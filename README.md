@@ -1,14 +1,16 @@
-# VHS Archive 7.5.2 — Photo Library Startup Fix
+# VHS Archive 7.6 — Archive Backup Tools
 
-7.5.2 fixes the remaining startup crash from the 7.5 photo-library update.
+7.6 replaces the risky Reset Starter Archive button with Import JSON Backup.
 
-## Fixed
+## New in 7.6
 
-- Shelf now safely receives the photoLibrary prop
-- Tape cards can resolve IndexedDB photos without crashing
-- Keeps IndexedDB photo storage from 7.5
-- Keeps zoom viewer and compression
+- Adds Import JSON Backup
+- Lets you choose a downloaded backup JSON file
+- Confirms before replacing the current archive
+- Restores tapes and wishlist from backup
+- Restores included photo data where supported
+- Removes the risky reset button from the main Stats backup area
 
 ## Suggested commit message
 
-Release 7.5.2 - Photo Library Startup Fix
+Release 7.6 - Archive Backup Tools
