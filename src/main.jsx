@@ -7,3 +7,13 @@ createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>
 );
+
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const swUrl = `${import.meta.env.BASE_URL}service-worker.js`;
+    navigator.serviceWorker.register(swUrl).catch((error) => {
+      console.warn('Service worker registration failed:', error);
+    });
+  });
+}

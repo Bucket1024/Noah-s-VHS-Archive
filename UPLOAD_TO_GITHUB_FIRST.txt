@@ -1,21 +1,19 @@
-NOAH'S VHS ARCHIVE 6.2 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.3 — UPLOAD STEPS
 
-This package is designed to replace your current GitHub files cleanly.
+1. Open your GitHub repository.
+2. Go to the Code tab.
+3. Click Add file → Upload files.
+4. Open this extracted Noahs_VHS_Archive_6.3 folder.
+5. Select everything INSIDE the folder.
+6. Drag it into GitHub.
+7. Commit message: Noah's VHS Archive 6.3 install-ready PWA
+8. Wait for Actions to turn green.
+9. Open the GitHub Pages link on Android Chrome.
+10. Use Install App or Add to Home screen.
+11. Launch from the new home-screen icon for fullscreen/no address bar.
 
-Recommended clean method:
-1. Go to your GitHub repository.
-2. Code tab.
-3. Upload everything INSIDE the Noahs_VHS_Archive_6.2 folder.
-4. If GitHub says files already exist, that is okay — it will replace them.
-5. Commit message: Noah's VHS Archive 6.2 clean foundation.
-6. Go to Actions and wait for the green checkmark.
-7. Open your GitHub Pages link and hard refresh.
-
-Important:
-This package includes:
-- vite.config.js
-- src/main.jsx
-- .github/workflows/deploy.yml
-- all app source files
-
-So you should not need to manually create the workflow again.
+This version fixes:
+- service worker registration
+- installable PWA metadata
+- relative GitHub Pages paths
+- PNG Android icons

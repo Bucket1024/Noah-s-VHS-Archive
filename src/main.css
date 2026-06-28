@@ -36,3 +36,17 @@ button.secondary{background:#111827;border:1px solid #465a7d;box-shadow:none}.da
 .bottom-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:15px;background:transparent;border:1px solid transparent;box-shadow:none;color:var(--muted);font-size:11px;padding:9px 2px}.bottom-nav .ico{font-size:24px;line-height:1}.bottom-nav button.active{color:var(--yellow);background:rgba(0,88,255,.2);border-color:rgba(255,213,31,.35);text-shadow:0 0 10px rgba(255,213,31,.45)}
 .toast{display:none;position:fixed;left:14px;right:14px;bottom:calc(110px + var(--safe));z-index:100;background:#071327;border:1px solid var(--yellow);border-radius:15px;padding:12px;color:white}.toast.show{display:block}
 @media(min-width:760px){h1{font-size:28px}.hero h2{font-size:46px}.stats{grid-template-columns:repeat(4,1fr)}.actions{grid-template-columns:1fr 1fr}.controls{grid-template-columns:2fr 1fr 1fr}.detail-layout{grid-template-columns:350px 1fr}.bigcover{height:510px}.grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}.photo-buttons{grid-template-columns:repeat(2,1fr)}.photo-grid{grid-template-columns:repeat(5,1fr)}}
+
+.install-button{
+  background:linear-gradient(180deg,#ffd51f,#c48a00);
+  color:#1b1400;
+  box-shadow:0 0 22px rgba(255,213,31,.42);
+}
+.install-panel{
+  border-color:rgba(255,213,31,.55);
+  box-shadow:0 0 20px rgba(255,213,31,.12);
+}
+@media all and (display-mode: standalone){
+  body{overscroll-behavior:none}
+  .app-header{padding-top:env(safe-area-inset-top,0px)}
+}

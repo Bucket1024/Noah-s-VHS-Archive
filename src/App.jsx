@@ -78,12 +78,37 @@ export default function App(){
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
+  const [installPrompt,setInstallPrompt] = useState(null);
+  const [isStandalone,setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   const [form,setForm] = useState({});
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
 
+  useEffect(() => {
+    const handler = (event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', () => {
+      setInstallPrompt(null);
+      setIsStandalone(true);
+      notify('Noah\'s VHS Archive installed.');
+    });
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
+  async function installApp(){
+    if (!installPrompt) {
+      notify('Use Chrome menu → Install app / Add to Home screen.');
+      return;
+    }
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  }
   function openTape(id){ setSelectedId(id); setSelectedPhoto(0); setEditOpen(false); setView('detail'); }
   const selected = tapes.find(t => t.id === selectedId);
 
@@ -178,7 +203,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Production foundation • 6.2</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Production foundation • 6.3</div></div>
         </div>
       </header>
 
@@ -187,10 +212,11 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.2 is the cleaner app foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.3 is the install-ready app foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
+                {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
               </div>
               <div className="stats">
                 <div className="stat"><strong>{stats.total}</strong><span>Total Tapes</span></div>
@@ -203,6 +229,10 @@ export default function App(){
                 <div className="stat"><strong>{stats.sleeves}</strong><span>Sleeves</span></div>
               </div>
             </section>
+            {!isStandalone && <section className="panel install-panel">
+              <h3>Install for Fullscreen</h3>
+              <p className="small">After GitHub finishes deploying 6.3, Chrome should show <b>Install app</b>. Launching from the installed home-screen icon removes the browser address bar.</p>
+            </section>}
             <Shelf title="New Arrivals" subtitle="Latest archive IDs" tapes={[...tapes].slice(-12).reverse()} onOpen={openTape}/>
             <Shelf title="Staff Picks" subtitle="Favorites" tapes={tapes.filter(t=>t.favorite).slice(0,16)} onOpen={openTape}/>
             <Shelf title="Special Shelf" subtitle="Screeners & variants" tapes={tapes.filter(t=>has(t,/screener|collector|special|nintendo|disney parks|custom|lenticular|metallic|2-tape|blue tape/i)).slice(0,16)} onOpen={openTape}/>
