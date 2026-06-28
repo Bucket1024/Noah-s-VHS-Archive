@@ -1,10 +1,12 @@
-VHS ARCHIVE 7.7.1 — UPLOAD STEPS
+VHS ARCHIVE 7.7.2 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.7.1 - PWA Install Fix.
+2. Commit message: Release 7.7.2 - Header and Shelf Polish.
 3. Wait for Actions green checkmark.
-4. Open the app link and refresh.
-5. Remove the old home-screen shortcut/app.
-6. Open Chrome menu and check for Install/Add to Home Screen behavior.
-
-This fixes icon paths for GitHub Pages.
+4. Refresh the app.
+5. Test:
+   - Header logo changed
+   - Header subtitle says Catalog. Collect. Preserve.
+   - Small version says v7.7.2
+   - Shelves swipe horizontally
+   - Main pages still scroll vertically

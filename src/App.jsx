@@ -608,8 +608,8 @@ export default function App(){
     <>
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
-          <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Icon Install Fix • 7.7.1</div></div>
+          <img className="header-ticket-logo" src="./icons/icon-192x192.png" alt="VHS Archive logo" />
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v7.7.2</div></div>
         </div>
       </header>
 
@@ -618,7 +618,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.7.1 fixes PWA install behavior with the new icon.</p>
+              <p>Catalog. Collect. Preserve.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>

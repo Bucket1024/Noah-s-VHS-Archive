@@ -1319,3 +1319,76 @@ body{
   background:rgba(0,0,0,.22);
   color:#dbeafe;
 }
+
+
+/* 7.7.2 Header + Shelf Polish */
+.header-ticket-logo{
+  width:76px;
+  height:76px;
+  object-fit:contain;
+  border-radius:18px;
+  flex:0 0 auto;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.38));
+}
+
+.version-badge{
+  margin-top:2px;
+  color:rgba(219,234,254,.58);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.8px;
+}
+
+/* Keep shelves feeling like shelves: vertical page scroll + horizontal shelf swipe */
+.shelf{
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-x:contain !important;
+  scroll-snap-type:x proximity;
+  touch-action:pan-x pan-y !important;
+  padding-bottom:12px;
+}
+
+.shelf > *{
+  scroll-snap-align:start;
+  flex:0 0 auto;
+}
+
+.shelf::-webkit-scrollbar{
+  height:5px;
+}
+
+.shelf::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.05);
+  border-radius:999px;
+}
+
+.shelf::-webkit-scrollbar-thumb{
+  background:rgba(255,213,31,.35);
+  border-radius:999px;
+}
+
+main.app-scroll{
+  touch-action:pan-y !important;
+}
+
+@media(max-width:760px){
+  .header-ticket-logo{
+    width:66px;
+    height:66px;
+    border-radius:16px;
+  }
+
+  .app-header{
+    gap:12px;
+  }
+
+  .version-badge{
+    font-size:10px;
+  }
+
+  .shelf{
+    scroll-snap-type:x mandatory;
+  }
+}

@@ -1,15 +1,16 @@
-# VHS Archive 7.7.1 — PWA Install Fix
+# VHS Archive 7.7.2 — Header + Shelf Polish
 
-7.7.1 fixes the install behavior from 7.7.
+7.7.2 polishes the branding and shelf scrolling.
 
-## Fixed
+## New in 7.7.2
 
-- Manifest icon paths changed to GitHub Pages-safe relative paths
-- Added relative start_url, scope, and id
-- Keeps the new VHS Archive app icon
-- Keeps 7.6.2 restore/import tools
+- Replaces the small top-left VHS badge with the new ticket-style app logo
+- Header now shows Catalog. Collect. Preserve.
+- Version shown subtly as v7.7.2
+- Restores horizontal scrolling/swiping for shelf sections
+- Keeps 7.7.1 PWA install fix
 - No archive data changes
 
 ## Suggested commit message
 
-Release 7.7.1 - PWA Install Fix
+Release 7.7.2 - Header and Shelf Polish
