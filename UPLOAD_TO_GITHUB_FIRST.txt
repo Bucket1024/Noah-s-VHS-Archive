@@ -1,0 +1,21 @@
+NOAH'S VHS ARCHIVE 6.2 — UPLOAD STEPS
+
+This package is designed to replace your current GitHub files cleanly.
+
+Recommended clean method:
+1. Go to your GitHub repository.
+2. Code tab.
+3. Upload everything INSIDE the Noahs_VHS_Archive_6.2 folder.
+4. If GitHub says files already exist, that is okay — it will replace them.
+5. Commit message: Noah's VHS Archive 6.2 clean foundation.
+6. Go to Actions and wait for the green checkmark.
+7. Open your GitHub Pages link and hard refresh.
+
+Important:
+This package includes:
+- vite.config.js
+- src/main.jsx
+- .github/workflows/deploy.yml
+- all app source files
+
+So you should not need to manually create the workflow again.

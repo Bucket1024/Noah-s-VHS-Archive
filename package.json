@@ -11,5 +11,8 @@
     "react-dom": "latest",
     "lucide-react": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "name": "noahs-vhs-archive",
+  "version": "6.2.0",
+  "private": true
 }

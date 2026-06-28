@@ -178,7 +178,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Production foundation • 6.0</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Production foundation • 6.2</div></div>
         </div>
       </header>
 
@@ -187,7 +187,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.0 is the cleaner app foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.2 is the cleaner app foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
