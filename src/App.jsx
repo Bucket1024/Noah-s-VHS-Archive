@@ -237,7 +237,7 @@ export default function App(){
     setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
-  function compressImage(file, maxSize = 2200, quality = 0.92){
+  function compressImage(file, maxSize = 1400, quality = 0.82){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onerror = reject;
@@ -362,7 +362,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Quality + Zoom • 7.3</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Stability + Zoom • 7.3.1</div></div>
         </div>
       </header>
 
@@ -371,7 +371,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.3 improves future photo quality and adds zoom controls for tape photos.</p>
+              <p>Catalog. Collect. Preserve. Version 7.3.1 restores safer compression while keeping zoom controls.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -457,7 +457,7 @@ export default function App(){
                   <h3>Tape Photos</h3>
                   <p className="small">Use your camera for front cover, back cover, spine, tape label, or choose from gallery.</p>
                   <div className="photo-capture-tip">
-                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. New photos save at a higher quality for sharper cover text.
+                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. Photos are compressed to keep the app stable and prevent storage crashes.
                   </div>
                   <div className="photo-buttons">
                     {['Front Cover','Back Cover','Spine','Tape Label'].map(label => (

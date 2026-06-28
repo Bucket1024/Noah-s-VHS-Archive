@@ -1,21 +1,19 @@
-# VHS Archive 7.3 — Photo Quality + Zoom
+# VHS Archive 7.3.1 — Photo Stability + Zoom
 
-7.3 improves future photo quality and makes detailed tape photos easier to inspect.
+7.3.1 restores safer photo compression to prevent the app from crashing when multiple tapes have full image sets.
 
-## New in 7.3
+## Changed in 7.3.1
 
-- Future uploaded/camera photos save at higher quality
-- Max photo size increased from roughly 1400px to 2200px
-- JPEG quality increased from 0.82 to 0.92
-- Full photo viewer now has zoom controls
-- Double tap/click image to quick zoom
-- Useful for back covers, small text, tape labels, and inserts
+- Restored safer photo compression
+- Max photo size returned to about 1400px
+- JPEG quality returned to 0.82
+- Keeps the 7.3 zoom viewer
+- Designed to reduce localStorage/PWA memory pressure
 
 ## Important
 
-Existing photos that were already saved at lower quality will not automatically become sharper.
-Retake/re-upload important photos if you want the improved quality.
+If a photo caused a crash and did not save, retake it after installing this version.
 
 ## Suggested commit message
 
-Release 7.3 - Photo Quality and Zoom
+Release 7.3.1 - Photo Stability and Zoom
