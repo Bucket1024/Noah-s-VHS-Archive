@@ -1,14 +1,13 @@
-# Noah's VHS Archive 7.1 — Movie Night Edition
+# Noah's VHS Archive 7.1.1 — Movie Night Surprise Tweak
 
-7.1 improves the Movie Night button with a lightweight Feature Presentation reveal.
+7.1.1 adjusts Movie Night so it stays a surprise.
 
-## New in 7.1
+## Changed in 7.1.1
 
-- Movie Night now shows a short tape-shuffle overlay
-- Reveals Tonight's Movie before opening the tape page
-- Lightweight animation designed to stay phone-friendly
-- Keeps 7.0.1 navigation polish
+- Movie Night shows the scrolling tape shuffle
+- It no longer reveals the selected title on the overlay
+- After the shuffle, it jumps straight to the chosen tape page
 
 ## Suggested commit message
 
-Release 7.1 - Movie Night Edition
+Release 7.1.1 - Movie Night Surprise Tweak

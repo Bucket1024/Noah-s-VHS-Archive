@@ -186,13 +186,12 @@ export default function App(){
   function pickMovieNight(){
     if(!tapes.length) return;
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 8);
+    const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 10);
     setMovieNight({stage:'shuffle', choice, reel: shuffled});
-    setTimeout(() => setMovieNight({stage:'reveal', choice, reel: shuffled}), 1400);
     setTimeout(() => {
       setMovieNight(null);
       openTape(choice.id);
-    }, 3200);
+    }, 2200);
   }
 
   const filtered = useMemo(() => {
@@ -342,7 +341,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Movie Night Edition • 7.1</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Movie Night Edition • 7.1.1</div></div>
         </div>
       </header>
 
@@ -351,7 +350,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 7.1 adds a lightweight Feature Presentation reveal for Movie Night while keeping the smooth navigation polish</p>
+              <p>Version 7.1.1 keeps Movie Night as a surprise by shuffling tapes, then opening the chosen tape page</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -529,22 +528,11 @@ export default function App(){
         <div className="movie-night-overlay">
           <div className="movie-night-card">
             <div className="movie-night-kicker">NOAH'S FEATURE PRESENTATION</div>
-            {movieNight.stage === 'shuffle' ? (
-              <>
-                <h2>Choosing Tonight's Tape...</h2>
-                <div className="tape-reel">
-                  {movieNight.reel.map(t => <span key={t.id}>{t.title}</span>)}
-                </div>
-              </>
-            ) : (
-              <>
-                <h2>Tonight's Movie</h2>
-                <div className="chosen-tape">
-                  <strong>{movieNight.choice.title}</strong>
-                  <span>{movieNight.choice.vhsYear || 'No year'} • {movieNight.choice.packaging}</span>
-                </div>
-              </>
-            )}
+            <h2>Choosing Tonight's Tape...</h2>
+            <div className="tape-reel">
+              {movieNight.reel.map(t => <span key={t.id}>{t.title}</span>)}
+            </div>
+            <p className="movie-night-hint">Loading surprise selection...</p>
           </div>
         </div>
       )}

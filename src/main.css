@@ -674,3 +674,12 @@ body:before{
     animation:none!important;
   }
 }
+
+
+/* 7.1.1 Movie Night surprise tweak */
+.movie-night-hint{
+  color:var(--muted,#a9b6ce);
+  font-size:12px;
+  margin:14px 0 0;
+  letter-spacing:.4px;
+}
