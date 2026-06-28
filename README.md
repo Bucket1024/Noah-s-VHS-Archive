@@ -1,14 +1,17 @@
-# VHS Archive 7.2.9 — Tape Card Open Animation
+# VHS Archive 7.2.9 — Collector's Cleanup
 
-7.2.9 adds a lightweight tap animation before opening a tape.
+7.2.9 focuses on making the cover art the star.
 
-## New
+## New / Changed
 
-- Tapping a tape card gently lifts/focuses the card
-- Detail page opens after a short smooth delay
-- Built from the stable 7.2.8 app scroll-container foundation
-- Keeps Browse front-cover images
+- Removed archive stickers from Browse/Home cover images
+- Cover art is now unobstructed
+- Archive IDs stay in tape details only
+- Archive ID format is VHS-0001
+- Slightly cleaner Browse card spacing
+- Improved placeholder text for tapes without photos
+- Built from the stable 7.2.8 scroll-container foundation
 
 ## Suggested commit message
 
-Release 7.2.9 - Tape Card Open Animation
+Release 7.2.9 - Collector's Cleanup

@@ -1,6 +1,9 @@
 VHS ARCHIVE 7.2.9 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.2.9 - Tape Card Open Animation.
+2. Commit message: Release 7.2.9 - Collector's Cleanup.
 3. Wait for Actions green checkmark.
-4. Test tapping tape cards in Browse and Home shelves.
+4. Test:
+   - Browse cards have no archive sticker over the cover
+   - Tape details show Archive ID as VHS-0001
+   - Scrolling still works in the installed app

@@ -50,15 +50,15 @@ function badgeList(t){
   return badges.slice(0,3);
 }
 
-function TapeCard({ tape, onOpen, mini=false, isOpening=false }){
+function TapeCard({ tape, onOpen, mini=false }){
   const img = mainImage(tape);
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
   const badges = badgeList(tape);
   return (
-    <article className={`tape-card ${mini ? 'mini-card':''} ${isOpening ? 'opening':''}`} onClick={() => onOpen(tape.id)}>
+    <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
       <div className={`cover ${img ? 'has-img':''}`}>
-        {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title">{tape.title}</div>}
-        <div className="case-shine"></div><div className="archive-sticker">{tape.id?.replace("VHS-","")}</div>
+        {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title"><span className="coming-soon">PHOTO NEEDED</span><br />{tape.title}</div>}
+        <div className="case-shine"></div>
       </div>
       <div className="meta">
         <div className="title">{tape.title}</div>
@@ -77,7 +77,7 @@ function Shelf({ title, subtitle, tapes, onOpen }){
     <>
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
       <div className="shelf">
-        {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini isOpening={false} />) : <div className="panel small">Nothing here yet.</div>}
+        {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini />) : <div className="panel small">Nothing here yet.</div>}
       </div>
     </>
   );
@@ -105,7 +105,6 @@ export default function App(){
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [scrollPositions,setScrollPositions] = useState({});
   const scrollAreaRef = useRef(null);
-  const [openingTapeId,setOpeningTapeId] = useState(null);
   const [movieNight,setMovieNight] = useState(null);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
@@ -177,15 +176,11 @@ export default function App(){
     saveScrollPosition(view);
     sessionStorage.setItem('noahVhs6_selectedTape', id);
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
-    setOpeningTapeId(id);
-    setTimeout(() => {
-      setSelectedId(id);
-      setSelectedPhoto(0);
-      setEditOpen(false);
-      setView('detail');
-      setOpeningTapeId(null);
-      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 40);
-    }, 260);
+    setSelectedId(id);
+    setSelectedPhoto(0);
+    setEditOpen(false);
+    setView('detail');
+    setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'}), 50);
   }
 
   function backToBrowse(){
@@ -352,7 +347,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Tape Open Animation • 7.2.9</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Collector's Cleanup • 7.2.9</div></div>
         </div>
       </header>
 
@@ -361,7 +356,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.2.9 adds a gentle tape-card open animation.</p>
+              <p>Catalog. Collect. Preserve. Version 7.2.9 cleans up cover cards and moves archive IDs into details.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -400,7 +395,7 @@ export default function App(){
               <select value={edition} onChange={e=>setEdition(e.target.value)}><option value="">All editions</option><option>Standard</option><option>Screener</option><option>Collector</option><option>Special</option><option>Nintendo</option><option>Disney Parks</option><option>Custom</option><option>Widescreen</option></select>
             </div>
             <div className="small" style={{margin:'8px 2px 14px'}}>{filtered.length} tapes showing • Title A-Z</div>
-            <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape} isOpening={openingTapeId===t.id}/>)}</div>
+            <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape}/>)}</div>
           </>
         )}
 
