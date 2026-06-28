@@ -1,10 +1,10 @@
-NOAH'S VHS ARCHIVE 7.0 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 7.0.1 — UPLOAD STEPS
 
 1. Open GitHub repository.
 2. Code tab → Add file → Upload files.
-3. Open the extracted Noahs_VHS_Archive_7.0 folder.
+3. Open the extracted Noahs_VHS_Archive_7.0.1 folder.
 4. Select everything INSIDE the folder.
 5. Drag into GitHub.
-6. Commit message: Release 7.0 - Collector's Edition.
+6. Commit message: Release 7.0.1 - Navigation Polish.
 7. Wait for Actions to turn green.
-8. Test laptop first, then phone.
+8. Test Browse scroll position and tap-active-tab-to-top.

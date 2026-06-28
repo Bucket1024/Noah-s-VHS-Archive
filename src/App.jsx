@@ -103,6 +103,7 @@ export default function App(){
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [viewerPhoto,setViewerPhoto] = useState(null);
+  const [scrollPositions,setScrollPositions] = useState({});
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -141,13 +142,43 @@ export default function App(){
     await installPrompt.userChoice;
     setInstallPrompt(null);
   }
+  function saveScrollPosition(page = view){
+    const y = window.scrollY || document.documentElement.scrollTop || 0;
+    setScrollPositions(prev => ({...prev, [page]: y}));
+    sessionStorage.setItem(`noahVhs_scroll_${page}`, String(y));
+  }
+
+  function restoreScrollPosition(page){
+    const saved = scrollPositions[page] ?? Number(sessionStorage.getItem(`noahVhs_scroll_${page}`) || 0);
+    setTimeout(() => window.scrollTo({top:saved, behavior:'auto'}), 50);
+  }
+
+  function goToView(nextView){
+    if(view === nextView){
+      window.scrollTo({top:0, behavior:'smooth'});
+      sessionStorage.setItem(`noahVhs_scroll_${nextView}`, '0');
+      setScrollPositions(prev => ({...prev, [nextView]: 0}));
+      return;
+    }
+    saveScrollPosition(view);
+    setView(nextView);
+    setTimeout(() => restoreScrollPosition(nextView), 80);
+  }
+
   function openTape(id){
+    saveScrollPosition(view);
     sessionStorage.setItem('noahVhs6_selectedTape', id);
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
     setSelectedId(id);
     setSelectedPhoto(0);
     setEditOpen(false);
     setView('detail');
+    setTimeout(() => window.scrollTo({top:0, behavior:'smooth'}), 50);
+  }
+
+  function backToBrowse(){
+    goToView('browse');
+    restoreScrollPosition('browse');
   }
   const selected = tapes.find(t => t.id === selectedId);
 
@@ -266,7 +297,7 @@ export default function App(){
     setTapes(prev => [...prev, ...additions]);
     setQuickRows('');
     notify(`${additions.length} tape${additions.length>1?'s':''} added.`);
-    setView('browse');
+    goToView('browse');
   }
 
   function addTape(e){
@@ -289,7 +320,7 @@ export default function App(){
     })]);
     e.currentTarget.reset();
     notify('Tape added.');
-    setView('browse');
+    goToView('browse');
   }
 
   function exportBackup(){
@@ -302,10 +333,10 @@ export default function App(){
 
   return (
     <>
-      <header className="app-header">
+      <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Collector's Edition • 7.0</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Collector's Edition • 7.0.1</div></div>
         </div>
       </header>
 
@@ -314,10 +345,10 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 7.0 focuses on collector-quality tape pages, archive IDs, a cleaner gallery, and a more refined VHS museum feel</p>
+              <p>Version 7.0.1 adds navigation polish: tap active tabs to return to top and keep your Browse position after opening tapes</p>
               <div className="actions">
-                <button onClick={()=>setView('browse')}>Browse the Shelves</button>
-                <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
+                <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
+                <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
                 <button className="movie-night" onClick={pickMovieNight}>🎲 Movie Night</button>
                 {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
               </div>
@@ -359,7 +390,7 @@ export default function App(){
 
         {view === 'detail' && selected && (
           <section>
-            <button className="secondary" onClick={()=>setView('browse')}>← Back to collection</button>
+            <button className="secondary" onClick={()=>goToView('browse')}>← Back to collection</button>
             <div className="detail-layout" style={{marginTop:14}}>
               <div>
                 <div className={`bigcover ${mainImage(selected) ? 'has-img':''}`} onClick={() => {
@@ -501,7 +532,7 @@ export default function App(){
       )}
 
       <nav className="bottom-nav">
-        {views.map(([id,ico,label]) => <button key={id} className={view===id?'active':''} onClick={()=>setView(id)}><span className="ico">{ico}</span><span>{label}</span></button>)}
+        {views.map(([id,ico,label]) => <button key={id} className={view===id?'active':''} onClick={()=>goToView(id)}><span className="ico">{ico}</span><span>{label}</span></button>)}
       </nav>
       <div className={`toast ${toast ? 'show':''}`}>{toast}</div>
     </>

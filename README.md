@@ -1,16 +1,15 @@
-# Noah's VHS Archive 7.0 — Collector's Edition
+# Noah's VHS Archive 7.0.1 — Navigation Polish
 
-7.0 is a collector-focused release built from the stable performance-safe foundation.
+7.0.1 is a small polish update focused on making navigation feel better.
 
-## New in 7.0
+## New in 7.0.1
 
-- Museum-style tape title area
-- Permanent Noah Archive IDs shown as NA-0001, NA-0002, etc.
-- Better collector badge presentation on tape pages
-- Tap large cover to open full photo viewer
-- Photo grid now has View and Remove controls
-- More refined collector/museum detail styling
+- Tap the active bottom tab to smoothly scroll that page back to the top
+- Tap the top header to return Home / top
+- Browse scroll position is saved before opening a tape
+- Back from a tape returns you to your previous Browse position
+- Same behavior applies to major tabs where possible
 
 ## Suggested commit message
 
-Release 7.0 - Collector's Edition
+Release 7.0.1 - Navigation Polish

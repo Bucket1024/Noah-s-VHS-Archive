@@ -571,3 +571,15 @@ body:before{
   .museum-title{display:block}
   .museum-title span{display:inline-block;margin-top:8px}
 }
+
+
+/* 7.0.1 Navigation Polish */
+.app-header{
+  cursor:pointer;
+}
+.app-header:active{
+  filter:brightness(1.08);
+}
+.bottom-nav button{
+  touch-action:manipulation;
+}
