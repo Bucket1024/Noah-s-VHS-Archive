@@ -103,6 +103,7 @@ export default function App(){
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [viewerPhoto,setViewerPhoto] = useState(null);
+  const [viewerZoom,setViewerZoom] = useState(1);
   const [scrollPositions,setScrollPositions] = useState({});
   const scrollAreaRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
@@ -135,6 +136,20 @@ export default function App(){
   }, []);
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
+
+  function openPhotoViewer(photo){
+    setViewerZoom(1);
+    setViewerPhoto(photo);
+  }
+
+  function closePhotoViewer(){
+    closePhotoViewer();
+    setViewerZoom(1);
+  }
+
+  function zoomPhoto(delta){
+    setViewerZoom(z => Math.max(1, Math.min(4, Number((z + delta).toFixed(2)))));
+  }
   async function installApp(){
     if (!installPrompt) {
       notify('Use Chrome menu → Install app / Add to Home screen.');
@@ -222,7 +237,7 @@ export default function App(){
     setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
-  function compressImage(file, maxSize = 1400, quality = 0.82){
+  function compressImage(file, maxSize = 2200, quality = 0.92){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onerror = reject;
@@ -347,7 +362,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Collector's Cleanup • 7.2.9</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Quality + Zoom • 7.3</div></div>
         </div>
       </header>
 
@@ -356,7 +371,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.2.9 cleans up cover cards and moves archive IDs into details.</p>
+              <p>Catalog. Collect. Preserve. Version 7.3 improves future photo quality and adds zoom controls for tape photos.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -406,7 +421,7 @@ export default function App(){
               <div>
                 <div className={`bigcover ${mainImage(selected) ? 'has-img':''}`} onClick={() => {
                   const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
-                  if(images[selectedPhoto]) setViewerPhoto(images[selectedPhoto]);
+                  if(images[selectedPhoto]) openPhotoViewer(images[selectedPhoto]);
                 }}>
                   {(() => {
                     const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
@@ -442,7 +457,7 @@ export default function App(){
                   <h3>Tape Photos</h3>
                   <p className="small">Use your camera for front cover, back cover, spine, tape label, or choose from gallery.</p>
                   <div className="photo-capture-tip">
-                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. This will make future crop/background-removal tools work much better.
+                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. New photos save at a higher quality for sharper cover text.
                   </div>
                   <div className="photo-buttons">
                     {['Front Cover','Back Cover','Spine','Tape Label'].map(label => (
@@ -460,7 +475,7 @@ export default function App(){
                     {(selected.photos || []).map((p,i)=>(
                       <div className="photo" key={i}>
                         <img src={p.src}/><div className="photo-label">{p.label}</div>
-                        <button onClick={()=>setViewerPhoto(p)}>View</button><button className="remove-photo" onClick={()=>removePhoto(i)}>Remove</button>
+                        <button onClick={()=>openPhotoViewer(p)}>View</button><button className="remove-photo" onClick={()=>removePhoto(i)}>Remove</button>
                       </div>
                     ))}
                   </div>
@@ -547,13 +562,26 @@ export default function App(){
       )}
 
       {viewerPhoto && (
-        <div className="photo-viewer-overlay" onClick={() => setViewerPhoto(null)}>
-          <div className="photo-viewer-card" onClick={e => e.stopPropagation()}>
+        <div className="photo-viewer-overlay" onClick={closePhotoViewer}>
+          <div className="photo-viewer-card zoomable" onClick={e => e.stopPropagation()}>
             <div className="photo-viewer-head">
               <strong>{viewerPhoto.label || 'Tape Photo'}</strong>
-              <button className="secondary" onClick={() => setViewerPhoto(null)}>Close</button>
+              <div className="zoom-controls">
+                <button className="secondary" onClick={() => zoomPhoto(-0.5)}>−</button>
+                <span>{Math.round(viewerZoom * 100)}%</span>
+                <button className="secondary" onClick={() => zoomPhoto(0.5)}>+</button>
+                <button className="secondary" onClick={closePhotoViewer}>Close</button>
+              </div>
             </div>
-            <img src={viewerPhoto.src} alt={viewerPhoto.label || 'Tape photo'} />
+            <div className="zoom-stage">
+              <img
+                src={viewerPhoto.src}
+                alt={viewerPhoto.label || 'Tape photo'}
+                style={{ transform: `scale(${viewerZoom})` }}
+                onDoubleClick={() => setViewerZoom(viewerZoom > 1 ? 1 : 2)}
+              />
+            </div>
+            <div className="photo-viewer-note">Use + / − to zoom. Double tap/click image for quick zoom.</div>
           </div>
         </div>
       )}
