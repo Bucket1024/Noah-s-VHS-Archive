@@ -1440,3 +1440,27 @@ main.app-scroll{
     margin-left:0 !important;
   }
 }
+
+
+/* 7.7.5 Transparent Ticket Header */
+.header-ticket-logo{
+  width:108px !important;
+  height:68px !important;
+  object-fit:contain !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) !important;
+}
+
+@media(max-width:760px){
+  .header-ticket-logo{
+    width:100px !important;
+    height:62px !important;
+    margin-left:-6px !important;
+  }
+
+  .app-header{
+    gap:10px !important;
+  }
+}
