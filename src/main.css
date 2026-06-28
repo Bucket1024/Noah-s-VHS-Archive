@@ -583,3 +583,94 @@ body:before{
 .bottom-nav button{
   touch-action:manipulation;
 }
+
+
+/* 7.1 Movie Night Edition */
+.movie-night-overlay{
+  position:fixed;
+  inset:0;
+  z-index:230;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at center,rgba(0,88,255,.24),transparent 42%),
+    rgba(1,2,7,.92);
+  padding:18px;
+}
+.movie-night-card{
+  width:min(92vw,460px);
+  border:2px solid var(--bb-yellow,#ffd51f);
+  border-radius:24px;
+  background:linear-gradient(180deg,#061944,#02030a);
+  text-align:center;
+  padding:22px 18px;
+  overflow:hidden;
+}
+.movie-night-kicker{
+  color:var(--neon-cyan,#31e7ff);
+  font-size:11px;
+  letter-spacing:2.5px;
+  font-weight:1000;
+  margin-bottom:10px;
+}
+.movie-night-card h2{
+  margin:0 0 16px;
+  color:var(--bb-yellow,#ffd51f);
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  letter-spacing:.7px;
+}
+.tape-reel{
+  display:flex;
+  gap:10px;
+  overflow:hidden;
+  padding:10px 0;
+  border-top:1px solid rgba(255,213,31,.25);
+  border-bottom:1px solid rgba(255,213,31,.25);
+}
+.tape-reel span{
+  flex:0 0 150px;
+  background:linear-gradient(180deg,#111827,#050914);
+  border:1px solid rgba(255,213,31,.28);
+  border-radius:12px;
+  padding:12px 10px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  animation:reelSlide 1.2s linear infinite;
+}
+@keyframes reelSlide{
+  from{transform:translateX(0)}
+  to{transform:translateX(-160px)}
+}
+.chosen-tape{
+  border:1px solid rgba(255,213,31,.42);
+  border-radius:18px;
+  padding:18px 14px;
+  background:rgba(255,213,31,.06);
+}
+.chosen-tape strong{
+  display:block;
+  color:white;
+  font-size:24px;
+  line-height:1.1;
+  margin-bottom:8px;
+}
+.chosen-tape span{
+  color:var(--muted,#a9b6ce);
+  font-size:13px;
+}
+@media(max-width:760px){
+  .movie-night-card{
+    padding:18px 14px;
+  }
+  .chosen-tape strong{
+    font-size:21px;
+  }
+}
+@media(prefers-reduced-motion: reduce){
+  .tape-reel span{
+    animation:none!important;
+  }
+}

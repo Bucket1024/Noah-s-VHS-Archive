@@ -1,15 +1,14 @@
-# Noah's VHS Archive 7.0.1 — Navigation Polish
+# Noah's VHS Archive 7.1 — Movie Night Edition
 
-7.0.1 is a small polish update focused on making navigation feel better.
+7.1 improves the Movie Night button with a lightweight Feature Presentation reveal.
 
-## New in 7.0.1
+## New in 7.1
 
-- Tap the active bottom tab to smoothly scroll that page back to the top
-- Tap the top header to return Home / top
-- Browse scroll position is saved before opening a tape
-- Back from a tape returns you to your previous Browse position
-- Same behavior applies to major tabs where possible
+- Movie Night now shows a short tape-shuffle overlay
+- Reveals Tonight's Movie before opening the tape page
+- Lightweight animation designed to stay phone-friendly
+- Keeps 7.0.1 navigation polish
 
 ## Suggested commit message
 
-Release 7.0.1 - Navigation Polish
+Release 7.1 - Movie Night Edition
