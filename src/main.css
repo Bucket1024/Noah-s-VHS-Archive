@@ -1064,3 +1064,53 @@ textarea,
 body{
   padding-bottom:0 !important;
 }
+
+
+/* 7.2.9 Tape Card Open Animation */
+.tape-card{
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease !important;
+  transform-origin:center center;
+}
+
+.tape-card.opening{
+  animation:tapeOpenLift .26s ease forwards;
+  z-index:20;
+  pointer-events:none;
+}
+
+.tape-card.opening .cover{
+  box-shadow:0 0 0 2px rgba(255,213,31,.55), 0 0 18px rgba(255,213,31,.28);
+}
+
+@keyframes tapeOpenLift{
+  0%{
+    transform:scale(1) translateY(0);
+    filter:brightness(1);
+  }
+  55%{
+    transform:scale(1.045) translateY(-8px) rotate(-.35deg);
+    filter:brightness(1.12);
+  }
+  100%{
+    transform:scale(1.025) translateY(-5px);
+    filter:brightness(1.06);
+  }
+}
+
+@media(max-width:760px){
+  .tape-card.opening{
+    animation:tapeOpenLiftMobile .24s ease forwards;
+  }
+
+  @keyframes tapeOpenLiftMobile{
+    0%{transform:scale(1) translateY(0);filter:brightness(1)}
+    60%{transform:scale(1.035) translateY(-5px);filter:brightness(1.08)}
+    100%{transform:scale(1.02) translateY(-3px);filter:brightness(1.04)}
+  }
+}
+
+@media(prefers-reduced-motion: reduce){
+  .tape-card.opening{
+    animation:none !important;
+  }
+}

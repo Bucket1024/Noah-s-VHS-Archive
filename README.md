@@ -1,18 +1,14 @@
-# VHS Archive 7.2.8 — App Scroll Container
+# VHS Archive 7.2.9 — Tape Card Open Animation
 
-7.2.8 changes the installed/PWA scrolling model.
+7.2.9 adds a lightweight tap animation before opening a tape.
 
-Instead of relying on the browser body to scroll, the app now uses a dedicated main scroll container above the bottom tabs.
+## New
 
-## Fixed / Changed
-
-- Intended to fix installed app scrolling only working from the bottom tab area
-- Main content area now has its own scroll container
-- Bottom tabs stay fixed
-- Header stays fixed
-- Tap-to-top now scrolls the app container
-- Keeps VHS Archive branding and previous fixes
+- Tapping a tape card gently lifts/focuses the card
+- Detail page opens after a short smooth delay
+- Built from the stable 7.2.8 app scroll-container foundation
+- Keeps Browse front-cover images
 
 ## Suggested commit message
 
-Release 7.2.8 - App Scroll Container
+Release 7.2.9 - Tape Card Open Animation

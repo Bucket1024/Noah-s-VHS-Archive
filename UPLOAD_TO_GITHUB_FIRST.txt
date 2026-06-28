@@ -1,9 +1,6 @@
-VHS ARCHIVE 7.2.8 — UPLOAD STEPS
+VHS ARCHIVE 7.2.9 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.2.8 - App Scroll Container.
+2. Commit message: Release 7.2.9 - Tape Card Open Animation.
 3. Wait for Actions green checkmark.
-4. Fully close the installed app.
-5. Reopen and test scrolling from the middle of the screen.
-
-If the installed app still acts cached, clear Chrome site data or reinstall the home-screen app.
+4. Test tapping tape cards in Browse and Home shelves.
