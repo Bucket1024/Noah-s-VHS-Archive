@@ -1,13 +1,8 @@
-NOAH'S VHS ARCHIVE 6.6 REBUILD — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.6.1 — UPLOAD STEPS
 
-1. Open GitHub repository.
-2. Code tab → Add file → Upload files.
-3. Open extracted Noahs_VHS_Archive_6.6_Rebuild folder.
-4. Select everything INSIDE the folder.
-5. Drag into GitHub.
-6. Commit message: Release 6.6 Rebuild - Video Store Edition.
-7. Wait for Actions to turn green.
-8. Test laptop first.
-9. Clear phone site data if phone still shows older cached version.
+1. Upload everything inside this folder to GitHub.
+2. Commit message: Release 6.6.1 - Performance Patch.
+3. Wait for Actions green checkmark.
+4. Test on phone.
 
-This rebuild is based on stable 6.5 and avoids the previous featurePick crash.
+This keeps the 6.6 look but makes the app lighter on mobile.

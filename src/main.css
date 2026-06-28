@@ -365,3 +365,94 @@ h1{
 .detail-card,.panel,.stat{
   border-color:rgba(255,213,31,.20);
 }
+
+
+/* 6.6.1 Performance Patch
+   Keeps the blue/yellow video-store feel but reduces expensive effects on phones. */
+
+body:before{
+  opacity:.28 !important;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.020),rgba(255,255,255,.020) 1px,transparent 1px,transparent 6px) !important;
+}
+
+.app-header,
+.hero,
+.stat,
+.panel,
+.detail-card,
+.tape-card,
+.bottom-nav button.active{
+  box-shadow:none !important;
+}
+
+.hero{
+  background:linear-gradient(145deg,rgba(0,88,255,.30),rgba(6,18,54,.96) 48%,rgba(0,27,84,.92)) !important;
+}
+
+.shelf{
+  box-shadow:0 7px 0 rgba(80,48,25,.45) !important;
+}
+
+.cover:before,
+.bigcover:before{
+  box-shadow:none !important;
+}
+
+.tape-card{
+  transition:transform .08s ease !important;
+}
+
+.tape-card:hover{
+  transform:none !important;
+  box-shadow:none !important;
+}
+
+.case-shine{
+  display:none !important;
+}
+
+.cover{
+  will-change:auto !important;
+}
+
+@media (max-width:760px){
+  body{
+    background:linear-gradient(180deg,#041f5c 0%,#030b21 58%,#010207 100%) fixed !important;
+  }
+
+  body:before{
+    opacity:.18 !important;
+  }
+
+  .hero:after,
+  .hero:before{
+    display:none !important;
+  }
+
+  .shelf{
+    border-bottom-width:6px !important;
+  }
+
+  .tape-card:before{
+    display:none !important;
+  }
+
+  .archive-sticker{
+    font-size:9px !important;
+    padding:2px 4px !important;
+  }
+
+  .mini-badge{
+    font-size:8px !important;
+    padding:2px 4px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
+}

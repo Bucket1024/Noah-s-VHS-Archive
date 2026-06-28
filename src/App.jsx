@@ -300,7 +300,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6.1</div></div>
         </div>
       </header>
 
@@ -309,7 +309,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.6 keeps the layout you like and rebuilds the blue-and-yellow video store look on the stable 6.5 foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.6.1 keeps the video-store look but reduces heavy effects for smoother phone performance: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
