@@ -1,12 +1,12 @@
-NOAH'S VHS ARCHIVE 6.4 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.5 — UPLOAD STEPS
 
 1. Open your GitHub repository.
 2. Code tab → Add file → Upload files.
-3. Open the extracted Noahs_VHS_Archive_6.4 folder.
+3. Open the extracted Noahs_VHS_Archive_6.5 folder.
 4. Select everything INSIDE the folder.
 5. Drag it into GitHub.
-6. Commit message: Noah's VHS Archive 6.4 Collector's Edition.
+6. Commit message: Release 6.5 - Rental Shelf.
 7. Wait for Actions to turn green.
 8. Open the GitHub Pages link and refresh.
 
-6.4 fixes the Android camera/photo return issue and adds 90s/VHS polish.
+6.5 adds collector badges, Quick Add Stack, and more VHS/rental-shelf visual polish.

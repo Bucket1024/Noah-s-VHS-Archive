@@ -29,18 +29,40 @@ function has(t, regex){
   return regex.test([t.title,t.studio,t.edition,t.packaging,t.notes,t.genre,t.tags].join(' '));
 }
 
+function badgeList(t){
+  const text = [t.title,t.studio,t.edition,t.packaging,t.notes,t.genre,t.tags].join(' ');
+  const badges = [];
+  if(/screener/i.test(text)) badges.push('SCREENER');
+  if(/collector/i.test(text)) badges.push('COLLECTOR');
+  if(/special/i.test(text)) badges.push('SPECIAL');
+  if(/widescreen/i.test(text)) badges.push('WIDE');
+  if(/lenticular/i.test(text)) badges.push('LENTICULAR');
+  if(/metallic/i.test(text)) badges.push('METALLIC');
+  if(/2-tape|2 tape|double/i.test(text)) badges.push('2 TAPE');
+  if(/nintendo/i.test(text)) badges.push('NINTENDO');
+  if(/disney parks|vacation|disneyland|walt disney world/i.test(text)) badges.push('PARKS');
+  if(/custom/i.test(text)) badges.push('CUSTOM');
+  if(/clamshell/i.test(t.packaging || '')) badges.push('CLAM');
+  return badges.slice(0,3);
+}
+
 function TapeCard({ tape, onOpen, mini=false }){
   const img = mainImage(tape);
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
+  const badges = badgeList(tape);
   return (
     <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
       <div className={`cover ${img ? 'has-img':''}`}>
         {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title">{tape.title}</div>}
+        <div className="case-shine"></div>
       </div>
       <div className="meta">
         <div className="title">{tape.title}</div>
         <div className="small">{tape.vhsYear || 'No year'} • {tape.studio || 'Unknown'}</div>
-        <span className={`tag ${special ? 'alt':''}`}>{tape.packaging}</span>
+        <div className="badge-row">
+          <span className={`tag ${special ? 'alt':''}`}>{tape.packaging}</span>
+          {badges.map(b => <span className="mini-badge" key={b}>{b}</span>)}
+        </div>
       </div>
     </article>
   );
@@ -81,6 +103,7 @@ export default function App(){
   const [installPrompt,setInstallPrompt] = useState(null);
   const [isStandalone,setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   const [form,setForm] = useState({});
+  const [quickRows,setQuickRows] = useState('');
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
@@ -215,6 +238,32 @@ export default function App(){
     notify('Tape details saved.');
   }
 
+  function quickAddTapes(){
+    const rows = quickRows.split('\n').map(r => r.trim()).filter(Boolean);
+    if(!rows.length){ notify('Paste one tape per line first.'); return; }
+    const additions = rows.map((row, idx) => {
+      const parts = row.split(',').map(p => p.trim());
+      const title = parts[0] || 'Untitled Tape';
+      const yearMatch = row.match(/(19|20)\d{2}/);
+      const packaging = /clamshell/i.test(row) ? 'Clamshell' : (/cardboard/i.test(row) ? 'Cardboard Sleeve' : 'Sleeve');
+      return normalizeTape({
+        id: 'VHS-' + String(tapes.length + idx + 1).padStart(4,'0'),
+        title,
+        vhsYear: yearMatch ? yearMatch[0] : '',
+        studio: parts[2] || parts[1] || 'Unknown',
+        edition: /screener/i.test(row) ? 'Screener' : (/widescreen/i.test(row) ? 'Widescreen' : 'Standard'),
+        packaging,
+        genre: 'Other',
+        notes: row,
+        dateAcquired: new Date().toISOString().slice(0,10)
+      });
+    });
+    setTapes(prev => [...prev, ...additions]);
+    setQuickRows('');
+    notify(`${additions.length} tape${additions.length>1?'s':''} added.`);
+    setView('browse');
+  }
+
   function addTape(e){
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -251,7 +300,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Collector's Edition • 6.4</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Rental Shelf • 6.5</div></div>
         </div>
       </header>
 
@@ -260,7 +309,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.4 keeps the 6.3 layout, adds a stronger 90s VHS feel, and fixes the camera workflow: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.5 keeps the layout you like and adds collector badges, quick add, and a more VHS-sleeve feel: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
@@ -285,6 +334,8 @@ export default function App(){
             <Shelf title="New Arrivals" subtitle="Latest archive IDs" tapes={[...tapes].slice(-12).reverse()} onOpen={openTape}/>
             <Shelf title="Staff Picks" subtitle="Favorites" tapes={tapes.filter(t=>t.favorite).slice(0,16)} onOpen={openTape}/>
             <Shelf title="Special Shelf" subtitle="Screeners & variants" tapes={tapes.filter(t=>has(t,/screener|collector|special|nintendo|disney parks|custom|lenticular|metallic|2-tape|blue tape/i)).slice(0,16)} onOpen={openTape}/>
+            <Shelf title="Nintendo / Promo Shelf" subtitle="Game tapes & promos" tapes={tapes.filter(t=>has(t,/nintendo|donkey kong|pokemon|pokémon/i)).slice(0,16)} onOpen={openTape}/>
+            <Shelf title="Disney Shelf" subtitle="Disney, Pixar & Parks" tapes={tapes.filter(t=>has(t,/disney|pixar|walt disney|parks|goofy|toy story/i)).slice(0,16)} onOpen={openTape}/>
             <Shelf title="Photo Shelf" subtitle="Your real tape photos" tapes={tapes.filter(t=>mainImage(t)).slice(0,14)} onOpen={openTape}/>
           </>
         )}
@@ -328,7 +379,7 @@ export default function App(){
                   <button className="secondary" onClick={()=>updateTape(selected.id,{watched:!selected.watched})}>▶ {selected.watched ? 'Unwatch':'Watched'}</button>
                 </div>
                 {[
-                  ['Archive ID',selected.id],['VHS Release',selected.vhsYear || 'No year listed'],['Studio',selected.studio],['Edition',selected.edition],['Packaging',selected.packaging],['Genre',selected.genre],['Tape Condition',selected.tapeCondition || selected.condition || 'Not set'],['Sleeve Condition',selected.sleeveCondition || 'Not set'],['Inserts',selected.inserts || 'Not set'],['Rating',selected.rating ? selected.rating + '/5':'Not rated'],['Acquired',selected.dateAcquired || 'Not set'],['Found At',selected.purchaseLocation || 'Not set'],['Price',selected.purchasePrice ? '$'+selected.purchasePrice:'Not set'],['Tags',selected.tags || ''],['Notes',selected.notes || '']
+                  ['Archive ID',selected.id],['VHS Release',selected.vhsYear || 'No year listed'],['Studio',selected.studio],['Edition',selected.edition],['Packaging',selected.packaging],['Genre',selected.genre],['Tape Condition',selected.tapeCondition || selected.condition || 'Not set'],['Sleeve Condition',selected.sleeveCondition || 'Not set'],['Inserts',selected.inserts || 'Not set'],['Rating',selected.rating ? selected.rating + '/5':'Not rated'],['Acquired',selected.dateAcquired || 'Not set'],['Found At',selected.purchaseLocation || 'Not set'],['Price',selected.purchasePrice ? '$'+selected.purchasePrice:'Not set'],['Collector Badges',badgeList(selected).join(', ') || 'None'],['Tags',selected.tags || ''],['Notes',selected.notes || '']
                 ].map(([a,b])=><div className="row" key={a}><span>{a}</span><span>{b}</span></div>)}
 
                 <div className="panel">
@@ -375,6 +426,12 @@ export default function App(){
         {view === 'add' && (
           <form className="panel formgrid" onSubmit={addTape}>
             <h3>Add a Tape</h3>
+            <div className="quick-add-box">
+              <h3>Quick Add Stack</h3>
+              <p className="small">Paste one tape per line when you come home with a stack. You can clean up photos/details later.</p>
+              <textarea rows="5" value={quickRows} onChange={e=>setQuickRows(e.target.value)} placeholder={"Ghostbusters, 1990, Columbia, sleeve\nChristmas Vacation, 1997, Warner Bros, sleeve"} />
+              <button type="button" className="secondary" onClick={quickAddTapes}>Quick Add These Tapes</button>
+            </div>
             <label>Title</label><input name="title"/>
             <label>VHS Release Year</label><input name="vhsYear"/>
             <label>Studio / Distributor</label><input name="studio"/>

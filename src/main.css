@@ -141,3 +141,73 @@ h1{
 .bottom-nav button.active{
   box-shadow:0 0 18px rgba(255,213,31,.18), inset 0 0 14px rgba(0,88,255,.18);
 }
+
+
+/* 6.5 Rental Shelf polish */
+.tape-card{
+  transform-style:preserve-3d;
+  position:relative;
+}
+.tape-card:before{
+  content:"";
+  position:absolute;
+  top:10px;
+  bottom:10px;
+  left:-5px;
+  width:8px;
+  background:linear-gradient(180deg,#0a1020,#030711);
+  border:1px solid rgba(255,213,31,.16);
+  border-radius:10px 0 0 10px;
+  opacity:.9;
+}
+.cover{
+  overflow:hidden;
+}
+.case-shine{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.08) 38%,rgba(255,255,255,.18) 45%,transparent 55%);
+  transform:translateX(-120%);
+  pointer-events:none;
+}
+.tape-card:hover .case-shine{
+  animation:caseShine 1.2s ease;
+}
+@keyframes caseShine{
+  to{transform:translateX(120%)}
+}
+.badge-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  align-items:center;
+}
+.mini-badge{
+  display:inline-block;
+  margin-top:8px;
+  background:rgba(51,231,255,.14);
+  border:1px solid rgba(51,231,255,.42);
+  color:#b9f7ff;
+  border-radius:6px;
+  font-size:9px;
+  text-transform:uppercase;
+  font-weight:1000;
+  padding:3px 5px;
+}
+.quick-add-box{
+  border:1px dashed rgba(255,213,31,.45);
+  border-radius:18px;
+  padding:12px;
+  background:rgba(255,213,31,.04);
+}
+.quick-add-box h3{
+  margin:0 0 6px;
+  color:var(--yellow);
+}
+.section-head h3:before{
+  content:"▸ ";
+  color:var(--neon-cyan);
+}
+.tape-card .title{
+  text-shadow:0 0 10px rgba(0,88,255,.22);
+}
