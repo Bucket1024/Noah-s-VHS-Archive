@@ -118,7 +118,7 @@ function badgeList(t){
   return badges.slice(0,3);
 }
 
-function TapeCard({ tape, onOpen, mini=false }){
+function TapeCard({ tape, onOpen, mini=false, photoLibrary={} }){
   const img = mainImage(tape, photoLibrary);
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
   const badges = badgeList(tape);
@@ -145,7 +145,7 @@ function Shelf({ title, subtitle, tapes, onOpen }){
     <>
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
       <div className="shelf">
-        {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini />) : <div className="panel small">Nothing here yet.</div>}
+        {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini photoLibrary={photoLibrary} />) : <div className="panel small">Nothing here yet.</div>}
       </div>
     </>
   );
@@ -483,7 +483,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Upgrade • 7.5</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Hotfix • 7.5.1</div></div>
         </div>
       </header>
 
@@ -492,7 +492,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.5 stores new photos in IndexedDB for larger collections.</p>
+              <p>Catalog. Collect. Preserve. Version 7.5.1 fixes the photo-library startup crash.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -514,12 +514,12 @@ export default function App(){
               <h3>Install for Fullscreen</h3>
               <p className="small">After GitHub finishes deploying 6.3, Chrome should show <b>Install app</b>. Launching from the installed home-screen icon removes the browser address bar.</p>
             </section>}
-            <Shelf title="New Arrivals" subtitle="Latest archive IDs" tapes={[...tapes].slice(-12).reverse()} onOpen={openTape}/>
-            <Shelf title="Staff Picks" subtitle="Favorites" tapes={tapes.filter(t=>t.favorite).slice(0,16)} onOpen={openTape}/>
-            <Shelf title="Special Shelf" subtitle="Screeners & variants" tapes={tapes.filter(t=>has(t,/screener|collector|special|nintendo|disney parks|custom|lenticular|metallic|2-tape|blue tape/i)).slice(0,16)} onOpen={openTape}/>
-            <Shelf title="Nintendo / Promo Shelf" subtitle="Game tapes & promos" tapes={tapes.filter(t=>has(t,/nintendo|donkey kong|pokemon|pokémon/i)).slice(0,16)} onOpen={openTape}/>
-            <Shelf title="Disney Shelf" subtitle="Disney, Pixar & Parks" tapes={tapes.filter(t=>has(t,/disney|pixar|walt disney|parks|goofy|toy story/i)).slice(0,16)} onOpen={openTape}/>
-            <Shelf title="Photo Shelf" subtitle="Your real tape photos" tapes={tapes.filter(t=>mainImage(t, photoLibrary)).slice(0,14)} onOpen={openTape}/>
+            <Shelf title="New Arrivals" subtitle="Latest archive IDs" tapes={[...tapes].slice(-12).reverse()} onOpen={openTape} photoLibrary={photoLibrary}/>
+            <Shelf title="Staff Picks" subtitle="Favorites" tapes={tapes.filter(t=>t.favorite).slice(0,16)} onOpen={openTape} photoLibrary={photoLibrary}/>
+            <Shelf title="Special Shelf" subtitle="Screeners & variants" tapes={tapes.filter(t=>has(t,/screener|collector|special|nintendo|disney parks|custom|lenticular|metallic|2-tape|blue tape/i)).slice(0,16)} onOpen={openTape} photoLibrary={photoLibrary}/>
+            <Shelf title="Nintendo / Promo Shelf" subtitle="Game tapes & promos" tapes={tapes.filter(t=>has(t,/nintendo|donkey kong|pokemon|pokémon/i)).slice(0,16)} onOpen={openTape} photoLibrary={photoLibrary}/>
+            <Shelf title="Disney Shelf" subtitle="Disney, Pixar & Parks" tapes={tapes.filter(t=>has(t,/disney|pixar|walt disney|parks|goofy|toy story/i)).slice(0,16)} onOpen={openTape} photoLibrary={photoLibrary}/>
+            <Shelf title="Photo Shelf" subtitle="Your real tape photos" tapes={tapes.filter(t=>mainImage(t, photoLibrary)).slice(0,14)} onOpen={openTape} photoLibrary={photoLibrary}/>
           </>
         )}
 
@@ -531,7 +531,7 @@ export default function App(){
               <select value={edition} onChange={e=>setEdition(e.target.value)}><option value="">All editions</option><option>Standard</option><option>Screener</option><option>Collector</option><option>Special</option><option>Nintendo</option><option>Disney Parks</option><option>Custom</option><option>Widescreen</option></select>
             </div>
             <div className="small" style={{margin:'8px 2px 14px'}}>{filtered.length} tapes showing • Title A-Z</div>
-            <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape}/>)}</div>
+            <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape} photoLibrary={photoLibrary}/>)}</div>
           </>
         )}
 
