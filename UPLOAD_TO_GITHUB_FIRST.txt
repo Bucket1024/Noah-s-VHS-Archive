@@ -1,6 +1,9 @@
-VHS ARCHIVE 7.2.5 — UPLOAD STEPS
+VHS ARCHIVE 7.2.6 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.2.5 - Smooth Scroll Polish.
+2. Commit message: Release 7.2.6 - App Scroll Restore.
 3. Wait for Actions green checkmark.
-4. Test Home/Browse tap-to-top scroll on phone.
+4. Open the app.
+5. If the installed app still won't scroll, remove the home-screen app and clear Chrome site data, then reinstall.
+
+This restores native scrolling and removes the 7.2.5 custom scroll patch.

@@ -134,28 +134,6 @@ export default function App(){
   }, []);
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
-
-  function smoothScrollToTop(duration = 360){
-    const start = window.scrollY || document.documentElement.scrollTop || 0;
-    if(start <= 2) return;
-    document.body.classList.add('is-auto-scrolling');
-    const started = performance.now();
-    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-
-    function step(now){
-      const progress = Math.min(1, (now - started) / duration);
-      const eased = easeOutCubic(progress);
-      window.scrollTo(0, Math.round(start * (1 - eased)));
-      if(progress < 1){
-        requestAnimationFrame(step);
-      } else {
-        window.scrollTo(0, 0);
-        setTimeout(() => document.body.classList.remove('is-auto-scrolling'), 80);
-      }
-    }
-
-    requestAnimationFrame(step);
-  }
   async function installApp(){
     if (!installPrompt) {
       notify('Use Chrome menu → Install app / Add to Home screen.');
@@ -178,7 +156,7 @@ export default function App(){
 
   function goToView(nextView){
     if(view === nextView){
-      smoothScrollToTop();
+      window.scrollTo({top:0, behavior:'smooth'});
       sessionStorage.setItem(`noahVhs_scroll_${nextView}`, '0');
       setScrollPositions(prev => ({...prev, [nextView]: 0}));
       return;
@@ -363,7 +341,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Smooth Scroll Polish • 7.2.5</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">App Scroll Restore • 7.2.6</div></div>
         </div>
       </header>
 
@@ -372,7 +350,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.2.5 improves tap-to-top scrolling.</p>
+              <p>Catalog. Collect. Preserve. Version 7.2.6 restores native app scrolling.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>

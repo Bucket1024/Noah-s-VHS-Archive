@@ -1,14 +1,15 @@
-# VHS Archive 7.2.5 — Smooth Scroll Polish
+# VHS Archive 7.2.6 — App Scroll Restore
 
-7.2.5 keeps the front-cover Browse layout and improves tap-to-top scrolling.
+7.2.6 rolls back the custom 7.2.5 scroll animation and restores native app scrolling.
 
-## New in 7.2.5
+## Fixed
 
-- Keeps front cover images in Browse
-- Adds a custom lightweight tap-to-top scroll animation
-- Temporarily reduces heavy visual effects during auto-scroll
-- Keeps stable branding and mobile sizing fixes
+- Restores scrolling in installed/PWA mode
+- Keeps stable VHS Archive branding
+- Keeps VHS-0001 archive IDs
+- Keeps sizing fixes from the stable build
+- Removes the custom scroll behavior that caused the installed app to lock
 
 ## Suggested commit message
 
-Release 7.2.5 - Smooth Scroll Polish
+Release 7.2.6 - App Scroll Restore

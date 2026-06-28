@@ -871,34 +871,68 @@ main{
 }
 
 
-/* 7.2.5 Smooth Scroll Polish */
-/* Keep Browse front-cover cards. Improve tap-to-top smoothness by reducing expensive effects during auto-scroll. */
+/* 7.2.6 App Scroll Restore
+   Removes the 7.2.5 custom auto-scroll behavior and restores native vertical scrolling in installed app mode. */
 
-body.is-auto-scrolling:before{
-  opacity:.08 !important;
+html{
+  height:auto !important;
+  min-height:100% !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  scroll-behavior:smooth;
 }
 
-body.is-auto-scrolling .tape-card,
-body.is-auto-scrolling .panel,
-body.is-auto-scrolling .detail-card,
-body.is-auto-scrolling .stat,
-body.is-auto-scrolling .hero,
-body.is-auto-scrolling .app-header{
-  box-shadow:none !important;
+body{
+  height:auto !important;
+  min-height:100dvh !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  position:relative !important;
+  touch-action:auto !important;
+  -webkit-overflow-scrolling:touch !important;
 }
 
-body.is-auto-scrolling .case-shine,
-body.is-auto-scrolling .hero:before,
-body.is-auto-scrolling .hero:after{
-  display:none !important;
+#root{
+  min-height:100dvh !important;
+  height:auto !important;
+  overflow-x:clip !important;
+  overflow-y:visible !important;
+  touch-action:auto !important;
+}
+
+main{
+  overflow-x:clip !important;
+  overflow-y:visible !important;
+  touch-action:auto !important;
+}
+
+.app-header,
+.bottom-nav,
+button,
+.tape-card{
+  touch-action:manipulation;
+}
+
+.shelf,
+.photo-carousel{
+  touch-action:pan-x pan-y;
+  -webkit-overflow-scrolling:touch;
 }
 
 body.is-auto-scrolling *{
-  scroll-behavior:auto !important;
+  scroll-behavior:smooth !important;
+}
+
+@media all and (display-mode: standalone){
+  html, body{
+    overflow-y:auto !important;
+    touch-action:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
 }
 
 @media(max-width:760px){
   html{
-    scroll-behavior:auto !important;
+    scroll-behavior:smooth !important;
   }
 }
