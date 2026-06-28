@@ -1,5 +1,5 @@
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { STARTER_TAPES } from './data.js';
 import './main.css';
 
@@ -104,6 +104,7 @@ export default function App(){
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [scrollPositions,setScrollPositions] = useState({});
+  const scrollAreaRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
@@ -144,19 +145,24 @@ export default function App(){
     setInstallPrompt(null);
   }
   function saveScrollPosition(page = view){
-    const y = window.scrollY || document.documentElement.scrollTop || 0;
+    const el = scrollAreaRef.current;
+    const y = el ? el.scrollTop : (window.scrollY || document.documentElement.scrollTop || 0);
     setScrollPositions(prev => ({...prev, [page]: y}));
     sessionStorage.setItem(`noahVhs_scroll_${page}`, String(y));
   }
 
   function restoreScrollPosition(page){
     const saved = scrollPositions[page] ?? Number(sessionStorage.getItem(`noahVhs_scroll_${page}`) || 0);
-    setTimeout(() => window.scrollTo({top:saved, behavior:'auto'}), 50);
+    setTimeout(() => {
+      const el = scrollAreaRef.current;
+      if(el) el.scrollTo({top:saved, behavior:'auto'});
+      else window.scrollTo({top:saved, behavior:'auto'});
+    }, 50);
   }
 
   function goToView(nextView){
     if(view === nextView){
-      window.scrollTo({top:0, behavior:'smooth'});
+      scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'});
       sessionStorage.setItem(`noahVhs_scroll_${nextView}`, '0');
       setScrollPositions(prev => ({...prev, [nextView]: 0}));
       return;
@@ -174,7 +180,7 @@ export default function App(){
     setSelectedPhoto(0);
     setEditOpen(false);
     setView('detail');
-    setTimeout(() => window.scrollTo({top:0, behavior:'smooth'}), 50);
+    setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'}), 50);
   }
 
   function backToBrowse(){
@@ -341,16 +347,16 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Touch Scroll Fix • 7.2.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">App Scroll Container • 7.2.8</div></div>
         </div>
       </header>
 
-      <main>
+      <main ref={scrollAreaRef} className="app-scroll">
         {view === 'home' && (
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.2.7 restores touch scrolling across the main app.</p>
+              <p>Catalog. Collect. Preserve. Version 7.2.8 uses a dedicated app scroll container for installed mode.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>

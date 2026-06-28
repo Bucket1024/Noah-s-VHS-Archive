@@ -1,14 +1,18 @@
-# VHS Archive 7.2.7 — Touch Scroll Fix
+# VHS Archive 7.2.8 — App Scroll Container
 
-7.2.7 fixes installed-app scrolling where only the bottom tab area recognized swipe gestures.
+7.2.8 changes the installed/PWA scrolling model.
 
-## Fixed
+Instead of relying on the browser body to scroll, the app now uses a dedicated main scroll container above the bottom tabs.
 
-- Restores vertical touch scrolling across the main content area
-- Keeps bottom navigation buttons working
-- Keeps horizontal shelf/photo carousel scrolling
-- Keeps VHS Archive branding and previous sizing fixes
+## Fixed / Changed
+
+- Intended to fix installed app scrolling only working from the bottom tab area
+- Main content area now has its own scroll container
+- Bottom tabs stay fixed
+- Header stays fixed
+- Tap-to-top now scrolls the app container
+- Keeps VHS Archive branding and previous fixes
 
 ## Suggested commit message
 
-Release 7.2.7 - Touch Scroll Fix
+Release 7.2.8 - App Scroll Container

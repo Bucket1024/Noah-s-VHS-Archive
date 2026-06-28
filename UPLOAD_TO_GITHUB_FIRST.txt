@@ -1,13 +1,9 @@
-VHS ARCHIVE 7.2.7 — UPLOAD STEPS
+VHS ARCHIVE 7.2.8 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.2.7 - Touch Scroll Fix.
+2. Commit message: Release 7.2.8 - App Scroll Container.
 3. Wait for Actions green checkmark.
-4. Open installed app and test scrolling from:
-   - Home content
-   - Browse cards
-   - Tape detail page
-   - Timeline
-   - Stats
+4. Fully close the installed app.
+5. Reopen and test scrolling from the middle of the screen.
 
-If the old installed app still behaves oddly, clear Chrome site data or reinstall the home-screen app.
+If the installed app still acts cached, clear Chrome site data or reinstall the home-screen app.

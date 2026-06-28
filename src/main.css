@@ -990,3 +990,77 @@ body:after{
 .stat{
   touch-action:pan-y !important;
 }
+
+
+/* 7.2.8 App Scroll Container
+   Uses main.app-scroll as the dedicated scrollable area, avoiding standalone/PWA body-scroll issues. */
+
+html,
+body,
+#root{
+  height:100% !important;
+  min-height:100% !important;
+  overflow:hidden !important;
+}
+
+body{
+  position:fixed !important;
+  inset:0 !important;
+  width:100% !important;
+  touch-action:none !important;
+}
+
+#root{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.app-header{
+  flex:0 0 auto !important;
+}
+
+main.app-scroll{
+  flex:1 1 auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  width:100% !important;
+  max-width:1180px !important;
+  margin:0 auto !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
+  overscroll-behavior:contain !important;
+  padding-bottom:calc(120px + var(--safe,18px)) !important;
+}
+
+.bottom-nav{
+  flex:0 0 auto !important;
+}
+
+main.app-scroll *{
+  touch-action:pan-y !important;
+}
+
+button,
+input,
+select,
+textarea,
+.bottom-nav,
+.bottom-nav *,
+.app-header{
+  touch-action:manipulation !important;
+}
+
+.shelf,
+.shelf *,
+.photo-carousel,
+.photo-carousel *{
+  touch-action:pan-x pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+/* The body no longer scrolls, so remove old body bottom padding impact */
+body{
+  padding-bottom:0 !important;
+}
