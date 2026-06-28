@@ -1,12 +1,12 @@
-NOAH'S VHS ARCHIVE 6.5 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.6 — UPLOAD STEPS
 
 1. Open your GitHub repository.
 2. Code tab → Add file → Upload files.
-3. Open the extracted Noahs_VHS_Archive_6.5 folder.
+3. Open the extracted Noahs_VHS_Archive_6.6 folder.
 4. Select everything INSIDE the folder.
 5. Drag it into GitHub.
-6. Commit message: Release 6.5 - Rental Shelf.
+6. Commit message: Release 6.6 - Video Store Edition.
 7. Wait for Actions to turn green.
 8. Open the GitHub Pages link and refresh.
 
-6.5 adds collector badges, Quick Add Stack, and more VHS/rental-shelf visual polish.
+6.6 is a visual-polish release with a Blockbuster-inspired blue/yellow/neon video-store feel.

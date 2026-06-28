@@ -1,31 +1,32 @@
-# Noah's VHS Archive 6.5 — Rental Shelf
+# Noah's VHS Archive 6.6 — Video Store Edition
 
-6.5 is a polish and quality-of-life release that keeps the 6.4 layout.
+6.6 keeps the working 6.5 layout and adds the stronger Blockbuster-inspired blue/yellow/neon video-store feel.
 
-## New in 6.5
+## New in 6.6
 
-- VHS case depth and shine effects
-- Collector badges on tape cards
-- Badges shown in tape details
-- Quick Add Stack for adding multiple tapes quickly
-- Nintendo / Promo shelf
-- Disney shelf
-- More 90s rental-shelf styling
+- Short VHS-style launch intro
+- Feature Presentation overlay for Movie Night
+- Stronger blue/yellow video-store color direction
+- VHS archive stickers on tape cards
+- More neon/CRT atmosphere
+- Polished shelves, cards, badges, and hover/tap feel
 
-## Kept from 6.4
+## Kept from previous versions
 
-- Camera/photo return fix
+- Camera/photo workflow fix
 - Photo compression
-- Movie Night picker
-- Android/PWA install support
+- Quick Add Stack
+- Collector badges
+- Nintendo/Promo and Disney shelves
 - Search/filter
 - Timeline
 - Backup export
+- PWA install support
 
 ## Upload
 
-Upload everything inside this folder to your GitHub repository and commit.
+Upload everything inside this folder to GitHub and commit.
 
 Suggested commit message:
 
-Release 6.5 - Rental Shelf
+Release 6.6 - Video Store Edition

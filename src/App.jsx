@@ -54,7 +54,7 @@ function TapeCard({ tape, onOpen, mini=false }){
     <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
       <div className={`cover ${img ? 'has-img':''}`}>
         {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title">{tape.title}</div>}
-        <div className="case-shine"></div>
+        <div className="case-shine"></div><div className="archive-sticker">{tape.id?.replace("VHS-","")}</div>
       </div>
       <div className="meta">
         <div className="title">{tape.title}</div>
@@ -71,6 +71,25 @@ function TapeCard({ tape, onOpen, mini=false }){
 function Shelf({ title, subtitle, tapes, onOpen }){
   return (
     <>
+      {booting && (
+        <div className="boot-screen">
+          <div className="boot-card">
+            <div className="boot-vhs">VHS</div>
+            <h2>NOAH'S VHS ARCHIVE</h2>
+            <div className="boot-slot"><span></span></div>
+            <p>INSERTING TAPE...</p>
+          </div>
+        </div>
+      )}
+      {featurePick && (
+        <div className="feature-overlay">
+          <div className="feature-card">
+            <div className="feature-kicker">FEATURE PRESENTATION</div>
+            <h2>{featurePick.title}</h2>
+            {featurePick.tape && <p>{featurePick.tape.title}</p>}
+          </div>
+        </div>
+      )}
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
       <div className="shelf">
         {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini />) : <div className="panel small">Nothing here yet.</div>}
@@ -101,6 +120,8 @@ export default function App(){
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
+  const [booting,setBooting] = useState(() => !sessionStorage.getItem('noahVhs6_booted'));
+  const [featurePick,setFeaturePick] = useState(null);
   const [isStandalone,setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   const [form,setForm] = useState({});
   const [quickRows,setQuickRows] = useState('');
@@ -126,6 +147,15 @@ export default function App(){
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
+  useEffect(() => {
+    if (!booting) return;
+    const timer = setTimeout(() => {
+      sessionStorage.setItem('noahVhs6_booted', 'yes');
+      setBooting(false);
+    }, 1300);
+    return () => clearTimeout(timer);
+  }, [booting]);
+
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
   async function installApp(){
     if (!installPrompt) {
@@ -149,8 +179,12 @@ export default function App(){
   function pickMovieNight(){
     if(!tapes.length) return;
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    notify(`Tonight's feature: ${choice.title}`);
-    setTimeout(() => openTape(choice.id), 700);
+    setFeaturePick({title:'Finding tonight\'s feature...', tape:null});
+    setTimeout(() => setFeaturePick({title:'Feature Presentation', tape:choice}), 900);
+    setTimeout(() => {
+      setFeaturePick(null);
+      openTape(choice.id);
+    }, 2300);
   }
 
   const filtered = useMemo(() => {
@@ -297,10 +331,29 @@ export default function App(){
 
   return (
     <>
+      {booting && (
+        <div className="boot-screen">
+          <div className="boot-card">
+            <div className="boot-vhs">VHS</div>
+            <h2>NOAH'S VHS ARCHIVE</h2>
+            <div className="boot-slot"><span></span></div>
+            <p>INSERTING TAPE...</p>
+          </div>
+        </div>
+      )}
+      {featurePick && (
+        <div className="feature-overlay">
+          <div className="feature-card">
+            <div className="feature-kicker">FEATURE PRESENTATION</div>
+            <h2>{featurePick.title}</h2>
+            {featurePick.tape && <p>{featurePick.tape.title}</p>}
+          </div>
+        </div>
+      )}
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Rental Shelf • 6.5</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6</div></div>
         </div>
       </header>
 
@@ -309,7 +362,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.5 keeps the layout you like and adds collector badges, quick add, and a more VHS-sleeve feel: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.6 keeps the layout you like and adds a stronger blue-and-yellow video-store atmosphere, neon polish, and Feature Presentation mode: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
