@@ -1,27 +1,14 @@
-# Noah's VHS Archive 6.6 — Video Store Edition
+# Noah's VHS Archive 6.6.1 — Video Store Edition Hotfix
 
-6.6 keeps the working 6.5 layout and adds the stronger Blockbuster-inspired blue/yellow/neon video-store feel.
+This hotfix keeps the 6.5 working foundation and applies the 6.6 visual polish more safely.
 
-## New in 6.6
+## Fixes
 
-- Short VHS-style launch intro
-- Feature Presentation overlay for Movie Night
-- Stronger blue/yellow video-store color direction
-- VHS archive stickers on tape cards
-- More neon/CRT atmosphere
-- Polished shelves, cards, badges, and hover/tap feel
-
-## Kept from previous versions
-
-- Camera/photo workflow fix
-- Photo compression
-- Quick Add Stack
-- Collector badges
-- Nintendo/Promo and Disney shelves
-- Search/filter
-- Timeline
-- Backup export
-- PWA install support
+- Fixes the 6.6 blank-blue-screen React crash
+- Keeps 6.5 layout and working tracking
+- Updates cache version so old service workers are replaced
+- Keeps Movie Night with a safer Feature Presentation overlay
+- Keeps VHS archive stickers and blue/yellow video-store polish
 
 ## Upload
 
@@ -29,4 +16,7 @@ Upload everything inside this folder to GitHub and commit.
 
 Suggested commit message:
 
-Release 6.6 - Video Store Edition
+Release 6.6.1 - Video Store Hotfix
+
+After Actions goes green, hard refresh on laptop.
+For phone stuck on 6.5, clear Chrome site data for the GitHub Pages site or uninstall/reinstall the home-screen app.

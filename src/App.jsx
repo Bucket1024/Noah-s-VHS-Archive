@@ -71,21 +71,11 @@ function TapeCard({ tape, onOpen, mini=false }){
 function Shelf({ title, subtitle, tapes, onOpen }){
   return (
     <>
-      {booting && (
-        <div className="boot-screen">
-          <div className="boot-card">
-            <div className="boot-vhs">VHS</div>
-            <h2>NOAH'S VHS ARCHIVE</h2>
-            <div className="boot-slot"><span></span></div>
-            <p>INSERTING TAPE...</p>
-          </div>
-        </div>
-      )}
       {featurePick && (
         <div className="feature-overlay">
           <div className="feature-card">
             <div className="feature-kicker">FEATURE PRESENTATION</div>
-            <h2>{featurePick.title}</h2>
+            <h2>{featurePick.stage === 'finding' ? 'Finding tonight\'s movie...' : 'Tonight\'s Movie'}</h2>
             {featurePick.tape && <p>{featurePick.tape.title}</p>}
           </div>
         </div>
@@ -120,10 +110,9 @@ export default function App(){
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
-  const [booting,setBooting] = useState(() => !sessionStorage.getItem('noahVhs6_booted'));
-  const [featurePick,setFeaturePick] = useState(null);
   const [isStandalone,setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   const [form,setForm] = useState({});
+  const [featurePick,setFeaturePick] = useState(null);
   const [quickRows,setQuickRows] = useState('');
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
@@ -146,15 +135,6 @@ export default function App(){
     });
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
-
-  useEffect(() => {
-    if (!booting) return;
-    const timer = setTimeout(() => {
-      sessionStorage.setItem('noahVhs6_booted', 'yes');
-      setBooting(false);
-    }, 1300);
-    return () => clearTimeout(timer);
-  }, [booting]);
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
   async function installApp(){
@@ -179,12 +159,13 @@ export default function App(){
   function pickMovieNight(){
     if(!tapes.length) return;
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    setFeaturePick({title:'Finding tonight\'s feature...', tape:null});
-    setTimeout(() => setFeaturePick({title:'Feature Presentation', tape:choice}), 900);
+    setFeaturePick({stage:'finding', tape:null});
+    notify('Finding tonight\'s feature...');
+    setTimeout(() => setFeaturePick({stage:'picked', tape:choice}), 700);
     setTimeout(() => {
       setFeaturePick(null);
       openTape(choice.id);
-    }, 2300);
+    }, 1800);
   }
 
   const filtered = useMemo(() => {
@@ -331,21 +312,11 @@ export default function App(){
 
   return (
     <>
-      {booting && (
-        <div className="boot-screen">
-          <div className="boot-card">
-            <div className="boot-vhs">VHS</div>
-            <h2>NOAH'S VHS ARCHIVE</h2>
-            <div className="boot-slot"><span></span></div>
-            <p>INSERTING TAPE...</p>
-          </div>
-        </div>
-      )}
       {featurePick && (
         <div className="feature-overlay">
           <div className="feature-card">
             <div className="feature-kicker">FEATURE PRESENTATION</div>
-            <h2>{featurePick.title}</h2>
+            <h2>{featurePick.stage === 'finding' ? 'Finding tonight\'s movie...' : 'Tonight\'s Movie'}</h2>
             {featurePick.tape && <p>{featurePick.tape.title}</p>}
           </div>
         </div>
@@ -353,7 +324,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6.1</div></div>
         </div>
       </header>
 
@@ -362,7 +333,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.6 keeps the layout you like and adds a stronger blue-and-yellow video-store atmosphere, neon polish, and Feature Presentation mode: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.6.1 keeps the 6.5 layout and adds a safer blue-and-yellow video-store polish: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>

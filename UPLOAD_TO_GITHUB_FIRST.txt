@@ -1,12 +1,12 @@
-NOAH'S VHS ARCHIVE 6.6 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.6.1 — UPLOAD STEPS
 
-1. Open your GitHub repository.
-2. Code tab → Add file → Upload files.
-3. Open the extracted Noahs_VHS_Archive_6.6 folder.
-4. Select everything INSIDE the folder.
-5. Drag it into GitHub.
-6. Commit message: Release 6.6 - Video Store Edition.
-7. Wait for Actions to turn green.
-8. Open the GitHub Pages link and refresh.
+1. Upload everything inside this folder to GitHub.
+2. Commit message: Release 6.6.1 - Video Store Hotfix.
+3. Wait for Actions green checkmark.
+4. Test on laptop first.
+5. If phone still shows 6.5:
+   - Chrome > site settings for your GitHub Pages link > Clear data
+   - Remove old home-screen icon
+   - Reopen link and reinstall/add again
 
-6.6 is a visual-polish release with a Blockbuster-inspired blue/yellow/neon video-store feel.
+This version fixes the blank blue screen from 6.6.
