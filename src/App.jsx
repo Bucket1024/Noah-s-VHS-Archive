@@ -140,7 +140,7 @@ function TapeCard({ tape, onOpen, mini=false, photoLibrary={} }){
   );
 }
 
-function Shelf({ title, subtitle, tapes, onOpen }){
+function Shelf({ title, subtitle, tapes, onOpen, photoLibrary={} }){
   return (
     <>
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
@@ -483,7 +483,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Hotfix • 7.5.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Startup Fix • 7.5.2</div></div>
         </div>
       </header>
 
@@ -492,7 +492,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.5.1 fixes the photo-library startup crash.</p>
+              <p>Catalog. Collect. Preserve. Version 7.5.2 fixes the shelf photo-library startup crash.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>

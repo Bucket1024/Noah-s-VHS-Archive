@@ -1,14 +1,14 @@
-# VHS Archive 7.5.1 — Photo Library Hotfix
+# VHS Archive 7.5.2 — Photo Library Startup Fix
 
-7.5.1 fixes the startup crash from 7.5.
+7.5.2 fixes the remaining startup crash from the 7.5 photo-library update.
 
 ## Fixed
 
-- Tape cards no longer reference photoLibrary outside their scope
-- photoLibrary is passed safely into Shelf and TapeCard components
+- Shelf now safely receives the photoLibrary prop
+- Tape cards can resolve IndexedDB photos without crashing
 - Keeps IndexedDB photo storage from 7.5
 - Keeps zoom viewer and compression
 
 ## Suggested commit message
 
-Release 7.5.1 - Photo Library Hotfix
+Release 7.5.2 - Photo Library Startup Fix
