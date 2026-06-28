@@ -1,0 +1,18 @@
+{
+  "name": "Noah's VHS Archive",
+  "short_name": "VHS Archive",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#02030a",
+  "theme_color": "#0058ff",
+  "description": "A retro VHS collection archive with video-store shelves, real tape photos, timeline, wishlist, and collector tools.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
