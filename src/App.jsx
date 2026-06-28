@@ -25,6 +25,10 @@ function mainImage(t){
   return tape.cover || tape.photos?.[0]?.src || '';
 }
 
+function archiveId(t){
+  return String(t?.id || '').replace('VHS-', 'NA-');
+}
+
 function has(t, regex){
   return regex.test([t.title,t.studio,t.edition,t.packaging,t.notes,t.genre,t.tags].join(' '));
 }
@@ -98,6 +102,7 @@ export default function App(){
   const [edition,setEdition] = useState('');
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
+  const [viewerPhoto,setViewerPhoto] = useState(null);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -300,7 +305,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6.1</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Collector's Edition • 7.0</div></div>
         </div>
       </header>
 
@@ -309,7 +314,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.6.1 keeps the video-store look but reduces heavy effects for smoother phone performance: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 7.0 focuses on collector-quality tape pages, archive IDs, a cleaner gallery, and a more refined VHS museum feel</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
@@ -357,7 +362,10 @@ export default function App(){
             <button className="secondary" onClick={()=>setView('browse')}>← Back to collection</button>
             <div className="detail-layout" style={{marginTop:14}}>
               <div>
-                <div className={`bigcover ${mainImage(selected) ? 'has-img':''}`}>
+                <div className={`bigcover ${mainImage(selected) ? 'has-img':''}`} onClick={() => {
+                  const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
+                  if(images[selectedPhoto]) setViewerPhoto(images[selectedPhoto]);
+                }}>
                   {(() => {
                     const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
                     const img = images[selectedPhoto];
@@ -373,13 +381,19 @@ export default function App(){
                 </div>
               </div>
               <div className="detail-card">
-                <h2>{selected.title}</h2>
+                <div className="museum-title">
+                  <h2>{selected.title}</h2>
+                  <span>{archiveId(selected)}</span>
+                </div>
+                <div className="detail-badges">
+                  {badgeList(selected).map(b => <span className="collector-sticker" key={b}>{b}</span>)}
+                </div>
                 <div className="actions">
                   <button onClick={()=>updateTape(selected.id,{favorite:!selected.favorite})}>⭐ {selected.favorite ? 'Unfavorite':'Favorite'}</button>
                   <button className="secondary" onClick={()=>updateTape(selected.id,{watched:!selected.watched})}>▶ {selected.watched ? 'Unwatch':'Watched'}</button>
                 </div>
                 {[
-                  ['Archive ID',selected.id],['VHS Release',selected.vhsYear || 'No year listed'],['Studio',selected.studio],['Edition',selected.edition],['Packaging',selected.packaging],['Genre',selected.genre],['Tape Condition',selected.tapeCondition || selected.condition || 'Not set'],['Sleeve Condition',selected.sleeveCondition || 'Not set'],['Inserts',selected.inserts || 'Not set'],['Rating',selected.rating ? selected.rating + '/5':'Not rated'],['Acquired',selected.dateAcquired || 'Not set'],['Found At',selected.purchaseLocation || 'Not set'],['Price',selected.purchasePrice ? '$'+selected.purchasePrice:'Not set'],['Collector Badges',badgeList(selected).join(', ') || 'None'],['Tags',selected.tags || ''],['Notes',selected.notes || '']
+                  ['Archive ID',archiveId(selected)],['VHS Release',selected.vhsYear || 'No year listed'],['Studio',selected.studio],['Edition',selected.edition],['Packaging',selected.packaging],['Genre',selected.genre],['Tape Condition',selected.tapeCondition || selected.condition || 'Not set'],['Sleeve Condition',selected.sleeveCondition || 'Not set'],['Inserts',selected.inserts || 'Not set'],['Rating',selected.rating ? selected.rating + '/5':'Not rated'],['Acquired',selected.dateAcquired || 'Not set'],['Found At',selected.purchaseLocation || 'Not set'],['Price',selected.purchasePrice ? '$'+selected.purchasePrice:'Not set'],['Collector Badges',badgeList(selected).join(', ') || 'None'],['Tags',selected.tags || ''],['Notes',selected.notes || '']
                 ].map(([a,b])=><div className="row" key={a}><span>{a}</span><span>{b}</span></div>)}
 
                 <div className="panel">
@@ -401,7 +415,7 @@ export default function App(){
                     {(selected.photos || []).map((p,i)=>(
                       <div className="photo" key={i}>
                         <img src={p.src}/><div className="photo-label">{p.label}</div>
-                        <button onClick={()=>removePhoto(i)}>Remove</button>
+                        <button onClick={()=>setViewerPhoto(p)}>View</button><button className="remove-photo" onClick={()=>removePhoto(i)}>Remove</button>
                       </div>
                     ))}
                   </div>
@@ -473,6 +487,18 @@ export default function App(){
           </>
         )}
       </main>
+
+      {viewerPhoto && (
+        <div className="photo-viewer-overlay" onClick={() => setViewerPhoto(null)}>
+          <div className="photo-viewer-card" onClick={e => e.stopPropagation()}>
+            <div className="photo-viewer-head">
+              <strong>{viewerPhoto.label || 'Tape Photo'}</strong>
+              <button className="secondary" onClick={() => setViewerPhoto(null)}>Close</button>
+            </div>
+            <img src={viewerPhoto.src} alt={viewerPhoto.label || 'Tape photo'} />
+          </div>
+        </div>
+      )}
 
       <nav className="bottom-nav">
         {views.map(([id,ico,label]) => <button key={id} className={view===id?'active':''} onClick={()=>setView(id)}><span className="ico">{ico}</span><span>{label}</span></button>)}

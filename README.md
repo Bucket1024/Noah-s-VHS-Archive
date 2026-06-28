@@ -1,17 +1,16 @@
-# Noah's VHS Archive 6.6.1 — Performance Patch
+# Noah's VHS Archive 7.0 — Collector's Edition
 
-This version keeps the 6.6 Video Store look but reduces heavy visual effects for smoother phone performance.
+7.0 is a collector-focused release built from the stable performance-safe foundation.
 
-## Changes
+## New in 7.0
 
-- Reduced scanline intensity
-- Removed expensive mobile shadows/glows
-- Disabled shine animation
-- Simplified mobile backgrounds
-- Reduced card animation cost
-- Kept blue/yellow video-store styling
-- Kept all 6.5/6.6 functionality
+- Museum-style tape title area
+- Permanent Noah Archive IDs shown as NA-0001, NA-0002, etc.
+- Better collector badge presentation on tape pages
+- Tap large cover to open full photo viewer
+- Photo grid now has View and Remove controls
+- More refined collector/museum detail styling
 
 ## Suggested commit message
 
-Release 6.6.1 - Performance Patch
+Release 7.0 - Collector's Edition

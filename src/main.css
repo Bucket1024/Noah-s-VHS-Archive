@@ -456,3 +456,118 @@ body:before{
     scroll-behavior:auto !important;
   }
 }
+
+
+/* 7.0 Collector's Edition */
+.museum-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid rgba(255,213,31,.25);
+  padding-bottom:10px;
+  margin-bottom:10px;
+}
+.museum-title h2{
+  margin:0;
+  font-family:Arial Black, Impact, Arial, sans-serif;
+  letter-spacing:.7px;
+}
+.museum-title span{
+  flex:0 0 auto;
+  background:rgba(255,255,240,.92);
+  color:#0b1736;
+  border:1px solid rgba(0,0,0,.25);
+  border-radius:6px;
+  font-family:Arial Black,Arial,sans-serif;
+  font-size:12px;
+  padding:5px 7px;
+  box-shadow:0 2px 5px rgba(0,0,0,.25);
+}
+.detail-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:8px 0 12px;
+}
+.collector-sticker{
+  background:linear-gradient(180deg,#ffe66a,#ffd51f);
+  color:#151000;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:999px;
+  font-size:10px;
+  font-weight:1000;
+  letter-spacing:.5px;
+  padding:5px 8px;
+}
+.detail-card{
+  background:linear-gradient(180deg,rgba(255,213,31,.035),transparent 18%), #080f1f;
+}
+.bigcover{
+  cursor:pointer;
+}
+.bigcover:after{
+  content:"Tap to view";
+  position:absolute;
+  left:16px;
+  bottom:16px;
+  background:rgba(2,3,10,.78);
+  color:var(--bb-yellow, #ffd51f);
+  border:1px solid rgba(255,213,31,.42);
+  border-radius:999px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:900;
+  pointer-events:none;
+}
+.photo button.remove-photo{
+  left:4px;
+  right:auto;
+  background:linear-gradient(180deg,#b91c1c,#7f1d1d)!important;
+  border:1px solid #ff7777!important;
+}
+.photo-viewer-overlay{
+  position:fixed;
+  inset:0;
+  z-index:220;
+  background:rgba(1,2,7,.92);
+  display:grid;
+  place-items:center;
+  padding:18px;
+}
+.photo-viewer-card{
+  width:min(96vw,720px);
+  max-height:90vh;
+  border:2px solid var(--bb-yellow, #ffd51f);
+  border-radius:20px;
+  background:#02030a;
+  overflow:hidden;
+}
+.photo-viewer-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,213,31,.25);
+  color:var(--bb-yellow, #ffd51f);
+}
+.photo-viewer-head button{
+  padding:8px 10px;
+  font-size:12px;
+}
+.photo-viewer-card img{
+  display:block;
+  width:100%;
+  max-height:78vh;
+  object-fit:contain;
+  background:#000;
+}
+.row span:first-child{
+  text-transform:uppercase;
+  letter-spacing:.35px;
+}
+@media(max-width:760px){
+  .museum-title{display:block}
+  .museum-title span{display:inline-block;margin-top:8px}
+}
