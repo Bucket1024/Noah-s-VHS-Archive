@@ -1392,3 +1392,29 @@ main.app-scroll{
     scroll-snap-type:x mandatory;
   }
 }
+
+
+/* 7.7.3 Header Logo + Motto */
+.header-ticket-logo{
+  width:94px !important;
+  height:64px !important;
+  object-fit:contain !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 5px 10px rgba(0,0,0,.45)) !important;
+}
+
+.hero p{
+  color:#dbeafe;
+  font-weight:700;
+  letter-spacing:.2px;
+}
+
+@media(max-width:760px){
+  .header-ticket-logo{
+    width:86px !important;
+    height:58px !important;
+    margin-left:-4px;
+  }
+}
