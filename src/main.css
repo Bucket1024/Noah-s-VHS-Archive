@@ -1418,3 +1418,25 @@ main.app-scroll{
     margin-left:-4px;
   }
 }
+
+
+/* 7.7.4 Matching Header Logo */
+/* Header now uses the exact same icon artwork as the installed app icon. */
+.header-ticket-logo{
+  width:72px !important;
+  height:72px !important;
+  object-fit:contain !important;
+  border-radius:18px !important;
+  background:transparent !important;
+  box-shadow:0 5px 14px rgba(0,0,0,.34) !important;
+  filter:none !important;
+}
+
+@media(max-width:760px){
+  .header-ticket-logo{
+    width:68px !important;
+    height:68px !important;
+    border-radius:17px !important;
+    margin-left:0 !important;
+  }
+}
