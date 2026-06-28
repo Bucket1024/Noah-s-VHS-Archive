@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vhs-archive-7-7-5';
+const CACHE_NAME = 'vhs-archive-7-7-6';
 const APP_SHELL = [
   './',
   './index.html',

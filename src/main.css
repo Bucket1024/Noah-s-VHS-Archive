@@ -1464,3 +1464,27 @@ main.app-scroll{
     gap:10px !important;
   }
 }
+
+
+/* 7.7.6 Uploaded Header Logo */
+.header-ticket-logo{
+  width:112px !important;
+  height:72px !important;
+  object-fit:contain !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.45)) !important;
+}
+
+@media(max-width:760px){
+  .header-ticket-logo{
+    width:104px !important;
+    height:68px !important;
+    margin-left:-8px !important;
+  }
+
+  .app-header{
+    gap:8px !important;
+  }
+}
