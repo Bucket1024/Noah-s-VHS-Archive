@@ -1,53 +1,25 @@
-# Noah's VHS Archive 6.3
+# Noah's VHS Archive 6.4 — Collector's Edition
 
-Install-ready React/PWA foundation for Noah's VHS Archive.
+6.4 keeps the 6.3 layout but makes it more polished, more 90s, and fixes the camera workflow.
 
-## What changed in 6.3
+## New in 6.4
 
-- Proper service worker registration
-- GitHub Pages-safe relative manifest and icon paths
-- PNG icons added for Android installability
-- Install App prompt support
-- Offline app shell caching
-- Standalone/fullscreen launch support after installation
-- 132-tape starter collection
-- Shelf-style home screen
-- Browse/search/filter
-- Tape detail page with photo carousel
-- Camera/gallery upload
-- Favorites and watched tracking
-- Edit tape fields
-- Collection timeline
-- Backup export
+- Fixes camera return bug after taking a photo
+- Remembers the selected tape if Android reloads after camera capture
+- Compresses photos before saving to keep the app faster
+- Stronger 90s/VHS visual polish
+- Movie Night random tape picker
+- Keeps the 6.3 layout and tracking style
 
-## Upload to GitHub
+## Upload
 
-Upload everything inside this folder to your repository and commit.
+Upload everything inside this folder to your GitHub repository and commit.
 
-GitHub Pages source should be:
+GitHub Pages source should remain:
 
 Settings → Pages → Source: GitHub Actions
-
-## After deployment
-
-Open your GitHub Pages link in Chrome on Android.
-
-Preferred:
-- Tap the in-app **Install App** button if it appears.
-
-Or:
-- Chrome menu → **Install app** / **Add to Home screen**
-
-Launching from the installed home-screen icon should remove the browser address bar.
-
-## Local development
-
-```bash
-npm install
-npm run dev
-```
 
 ## Important
 
 Photos and edits are saved to the browser/device using localStorage.
-Use the Backup button before clearing browser data or switching phones.
+Use Backup before clearing browser data or switching phones.

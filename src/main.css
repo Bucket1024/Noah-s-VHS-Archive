@@ -50,3 +50,94 @@ button.secondary{background:#111827;border:1px solid #465a7d;box-shadow:none}.da
   body{overscroll-behavior:none}
   .app-header{padding-top:env(safe-area-inset-top,0px)}
 }
+
+
+/* 6.4 Collector's Edition polish */
+:root{
+  --neon-pink:#ff4fd8;
+  --neon-cyan:#33e7ff;
+  --vhs-purple:#7c3aed;
+}
+body{
+  background:
+    radial-gradient(circle at 15% -10%, rgba(0,88,255,.75), transparent 38%),
+    radial-gradient(circle at 100% 10%, rgba(255,79,216,.20), transparent 34%),
+    linear-gradient(180deg,#041844 0%,#02030a 62%,#010207 100%) fixed;
+}
+body:before{
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.040),rgba(255,255,255,.040) 1px,transparent 1px,transparent 4px),
+    linear-gradient(90deg,rgba(255,0,180,.025),rgba(0,255,255,.025));
+  opacity:.55;
+}
+.app-header{
+  border-bottom:4px solid var(--yellow);
+  box-shadow:0 0 24px rgba(0,88,255,.42), 0 0 18px rgba(255,213,31,.22);
+}
+.ticket{
+  text-shadow:0 0 12px rgba(255,213,31,.55);
+}
+h1{
+  font-family:Arial Black, Impact, Arial, sans-serif;
+  letter-spacing:2px;
+}
+.hero{
+  border-color:rgba(255,79,216,.55);
+  box-shadow:0 26px 80px rgba(0,0,0,.55),0 0 26px rgba(255,79,216,.18), inset 0 0 24px rgba(0,88,255,.18);
+}
+.hero h2{
+  font-family:Arial Black, Impact, Arial, sans-serif;
+  letter-spacing:.5px;
+}
+.hero:before{
+  content:"TRACKING";
+  position:absolute;
+  left:18px;
+  bottom:12px;
+  font-size:11px;
+  letter-spacing:3px;
+  color:rgba(51,231,255,.35);
+}
+.stat,.panel,.detail-card,.tape-card{
+  box-shadow:inset 0 0 18px rgba(0,88,255,.10), 0 10px 24px rgba(0,0,0,.30);
+}
+.stat strong{
+  font-family:Arial Black, Impact, Arial, sans-serif;
+}
+.cover{
+  background:
+    linear-gradient(155deg,rgba(255,79,216,.12),transparent 28%),
+    linear-gradient(155deg,#1b2850,#06142a 52%,#02030a);
+}
+.cover:after{
+  content:"SP";
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  right:auto;
+  color:rgba(51,231,255,.23);
+  font-size:18px;
+}
+.shelf{
+  border-bottom-color:rgba(122,73,36,.98);
+  box-shadow:0 12px 0 rgba(80,48,25,.62), inset 0 -10px 16px rgba(0,0,0,.35);
+}
+.movie-night{
+  background:linear-gradient(180deg,var(--neon-pink),#7c1d68);
+  box-shadow:0 0 22px rgba(255,79,216,.38);
+}
+.bigcover{
+  box-shadow:0 0 20px rgba(255,213,31,.12), inset 0 0 25px rgba(0,88,255,.16);
+}
+.photo-buttons button{
+  border:1px solid rgba(255,213,31,.25);
+}
+.toast{
+  box-shadow:0 0 20px rgba(255,213,31,.28);
+}
+.bottom-nav{
+  background:linear-gradient(180deg,rgba(8,14,29,.98),rgba(2,3,10,.99));
+}
+.bottom-nav button.active{
+  box-shadow:0 0 18px rgba(255,213,31,.18), inset 0 0 14px rgba(0,88,255,.18);
+}

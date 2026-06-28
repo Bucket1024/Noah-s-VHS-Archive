@@ -70,11 +70,11 @@ export default function App(){
       {title:'Toy Story Screener', notes:'Dream Disney/Pixar find', priority:'Medium'}
     ];
   });
-  const [view,setView] = useState('home');
+  const [view,setView] = useState(() => sessionStorage.getItem('noahVhs6_lastView') || 'home');
   const [query,setQuery] = useState('');
   const [pkg,setPkg] = useState('');
   const [edition,setEdition] = useState('');
-  const [selectedId,setSelectedId] = useState(null);
+  const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
@@ -84,6 +84,10 @@ export default function App(){
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
+  useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
+  useEffect(()=>{
+    if(selectedId) sessionStorage.setItem('noahVhs6_selectedTape', selectedId);
+  },[selectedId]);
 
   useEffect(() => {
     const handler = (event) => {
@@ -109,8 +113,22 @@ export default function App(){
     await installPrompt.userChoice;
     setInstallPrompt(null);
   }
-  function openTape(id){ setSelectedId(id); setSelectedPhoto(0); setEditOpen(false); setView('detail'); }
+  function openTape(id){
+    sessionStorage.setItem('noahVhs6_selectedTape', id);
+    sessionStorage.setItem('noahVhs6_lastView', 'detail');
+    setSelectedId(id);
+    setSelectedPhoto(0);
+    setEditOpen(false);
+    setView('detail');
+  }
   const selected = tapes.find(t => t.id === selectedId);
+
+  function pickMovieNight(){
+    if(!tapes.length) return;
+    const choice = tapes[Math.floor(Math.random() * tapes.length)];
+    notify(`Tonight's feature: ${choice.title}`);
+    setTimeout(() => openTape(choice.id), 700);
+  }
 
   const filtered = useMemo(() => {
     let list = tapes.filter(t => [t.title,t.studio,t.edition,t.packaging,t.notes,t.genre,t.tags,t.vhsYear].join(' ').toLowerCase().includes(query.toLowerCase()));
@@ -134,16 +152,46 @@ export default function App(){
     setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
-  function addPhoto(label, file){
+  function compressImage(file, maxSize = 1400, quality = 0.82){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          let { width, height } = img;
+          const scale = Math.min(1, maxSize / Math.max(width, height));
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function addPhoto(label, file){
     if(!selected || !file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const photo = {src:e.target.result, label, date:new Date().toISOString().slice(0,10)};
+    sessionStorage.setItem('noahVhs6_selectedTape', selected.id);
+    sessionStorage.setItem('noahVhs6_lastView', 'detail');
+    try{
+      const src = await compressImage(file);
+      const photo = {src, label, date:new Date().toISOString().slice(0,10)};
       const photos = [...(selected.photos || []), photo];
       updateTape(selected.id, {photos, cover: selected.cover || photo.src});
-      notify(`${label} added.`);
-    };
-    reader.readAsDataURL(file);
+      setSelectedPhoto(selected.cover ? photos.length : 0);
+      setView('detail');
+      notify(`${label} saved.`);
+    } catch(error){
+      notify('Photo could not be saved. Try again.');
+    }
   }
 
   function removePhoto(i){
@@ -203,7 +251,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Production foundation • 6.3</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Collector's Edition • 6.4</div></div>
         </div>
       </header>
 
@@ -212,10 +260,11 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.3 is the install-ready app foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.4 keeps the 6.3 layout, adds a stronger 90s VHS feel, and fixes the camera workflow: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>
+                <button className="movie-night" onClick={pickMovieNight}>🎲 Movie Night</button>
                 {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
               </div>
               <div className="stats">

@@ -1,19 +1,12 @@
-NOAH'S VHS ARCHIVE 6.3 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.4 — UPLOAD STEPS
 
 1. Open your GitHub repository.
-2. Go to the Code tab.
-3. Click Add file → Upload files.
-4. Open this extracted Noahs_VHS_Archive_6.3 folder.
-5. Select everything INSIDE the folder.
-6. Drag it into GitHub.
-7. Commit message: Noah's VHS Archive 6.3 install-ready PWA
-8. Wait for Actions to turn green.
-9. Open the GitHub Pages link on Android Chrome.
-10. Use Install App or Add to Home screen.
-11. Launch from the new home-screen icon for fullscreen/no address bar.
+2. Code tab → Add file → Upload files.
+3. Open the extracted Noahs_VHS_Archive_6.4 folder.
+4. Select everything INSIDE the folder.
+5. Drag it into GitHub.
+6. Commit message: Noah's VHS Archive 6.4 Collector's Edition.
+7. Wait for Actions to turn green.
+8. Open the GitHub Pages link and refresh.
 
-This version fixes:
-- service worker registration
-- installable PWA metadata
-- relative GitHub Pages paths
-- PNG Android icons
+6.4 fixes the Android camera/photo return issue and adds 90s/VHS polish.
