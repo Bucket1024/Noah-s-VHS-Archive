@@ -1,7 +1,9 @@
-VHS ARCHIVE 7.5.2 — UPLOAD STEPS
+VHS ARCHIVE 7.6.2 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.5.2 - Photo Library Startup Fix.
+2. Commit message: Release 7.6.2 - Restore Import Fix.
 3. Wait for Actions green checkmark.
-4. Clear cache/reopen app if needed.
-5. Confirm the app loads before testing new photos.
+4. Open Stats.
+5. Use Import JSON Backup and choose your downloaded backup file.
+
+This version is built from the stable 7.5.3 foundation.

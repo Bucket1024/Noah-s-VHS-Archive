@@ -1191,3 +1191,131 @@ body{
 .photo-capture-tip{
   border-style:solid;
 }
+
+
+/* 7.5.3 Photo Viewer Fix */
+.photo-viewer-overlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:400 !important;
+  background:rgba(1,2,7,.94) !important;
+  display:grid !important;
+  place-items:center !important;
+  padding:10px !important;
+  touch-action:none !important;
+}
+
+.photo-viewer-card.zoomable{
+  width:min(96vw,900px) !important;
+  height:min(92vh,900px) !important;
+  max-height:92vh !important;
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.photo-viewer-head{
+  flex:0 0 auto !important;
+}
+
+.zoom-controls{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.zoom-controls button{
+  padding:7px 10px;
+  font-size:13px;
+}
+
+.zoom-controls span{
+  color:#dbeafe;
+  font-size:12px;
+  min-width:44px;
+  text-align:center;
+  font-weight:900;
+}
+
+.zoom-stage{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  background:#000;
+  display:grid;
+  place-items:center;
+  touch-action:none !important;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.zoom-stage img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  transform-origin:center center;
+  transition:transform .05s linear;
+  will-change:transform;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+.photo-viewer-note{
+  flex:0 0 auto;
+  padding:8px 12px;
+  color:var(--muted,#a9b6ce);
+  border-top:1px solid rgba(255,213,31,.18);
+  font-size:12px;
+  text-align:center;
+}
+
+.close-viewer{
+  border-color:rgba(255,213,31,.65)!important;
+}
+
+@media(max-width:760px){
+  .photo-viewer-overlay{
+    padding:6px !important;
+  }
+
+  .photo-viewer-card.zoomable{
+    width:98vw !important;
+    height:92vh !important;
+  }
+
+  .photo-viewer-head{
+    display:block;
+  }
+
+  .zoom-controls{
+    margin-top:8px;
+    justify-content:center;
+  }
+}
+
+
+/* 7.6.2 Restore Import Fix */
+.restore-box{
+  border:1px solid rgba(255,213,31,.35);
+  border-radius:16px;
+  padding:12px;
+  background:rgba(255,213,31,.05);
+  margin-top:12px;
+}
+
+.restore-label{
+  display:block;
+  color:var(--bb-yellow,#ffd51f);
+  font-weight:1000;
+  margin-bottom:8px;
+}
+
+.restore-box input[type="file"]{
+  width:100%;
+  padding:10px;
+  border:1px dashed rgba(255,213,31,.45);
+  border-radius:12px;
+  background:rgba(0,0,0,.22);
+  color:#dbeafe;
+}

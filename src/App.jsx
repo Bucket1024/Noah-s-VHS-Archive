@@ -173,8 +173,11 @@ export default function App(){
   const [photoLibrary,setPhotoLibrary] = useState({});
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [viewerZoom,setViewerZoom] = useState(1);
+  const [viewerOffset,setViewerOffset] = useState({x:0,y:0});
+  const viewerGestureRef = useRef({mode:null,startDistance:0,startZoom:1,startX:0,startY:0,startOffset:{x:0,y:0}});
   const [scrollPositions,setScrollPositions] = useState({});
   const scrollAreaRef = useRef(null);
+  const importBackupRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
@@ -235,16 +238,82 @@ export default function App(){
 
   function openPhotoViewer(photo){
     setViewerZoom(1);
+    setViewerOffset({x:0,y:0});
     setViewerPhoto(photo);
   }
 
   function closePhotoViewer(){
-    closePhotoViewer();
+    setViewerPhoto(null);
     setViewerZoom(1);
+    setViewerOffset({x:0,y:0});
   }
 
   function zoomPhoto(delta){
-    setViewerZoom(z => Math.max(1, Math.min(4, Number((z + delta).toFixed(2)))));
+    setViewerZoom(z => {
+      const next = Math.max(1, Math.min(4, Number((z + delta).toFixed(2))));
+      if(next === 1) setViewerOffset({x:0,y:0});
+      return next;
+    });
+  }
+
+  function getTouchDistance(touches){
+    const [a,b] = touches;
+    return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+  }
+
+  function handleViewerTouchStart(e){
+    if(e.touches.length === 2){
+      viewerGestureRef.current = {
+        mode:'pinch',
+        startDistance:getTouchDistance(e.touches),
+        startZoom:viewerZoom,
+        startX:0,
+        startY:0,
+        startOffset:viewerOffset
+      };
+    } else if(e.touches.length === 1){
+      viewerGestureRef.current = {
+        mode:'pan',
+        startDistance:0,
+        startZoom:viewerZoom,
+        startX:e.touches[0].clientX,
+        startY:e.touches[0].clientY,
+        startOffset:viewerOffset
+      };
+    }
+  }
+
+  function handleViewerTouchMove(e){
+    if(!viewerPhoto) return;
+    if(e.touches.length === 2 && viewerGestureRef.current.mode === 'pinch'){
+      e.preventDefault();
+      const dist = getTouchDistance(e.touches);
+      const base = viewerGestureRef.current.startDistance || dist;
+      const next = Math.max(1, Math.min(4, viewerGestureRef.current.startZoom * (dist / base)));
+      setViewerZoom(Number(next.toFixed(2)));
+      if(next <= 1.02) setViewerOffset({x:0,y:0});
+    } else if(e.touches.length === 1 && viewerGestureRef.current.mode === 'pan' && viewerZoom > 1){
+      e.preventDefault();
+      const dx = e.touches[0].clientX - viewerGestureRef.current.startX;
+      const dy = e.touches[0].clientY - viewerGestureRef.current.startY;
+      setViewerOffset({
+        x: viewerGestureRef.current.startOffset.x + dx,
+        y: viewerGestureRef.current.startOffset.y + dy
+      });
+    }
+  }
+
+  function handleViewerTouchEnd(){
+    viewerGestureRef.current = {mode:null,startDistance:0,startZoom:viewerZoom,startX:0,startY:0,startOffset:viewerOffset};
+    if(viewerZoom <= 1.02){
+      setViewerZoom(1);
+      setViewerOffset({x:0,y:0});
+    }
+  }
+
+  function resetPhotoZoom(){
+    setViewerZoom(1);
+    setViewerOffset({x:0,y:0});
   }
   async function installApp(){
     if (!installPrompt) {
@@ -478,12 +547,69 @@ export default function App(){
     a.click();
   }
 
+  async function importBackupFile(file){
+    if(!file){
+      notify('No backup file selected.');
+      return;
+    }
+
+    try{
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      const importedTapes = Array.isArray(data) ? data : data.tapes;
+      const importedWishlist = Array.isArray(data?.wishlist) ? data.wishlist : [];
+      const importedPhotos = data?.photos && typeof data.photos === 'object' ? data.photos : {};
+
+      if(!Array.isArray(importedTapes)){
+        notify('Invalid backup file.');
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Import backup with ${importedTapes.length} tapes? This will replace the current archive on this device.`
+      );
+      if(!confirmed) return;
+
+      const newPhotoLibrary = {};
+
+      for(const [id, src] of Object.entries(importedPhotos)){
+        if(!id || !src) continue;
+        newPhotoLibrary[id] = src;
+        try{
+          await idbSavePhoto(id, src);
+        }catch(error){
+          // If IndexedDB fails, the tape records can still restore;
+          // old backups with embedded src photos will still display.
+        }
+      }
+
+      setPhotoLibrary(prev => ({...prev, ...newPhotoLibrary}));
+      setTapes(importedTapes.map(normalizeTape));
+      setWishlist(importedWishlist);
+      setSelectedId(null);
+      setSelectedPhoto(0);
+      setViewerPhoto(null);
+      setView('home');
+      sessionStorage.removeItem('noahVhs6_selectedTape');
+
+      notify('Backup imported.');
+    }catch(error){
+      console.error(error);
+      notify('Backup import failed.');
+    }finally{
+      if(importBackupRef.current) importBackupRef.current.value = '';
+    }
+  }
+
+
+
   return (
     <>
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Startup Fix • 7.5.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Restore Import Fix • 7.6.2</div></div>
         </div>
       </header>
 
@@ -492,7 +618,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.5.2 fixes the shelf photo-library startup crash.</p>
+              <p>Catalog. Collect. Preserve. Version 7.6.2 fixes backup import and removes the risky reset button.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -663,7 +789,16 @@ export default function App(){
               <h3>Backup</h3>
               <p className="small">Back up your collection including photos, edits, added tapes, and wishlist.</p>
               <button onClick={exportBackup}>Export Backup JSON</button>
-              <button className="danger" style={{marginTop:10}} onClick={()=>{localStorage.removeItem('noahVhs6_tapes');location.reload();}}>Reset Starter Archive</button>
+              <div className="restore-box">
+                <label className="restore-label">Import JSON Backup</label>
+                <input
+                  ref={importBackupRef}
+                  type="file"
+                  accept="application/json,.json"
+                  onChange={e=>importBackupFile(e.target.files?.[0])}
+                />
+                <p className="small">Choose a backup JSON file to restore tapes, wishlist, and included photos.</p>
+              </div>
             </div>
           </>
         )}
@@ -683,26 +818,32 @@ export default function App(){
       )}
 
       {viewerPhoto && (
-        <div className="photo-viewer-overlay" onClick={closePhotoViewer}>
-          <div className="photo-viewer-card zoomable" onClick={e => e.stopPropagation()}>
+        <div className="photo-viewer-overlay">
+          <div className="photo-viewer-card zoomable">
             <div className="photo-viewer-head">
               <strong>{viewerPhoto.label || 'Tape Photo'}</strong>
               <div className="zoom-controls">
-                <button className="secondary" onClick={() => zoomPhoto(-0.5)}>−</button>
+                <button type="button" className="secondary" onClick={() => zoomPhoto(-0.5)}>−</button>
                 <span>{Math.round(viewerZoom * 100)}%</span>
-                <button className="secondary" onClick={() => zoomPhoto(0.5)}>+</button>
-                <button className="secondary" onClick={closePhotoViewer}>Close</button>
+                <button type="button" className="secondary" onClick={() => zoomPhoto(0.5)}>+</button>
+                <button type="button" className="secondary" onClick={resetPhotoZoom}>Reset</button>
+                <button type="button" className="secondary close-viewer" onClick={closePhotoViewer}>Close</button>
               </div>
             </div>
-            <div className="zoom-stage">
+            <div
+              className="zoom-stage"
+              onTouchStart={handleViewerTouchStart}
+              onTouchMove={handleViewerTouchMove}
+              onTouchEnd={handleViewerTouchEnd}
+            >
               <img
                 src={viewerPhoto.src}
                 alt={viewerPhoto.label || 'Tape photo'}
-                style={{ transform: `scale(${viewerZoom})` }}
-                onDoubleClick={() => setViewerZoom(viewerZoom > 1 ? 1 : 2)}
+                style={{ transform: `translate(${viewerOffset.x}px, ${viewerOffset.y}px) scale(${viewerZoom})` }}
+                onDoubleClick={() => viewerZoom > 1 ? resetPhotoZoom() : setViewerZoom(2)}
               />
             </div>
-            <div className="photo-viewer-note">Use + / − to zoom. Double tap/click image for quick zoom.</div>
+            <div className="photo-viewer-note">Pinch to zoom, drag to move, or use + / −. Tap Close to return.</div>
           </div>
         </div>
       )}
