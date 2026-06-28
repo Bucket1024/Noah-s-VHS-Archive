@@ -683,3 +683,131 @@ body:before{
   margin:14px 0 0;
   letter-spacing:.4px;
 }
+
+
+/* 7.2 Photo Fit Edition */
+/* Fixes oversized mobile tape detail pages and prepares for cleaner photo capture. */
+
+html, body, #root{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+main{
+  width:100%;
+  max-width:1180px;
+  overflow-x:hidden;
+}
+
+.detail-layout,
+.detail-card,
+.panel,
+.bigcover,
+.photo-grid,
+.photo-carousel{
+  max-width:100%;
+  min-width:0;
+}
+
+.detail-card{
+  overflow:hidden;
+}
+
+.row{
+  min-width:0;
+}
+
+.row span{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.bigcover{
+  width:100%;
+}
+
+.photo-capture-tip{
+  border:1px dashed rgba(255,213,31,.45);
+  border-radius:14px;
+  padding:10px;
+  margin:10px 0;
+  background:rgba(255,213,31,.045);
+  color:var(--muted,#a9b6ce);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.photo-capture-tip strong{
+  color:var(--bb-yellow,#ffd51f);
+}
+
+@media(max-width:760px){
+  main{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .detail-layout{
+    display:block !important;
+    width:100%;
+  }
+
+  .detail-layout > div{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  .bigcover{
+    height:min(72vh, 430px) !important;
+    width:100%;
+  }
+
+  .detail-card{
+    margin-top:14px;
+    width:100%;
+  }
+
+  .row{
+    grid-template-columns:96px minmax(0,1fr) !important;
+    gap:7px;
+  }
+
+  .photo-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  .photo{
+    min-width:0;
+  }
+
+  .photo-carousel{
+    width:100%;
+    max-width:100%;
+  }
+
+  .carousel-thumb{
+    min-width:72px !important;
+    width:72px;
+    height:72px;
+  }
+
+  .actions{
+    grid-template-columns:1fr !important;
+  }
+
+  input,select,textarea,button{
+    max-width:100%;
+  }
+}
+
+@media(max-width:380px){
+  .row{
+    grid-template-columns:1fr !important;
+  }
+
+  .row span:first-child{
+    padding-bottom:0;
+  }
+}

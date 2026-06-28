@@ -341,7 +341,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Movie Night Edition • 7.1.1</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Photo Fit Edition • 7.2</div></div>
         </div>
       </header>
 
@@ -350,7 +350,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 7.1.1 keeps Movie Night as a surprise by shuffling tapes, then opening the chosen tape page</p>
+              <p>Version 7.2 fixes mobile tape-page sizing and adds the first photo-capture guidance toward cleaner tape images</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -435,6 +435,9 @@ export default function App(){
                 <div className="panel">
                   <h3>Tape Photos</h3>
                   <p className="small">Use your camera for front cover, back cover, spine, tape label, or choose from gallery.</p>
+                  <div className="photo-capture-tip">
+                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. This will make future crop/background-removal tools work much better.
+                  </div>
                   <div className="photo-buttons">
                     {['Front Cover','Back Cover','Spine','Tape Label'].map(label => (
                       <label key={label}>
