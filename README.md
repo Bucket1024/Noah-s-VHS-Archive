@@ -1,31 +1,32 @@
-# Noah's VHS Archive 6.5 — Rental Shelf
+# Noah's VHS Archive 6.6 Rebuild — Video Store Edition
 
-6.5 is a polish and quality-of-life release that keeps the 6.4 layout.
+This is a clean rebuild of 6.6 from the stable 6.5 foundation.
 
-## New in 6.5
+## Important
 
-- VHS case depth and shine effects
-- Collector badges on tape cards
-- Badges shown in tape details
-- Quick Add Stack for adding multiple tapes quickly
-- Nintendo / Promo shelf
-- Disney shelf
-- More 90s rental-shelf styling
+This rebuild avoids the broken React overlay/state code from the previous 6.6 attempt.
+The 6.6 changes are mostly CSS/visual polish so the app remains stable.
 
-## Kept from 6.4
+## New in 6.6 Rebuild
 
-- Camera/photo return fix
-- Photo compression
-- Movie Night picker
-- Android/PWA install support
-- Search/filter
-- Timeline
-- Backup export
+- Blockbuster-inspired blue/yellow video-store colour polish
+- Safer VHS archive stickers on cards
+- Improved shelves, glow, badge styling, and case feel
+- Keeps stable 6.5 features:
+  - Quick Add Stack
+  - Collector badges
+  - Nintendo/Promo shelf
+  - Disney shelf
+  - Camera/photo workflow fix
+  - Movie Night
+  - Search/filter
+  - Timeline
+  - Backup export
 
-## Upload
+## Suggested commit message
 
-Upload everything inside this folder to your GitHub repository and commit.
+Release 6.6 Rebuild - Video Store Edition
 
-Suggested commit message:
+## If your phone still shows 6.5
 
-Release 6.5 - Rental Shelf
+Clear site data for the GitHub Pages link or remove/re-add the home-screen icon after Actions goes green.

@@ -54,7 +54,7 @@ function TapeCard({ tape, onOpen, mini=false }){
     <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
       <div className={`cover ${img ? 'has-img':''}`}>
         {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title">{tape.title}</div>}
-        <div className="case-shine"></div>
+        <div className="case-shine"></div><div className="archive-sticker">{tape.id?.replace("VHS-","")}</div>
       </div>
       <div className="meta">
         <div className="title">{tape.title}</div>
@@ -300,7 +300,7 @@ export default function App(){
       <header className="app-header">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Rental Shelf • 6.5</div></div>
+          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Video Store Edition • 6.6</div></div>
         </div>
       </header>
 
@@ -309,7 +309,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Your personal video store.</h2>
-              <p>Version 6.5 keeps the layout you like and adds collector badges, quick add, and a more VHS-sleeve feel: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
+              <p>Version 6.6 keeps the layout you like and rebuilds the blue-and-yellow video store look on the stable 6.5 foundation: React project structure, organized data, collector-first fields, shelves, photos, timeline, and GitHub Pages-ready PWA files.</p>
               <div className="actions">
                 <button onClick={()=>setView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>setView('timeline')}>Collection Timeline</button>

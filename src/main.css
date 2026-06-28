@@ -211,3 +211,157 @@ h1{
 .tape-card .title{
   text-shadow:0 0 10px rgba(0,88,255,.22);
 }
+
+
+/* 6.6 Rebuild — Video Store Edition
+   Built safely from stable 6.5. CSS-only polish, no new React state. */
+
+:root{
+  --bb-blue:#0046ad;
+  --bb-deep:#001f5f;
+  --bb-navy:#020b2b;
+  --bb-yellow:#ffd51f;
+  --neon-cyan:#31e7ff;
+  --neon-purple:#8b5cf6;
+}
+
+body{
+  background:
+    radial-gradient(circle at 20% -12%, rgba(0,88,255,.80), transparent 38%),
+    radial-gradient(circle at 95% 3%, rgba(49,231,255,.16), transparent 30%),
+    radial-gradient(circle at 50% 100%, rgba(139,92,246,.14), transparent 38%),
+    linear-gradient(180deg,#041f5c 0%,#030b21 54%,#010207 100%) fixed;
+}
+
+body:before{
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.034),rgba(255,255,255,.034) 1px,transparent 1px,transparent 4px),
+    linear-gradient(90deg,rgba(0,88,255,.05),rgba(255,213,31,.025),rgba(49,231,255,.035));
+  opacity:.58;
+}
+
+.app-header{
+  background:linear-gradient(180deg,rgba(0,38,116,.97),rgba(2,3,10,.92));
+  border-bottom:4px solid var(--bb-yellow);
+  box-shadow:0 0 30px rgba(0,88,255,.44),0 0 18px rgba(255,213,31,.20);
+}
+
+.ticket{
+  background:linear-gradient(160deg,#0060ff,#00216b);
+  border-color:var(--bb-yellow);
+  color:var(--bb-yellow);
+  text-shadow:0 0 12px rgba(255,213,31,.55);
+}
+
+h1{
+  color:var(--bb-yellow);
+  text-shadow:0 0 12px rgba(255,213,31,.55),0 0 28px rgba(49,231,255,.18);
+}
+
+.hero{
+  background:
+    linear-gradient(145deg,rgba(0,88,255,.44),rgba(6,18,54,.97) 45%,rgba(0,27,84,.95)),
+    repeating-linear-gradient(135deg,rgba(255,213,31,.04) 0 10px, transparent 10px 20px);
+  border:1px solid rgba(255,213,31,.58);
+  box-shadow:0 26px 80px rgba(0,0,0,.55),0 0 30px rgba(0,88,255,.25), inset 0 0 24px rgba(255,213,31,.05);
+}
+
+.hero:after{
+  content:"OPEN LATE";
+  color:rgba(255,213,31,.13);
+}
+
+.section-head{
+  border-left:4px solid var(--bb-yellow);
+  padding-left:10px;
+}
+
+.section-head h3{
+  font-family:Arial Black, Impact, Arial, sans-serif;
+  letter-spacing:.7px;
+  text-shadow:0 0 12px rgba(255,213,31,.28);
+}
+
+.section-head h3:before{
+  color:var(--neon-cyan);
+}
+
+.shelf{
+  background:
+    linear-gradient(180deg,transparent 0%,rgba(0,0,0,.16) 58%,rgba(0,0,0,.36) 100%);
+  border-bottom:8px solid #7b481f;
+  box-shadow:0 12px 0 rgba(80,48,25,.60), inset 0 -10px 16px rgba(0,0,0,.34);
+}
+
+.tape-card{
+  border-color:rgba(255,213,31,.30);
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.tape-card:active{
+  transform:scale(.98) translateY(1px);
+}
+
+.tape-card:hover{
+  transform:translateY(-3px) rotate(-.25deg);
+  box-shadow:0 18px 34px rgba(0,0,0,.42),0 0 18px rgba(255,213,31,.12);
+}
+
+.cover{
+  border-bottom:3px solid rgba(255,213,31,.35);
+}
+
+.archive-sticker{
+  position:absolute;
+  left:10px;
+  top:10px;
+  background:rgba(255,255,240,.92);
+  color:#0b1736;
+  border:1px solid rgba(0,0,0,.25);
+  border-radius:4px;
+  font-size:10px;
+  font-family:Arial Black,Arial,sans-serif;
+  padding:3px 5px;
+  box-shadow:0 2px 5px rgba(0,0,0,.25);
+  z-index:2;
+}
+
+.archive-sticker:before{
+  content:"NOAH ";
+  color:#0058ff;
+}
+
+.mini-badge{
+  background:linear-gradient(180deg,rgba(49,231,255,.22),rgba(0,88,255,.12));
+  border-color:rgba(49,231,255,.55);
+  color:#c8fbff;
+}
+
+.tag{
+  background:linear-gradient(180deg,#ffe66a,#ffd51f);
+  box-shadow:0 0 10px rgba(255,213,31,.12);
+}
+
+.movie-night{
+  background:linear-gradient(180deg,#ffd51f,#c48a00);
+  color:#1b1400;
+  box-shadow:0 0 22px rgba(255,213,31,.38);
+}
+
+.stat strong{
+  color:var(--bb-yellow);
+}
+
+.bottom-nav{
+  background:linear-gradient(180deg,rgba(3,20,62,.98),rgba(2,3,10,.99));
+}
+
+.bottom-nav button.active{
+  background:rgba(0,88,255,.24);
+  border-color:rgba(255,213,31,.45);
+  box-shadow:0 0 18px rgba(255,213,31,.18), inset 0 0 14px rgba(0,88,255,.18);
+}
+
+.detail-card,.panel,.stat{
+  border-color:rgba(255,213,31,.20);
+}

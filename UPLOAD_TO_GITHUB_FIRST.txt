@@ -1,12 +1,13 @@
-NOAH'S VHS ARCHIVE 6.5 — UPLOAD STEPS
+NOAH'S VHS ARCHIVE 6.6 REBUILD — UPLOAD STEPS
 
-1. Open your GitHub repository.
+1. Open GitHub repository.
 2. Code tab → Add file → Upload files.
-3. Open the extracted Noahs_VHS_Archive_6.5 folder.
+3. Open extracted Noahs_VHS_Archive_6.6_Rebuild folder.
 4. Select everything INSIDE the folder.
-5. Drag it into GitHub.
-6. Commit message: Release 6.5 - Rental Shelf.
+5. Drag into GitHub.
+6. Commit message: Release 6.6 Rebuild - Video Store Edition.
 7. Wait for Actions to turn green.
-8. Open the GitHub Pages link and refresh.
+8. Test laptop first.
+9. Clear phone site data if phone still shows older cached version.
 
-6.5 adds collector badges, Quick Add Stack, and more VHS/rental-shelf visual polish.
+This rebuild is based on stable 6.5 and avoids the previous featurePick crash.
