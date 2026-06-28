@@ -1299,3 +1299,27 @@ body{
 button.secondary{
   touch-action:manipulation;
 }
+
+
+/* 7.6.1 Emergency Restore Tools */
+.restore-box{
+  border:1px solid rgba(255,213,31,.35);
+  border-radius:16px;
+  padding:12px;
+  background:rgba(255,213,31,.05);
+  margin-top:10px;
+}
+.restore-label{
+  display:block;
+  color:var(--bb-yellow,#ffd51f);
+  font-weight:1000;
+  margin-bottom:8px;
+}
+.restore-box input[type="file"]{
+  width:100%;
+  padding:10px;
+  border:1px dashed rgba(255,213,31,.45);
+  border-radius:12px;
+  background:rgba(0,0,0,.22);
+  color:#dbeafe;
+}

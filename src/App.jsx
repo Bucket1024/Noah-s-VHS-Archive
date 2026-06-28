@@ -538,19 +538,16 @@ export default function App(){
         if(p.photoId){
           photos[p.photoId] = photoLibrary[p.photoId] || await idbGetPhoto(p.photoId).catch(() => '');
         }
-      }
-    }
-    const blob = new Blob([JSON.stringify({version:'7.5', tapes, wishlist, photos}, null, 2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'vhs-archive-7-5-backup.json';
-    a.click();
-  }
 
-  function importBackupFile(file){
-    if(!file) return;
+  async function importBackupFile(file){
+    if(!file){
+      notify('No backup file selected.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onerror = () => notify('Backup could not be read.');
+
     reader.onload = async () => {
       try{
         const data = JSON.parse(reader.result);
@@ -563,6 +560,52 @@ export default function App(){
           return;
         }
 
+        const confirmed = window.confirm(
+          `Import backup with ${importedTapes.length} tapes? This will replace the current archive on this device.`
+        );
+        if(!confirmed) return;
+
+        const newPhotoLibrary = {};
+
+        if(importedPhotos && typeof importedPhotos === 'object'){
+          for(const [id, src] of Object.entries(importedPhotos)){
+            if(!id || !src) continue;
+            newPhotoLibrary[id] = src;
+            try{
+              if(typeof idbSavePhoto === 'function'){
+                await idbSavePhoto(id, src);
+              }
+            }catch(error){}
+          }
+        }
+
+        setPhotoLibrary(prev => ({...prev, ...newPhotoLibrary}));
+        setTapes(importedTapes.map(normalizeTape));
+        setWishlist(Array.isArray(importedWishlist) ? importedWishlist : []);
+        setSelectedId(null);
+        setSelectedPhoto(0);
+        setView('home');
+        sessionStorage.removeItem('noahVhs6_selectedTape');
+        notify('Backup imported. Close and reopen the app if photos need a refresh.');
+      }catch(error){
+        console.error(error);
+        notify('Backup import failed.');
+      }finally{
+        if(importBackupRef.current) importBackupRef.current.value = '';
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+      }
+    }
+    const blob = new Blob([JSON.stringify({version:'7.5', tapes, wishlist, photos}, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'vhs-archive-7-5-backup.json';
+    a.click();
+  }
         const confirmed = window.confirm(`Import backup with ${importedTapes.length} tapes? This will replace the current archive on this device.`);
         if(!confirmed) return;
 
@@ -596,7 +639,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Archive Backup Tools • 7.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Emergency Restore Tools • 7.6.1</div></div>
         </div>
       </header>
 
@@ -605,7 +648,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.6 adds Import JSON Backup and removes the risky reset button.</p>
+              <p>Catalog. Collect. Preserve. Version 7.6.1 adds a safer visible JSON restore picker.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -776,6 +819,16 @@ export default function App(){
               <h3>Backup</h3>
               <p className="small">Back up your collection including photos, edits, added tapes, and wishlist.</p>
               <button onClick={exportBackup}>Export Backup JSON</button>
+            <div className="restore-box">
+              <label className="restore-label">Import JSON Backup</label>
+              <input
+                ref={importBackupRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={e=>importBackupFile(e.target.files?.[0])}
+              />
+              <p className="small">Choose your downloaded backup JSON file to restore tapes, wishlist, and included photos.</p>
+            </div>
               <button className="danger" style={{marginTop:10}} onClick={()=>{localStorage.removeItem('noahVhs6_tapes');location.reload();}}>Import JSON Backup</button>
             </div>
           </>
