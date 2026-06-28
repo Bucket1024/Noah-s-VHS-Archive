@@ -1,7 +1,7 @@
 {
-  "name": "Noah's VHS Archive",
+  "name": "VHS Archive",
   "short_name": "VHS Archive",
-  "description": "A retro VHS collection archive with video-store shelves, real tape photos, timeline, wishlist, and collector tools.",
+  "description": "Catalog. Collect. Preserve. A retro VHS collection archive.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

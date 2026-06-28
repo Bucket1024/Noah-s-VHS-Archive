@@ -1,23 +1,16 @@
-# Noah's VHS Archive 7.2 — Photo Fit Edition
+# VHS Archive 7.2.2 — Branding Update
 
-7.2 fixes the oversized mobile tape-detail screen and adds the first photo-capture guidance toward cleaner tape images.
+7.2.2 refreshes the app branding from Noah's VHS Archive to VHS Archive.
 
-## New in 7.2
+## New in 7.2.2
 
-- Fixes tape detail page being slightly too wide on phones
-- Prevents horizontal overflow/forced pinch zoom
-- Improves mobile detail layout spacing
-- Adds photo-capture guidance for cleaner future background removal/cropping
-- Keeps 7.1.1 Movie Night surprise flow
-
-## About automatic background removal
-
-True automatic tape cutout/background removal is possible, but it needs either:
-- a cloud/background-removal API, or
-- an on-device AI segmentation model.
-
-This version does not add AI background removal yet. It prepares the capture workflow and fixes the mobile layout first.
+- App/header renamed to VHS Archive
+- Top tagline changed to: Catalog. Collect. Preserve.
+- Splash screen includes: Be Kind, Rewind
+- Splash screen stays slightly longer
+- Archive IDs use VHS-0001 format
+- Keeps 7.2.1 scroll fix and photo fit improvements
 
 ## Suggested commit message
 
-Release 7.2 - Photo Fit Edition
+Release 7.2.2 - Branding Update

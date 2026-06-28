@@ -12,7 +12,7 @@
     "lucide-react": "latest"
   },
   "devDependencies": {},
-  "name": "noahs-vhs-archive",
-  "version": "7.2.0",
+  "name": "vhs-archive",
+  "version": "7.2.2",
   "private": true
 }

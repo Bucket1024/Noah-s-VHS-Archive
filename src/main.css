@@ -811,3 +811,128 @@ main{
     padding-bottom:0;
   }
 }
+
+
+/* 7.2.1 Scroll Fix
+   Keeps horizontal overflow controlled, but restores normal vertical scrolling in installed/PWA mode. */
+
+html{
+  height:auto !important;
+  min-height:100% !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+}
+
+body{
+  height:auto !important;
+  min-height:100dvh !important;
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  position:relative !important;
+  touch-action:pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+#root{
+  width:100% !important;
+  max-width:100% !important;
+  min-height:100dvh !important;
+  height:auto !important;
+  overflow-x:clip !important;
+  overflow-y:visible !important;
+}
+
+main{
+  overflow-x:clip !important;
+  overflow-y:visible !important;
+}
+
+.detail-layout,
+.detail-card,
+.panel{
+  overflow-y:visible !important;
+}
+
+@media all and (display-mode: standalone){
+  html,
+  body{
+    overflow-y:auto !important;
+    touch-action:pan-y !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+}
+
+
+/* 7.2.2 Branding Update */
+.sub{
+  color:#dbeafe;
+  letter-spacing:.4px;
+}
+.boot-screen{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at center,rgba(0,88,255,.24),transparent 42%),
+    linear-gradient(180deg,#041f5c,#02030a);
+}
+.boot-card{
+  width:min(86vw,420px);
+  border:2px solid var(--bb-yellow,#ffd51f);
+  border-radius:24px;
+  background:linear-gradient(180deg,#061944,#02030a);
+  text-align:center;
+  padding:26px 20px;
+  box-shadow:0 0 30px rgba(0,88,255,.26);
+}
+.boot-vhs{
+  display:inline-block;
+  border:2px solid var(--bb-yellow,#ffd51f);
+  color:var(--bb-yellow,#ffd51f);
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  padding:8px 12px;
+  border-radius:8px;
+  margin-bottom:12px;
+}
+.boot-card h2{
+  margin:6px 0 4px;
+  color:var(--bb-yellow,#ffd51f);
+  font-family:Arial Black,Impact,Arial,sans-serif;
+  letter-spacing:1px;
+}
+.boot-tagline{
+  color:#dbeafe;
+  margin:0 0 16px;
+  font-weight:800;
+}
+.boot-slot{
+  height:18px;
+  border:2px solid rgba(255,213,31,.55);
+  border-radius:999px;
+  overflow:hidden;
+  background:#010207;
+  margin:18px 28px;
+}
+.boot-slot span{
+  display:block;
+  height:100%;
+  width:58%;
+  background:linear-gradient(90deg,transparent,#ffd51f,transparent);
+  animation:tapeInsert 1.15s ease-in-out infinite;
+}
+.rewind-line{
+  margin:14px 0 0;
+  color:var(--bb-yellow,#ffd51f);
+  font-size:13px;
+  letter-spacing:2px;
+  font-weight:1000;
+}
+@keyframes tapeInsert{
+  from{transform:translateX(-105%)}
+  to{transform:translateX(205%)}
+}
+@media(prefers-reduced-motion: reduce){
+  .boot-slot span{animation:none!important}
+}

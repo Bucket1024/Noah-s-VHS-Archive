@@ -26,7 +26,7 @@ function mainImage(t){
 }
 
 function archiveId(t){
-  return String(t?.id || '').replace('VHS-', 'NA-');
+  return String(t?.id || '').replace('VHS-', 'VHS-');
 }
 
 function has(t, regex){
@@ -75,6 +75,17 @@ function TapeCard({ tape, onOpen, mini=false }){
 function Shelf({ title, subtitle, tapes, onOpen }){
   return (
     <>
+      {booting && (
+        <div className="boot-screen">
+          <div className="boot-card">
+            <div className="boot-vhs">VHS</div>
+            <h2>VHS ARCHIVE</h2>
+            <p className="boot-tagline">Catalog. Collect. Preserve.</p>
+            <div className="boot-slot"><span></span></div>
+            <p className="rewind-line">BE KIND, REWIND</p>
+          </div>
+        </div>
+      )}
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
       <div className="shelf">
         {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini />) : <div className="panel small">Nothing here yet.</div>}
@@ -105,6 +116,7 @@ export default function App(){
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [scrollPositions,setScrollPositions] = useState({});
   const [movieNight,setMovieNight] = useState(null);
+  const [booting,setBooting] = useState(() => !sessionStorage.getItem('vhsArchive_booted_722'));
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -132,6 +144,15 @@ export default function App(){
     });
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
+
+  useEffect(() => {
+    if (!booting) return;
+    const timer = setTimeout(() => {
+      sessionStorage.setItem('vhsArchive_booted_722', 'yes');
+      setBooting(false);
+    }, 2100);
+    return () => clearTimeout(timer);
+  }, [booting]);
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
   async function installApp(){
@@ -338,10 +359,21 @@ export default function App(){
 
   return (
     <>
+      {booting && (
+        <div className="boot-screen">
+          <div className="boot-card">
+            <div className="boot-vhs">VHS</div>
+            <h2>VHS ARCHIVE</h2>
+            <p className="boot-tagline">Catalog. Collect. Preserve.</p>
+            <div className="boot-slot"><span></span></div>
+            <p className="rewind-line">BE KIND, REWIND</p>
+          </div>
+        </div>
+      )}
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>NOAH'S VHS ARCHIVE</h1><div className="sub">Photo Fit Edition • 7.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Branding Update • 7.2.2</div></div>
         </div>
       </header>
 
@@ -349,8 +381,8 @@ export default function App(){
         {view === 'home' && (
           <>
             <section className="hero">
-              <h2>Your personal video store.</h2>
-              <p>Version 7.2 fixes mobile tape-page sizing and adds the first photo-capture guidance toward cleaner tape images</p>
+              <h2>Catalog. Collect. Preserve.</h2>
+              <p>Catalog. Collect. Preserve. Version 7.2.2 refreshes the branding and archive IDs.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
