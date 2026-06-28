@@ -3,6 +3,62 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { STARTER_TAPES } from './data.js';
 import './main.css';
 
+const PHOTO_DB_NAME = 'vhs-archive-photo-library';
+const PHOTO_STORE = 'photos';
+
+function canUseIndexedDb(){
+  return typeof indexedDB !== 'undefined';
+}
+
+function openPhotoDatabase(){
+  return new Promise((resolve, reject) => {
+    if(!canUseIndexedDb()){
+      reject(new Error('IndexedDB not supported'));
+      return;
+    }
+    const request = indexedDB.open(PHOTO_DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if(!db.objectStoreNames.contains(PHOTO_STORE)){
+        db.createObjectStore(PHOTO_STORE, { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error('Could not open photo database'));
+  });
+}
+
+async function idbSavePhoto(id, src){
+  const db = await openPhotoDatabase();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).put({ id, src, savedAt: Date.now() });
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error || new Error('Could not save photo'));
+  });
+}
+
+async function idbGetPhoto(id){
+  const db = await openPhotoDatabase();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readonly');
+    const req = tx.objectStore(PHOTO_STORE).get(id);
+    req.onsuccess = () => resolve(req.result?.src || '');
+    req.onerror = () => reject(req.error || new Error('Could not read photo'));
+  });
+}
+
+async function idbDeletePhoto(id){
+  const db = await openPhotoDatabase();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(PHOTO_STORE, 'readwrite');
+    tx.objectStore(PHOTO_STORE).delete(id);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(tx.error || new Error('Could not delete photo'));
+  });
+}
+
+
 const views = [
   ['home','🏠','Home'],
   ['browse','📼','Browse'],
@@ -20,9 +76,21 @@ function normalizeTape(t){
   };
 }
 
-function mainImage(t){
+function resolvePhotoSrc(photo, photoLibrary = {}){
+  if(!photo) return '';
+  if(typeof photo === 'string') return photo;
+  if(photo.src) return photo.src;
+  if(photo.photoId && photoLibrary[photo.photoId]) return photoLibrary[photo.photoId];
+  return '';
+}
+
+function mainImage(t, photoLibrary = {}){
   const tape = normalizeTape(t);
-  return tape.cover || tape.photos?.[0]?.src || '';
+  if(tape.cover && String(tape.cover).startsWith('data:')) return tape.cover;
+  if(tape.cover && photoLibrary[tape.cover]) return photoLibrary[tape.cover];
+  const first = tape.photos?.[0];
+  if(!first) return '';
+  return resolvePhotoSrc(first, photoLibrary);
 }
 
 function archiveId(t){
@@ -51,7 +119,7 @@ function badgeList(t){
 }
 
 function TapeCard({ tape, onOpen, mini=false }){
-  const img = mainImage(tape);
+  const img = mainImage(tape, photoLibrary);
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
   const badges = badgeList(tape);
   return (
@@ -102,6 +170,7 @@ export default function App(){
   const [edition,setEdition] = useState('');
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
+  const [photoLibrary,setPhotoLibrary] = useState({});
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [viewerZoom,setViewerZoom] = useState(1);
   const [scrollPositions,setScrollPositions] = useState({});
@@ -115,6 +184,33 @@ export default function App(){
   const [quickRows,setQuickRows] = useState('');
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPhotoRefsFromIndexedDb(){
+      const ids = [];
+      tapes.forEach(t => {
+        if(t.cover && !String(t.cover).startsWith('data:')) ids.push(t.cover);
+        (t.photos || []).forEach(p => {
+          if(p?.photoId) ids.push(p.photoId);
+        });
+      });
+      const missing = [...new Set(ids)].filter(id => id && !photoLibrary[id]);
+      if(!missing.length) return;
+      const loaded = {};
+      for(const id of missing){
+        try{
+          const src = await idbGetPhoto(id);
+          if(src) loaded[id] = src;
+        }catch(error){}
+      }
+      if(!cancelled && Object.keys(loaded).length){
+        setPhotoLibrary(prev => ({...prev, ...loaded}));
+      }
+    }
+    loadPhotoRefsFromIndexedDb();
+    return () => { cancelled = true; };
+  }, [tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
   useEffect(()=>{
@@ -224,7 +320,7 @@ export default function App(){
 
   const stats = {
     total: tapes.length,
-    photos: tapes.filter(t => mainImage(t)).length,
+    photos: tapes.filter(t => mainImage(t, photoLibrary)).length,
     favorites: tapes.filter(t => t.favorite).length,
     watched: tapes.filter(t => t.watched).length,
     screeners: tapes.filter(t => has(t,/screener/i)).length,
@@ -237,7 +333,7 @@ export default function App(){
     setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
-  function compressImage(file, maxSize = 900, quality = 0.70){
+  function compressImage(file, maxSize = 1100, quality = 0.74){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onerror = reject;
@@ -268,14 +364,22 @@ export default function App(){
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
     try{
       const src = await compressImage(file);
-      const photo = {src, label, date:new Date().toISOString().slice(0,10)};
+      const photoId = `${selected.id}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+      let photo;
+      try{
+        await idbSavePhoto(photoId, src);
+        setPhotoLibrary(prev => ({...prev, [photoId]: src}));
+        photo = {photoId, label, date:new Date().toISOString().slice(0,10)};
+      }catch(storageError){
+        photo = {src, label, date:new Date().toISOString().slice(0,10)};
+      }
       const photos = [...(selected.photos || []), photo];
-      updateTape(selected.id, {photos, cover: selected.cover || photo.src});
+      updateTape(selected.id, {photos, cover: selected.cover || (photo.photoId || photo.src)});
       setSelectedPhoto(selected.cover ? photos.length : 0);
       setView('detail');
       notify(`${label} saved.`);
     } catch(error){
-      notify('Photo could not be saved. Try again.');
+      notify('Photo could not be saved. Try a smaller photo.');
     }
   }
 
@@ -283,7 +387,16 @@ export default function App(){
     if(!selected) return;
     const photos = [...(selected.photos || [])];
     const removed = photos.splice(i,1)[0];
-    const cover = selected.cover === removed?.src ? (photos[0]?.src || '') : selected.cover;
+    const removedKey = removed?.photoId || removed?.src;
+    if(removed?.photoId){
+      idbDeletePhoto(removed.photoId).catch(()=>{});
+      setPhotoLibrary(prev => {
+        const next = {...prev};
+        delete next[removed.photoId];
+        return next;
+      });
+    }
+    const cover = selected.cover === removedKey ? (photos[0]?.photoId || photos[0]?.src || '') : selected.cover;
     updateTape(selected.id, {photos, cover});
     notify('Photo removed.');
   }
@@ -349,11 +462,19 @@ export default function App(){
     goToView('browse');
   }
 
-  function exportBackup(){
-    const blob = new Blob([JSON.stringify({version:'6.0', tapes, wishlist}, null, 2)], {type:'application/json'});
+  async function exportBackup(){
+    const photos = {};
+    for(const tape of tapes){
+      for(const p of (tape.photos || [])){
+        if(p.photoId){
+          photos[p.photoId] = photoLibrary[p.photoId] || await idbGetPhoto(p.photoId).catch(() => '');
+        }
+      }
+    }
+    const blob = new Blob([JSON.stringify({version:'7.5', tapes, wishlist, photos}, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'noahs-vhs-archive-6-backup.json';
+    a.download = 'vhs-archive-7-5-backup.json';
     a.click();
   }
 
@@ -362,7 +483,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Stability Rollback • 7.4.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Photo Library Upgrade • 7.5</div></div>
         </div>
       </header>
 
@@ -371,7 +492,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.4.1 restores stable launch and uses smaller photo compression.</p>
+              <p>Catalog. Collect. Preserve. Version 7.5 stores new photos in IndexedDB for larger collections.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
@@ -398,7 +519,7 @@ export default function App(){
             <Shelf title="Special Shelf" subtitle="Screeners & variants" tapes={tapes.filter(t=>has(t,/screener|collector|special|nintendo|disney parks|custom|lenticular|metallic|2-tape|blue tape/i)).slice(0,16)} onOpen={openTape}/>
             <Shelf title="Nintendo / Promo Shelf" subtitle="Game tapes & promos" tapes={tapes.filter(t=>has(t,/nintendo|donkey kong|pokemon|pokémon/i)).slice(0,16)} onOpen={openTape}/>
             <Shelf title="Disney Shelf" subtitle="Disney, Pixar & Parks" tapes={tapes.filter(t=>has(t,/disney|pixar|walt disney|parks|goofy|toy story/i)).slice(0,16)} onOpen={openTape}/>
-            <Shelf title="Photo Shelf" subtitle="Your real tape photos" tapes={tapes.filter(t=>mainImage(t)).slice(0,14)} onOpen={openTape}/>
+            <Shelf title="Photo Shelf" subtitle="Your real tape photos" tapes={tapes.filter(t=>mainImage(t, photoLibrary)).slice(0,14)} onOpen={openTape}/>
           </>
         )}
 
@@ -419,20 +540,20 @@ export default function App(){
             <button className="secondary" onClick={()=>goToView('browse')}>← Back to collection</button>
             <div className="detail-layout" style={{marginTop:14}}>
               <div>
-                <div className={`bigcover ${mainImage(selected) ? 'has-img':''}`} onClick={() => {
-                  const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
+                <div className={`bigcover ${mainImage(selected, photoLibrary) ? 'has-img':''}`} onClick={() => {
+                  const images = [selected.cover ? {src: mainImage(selected, photoLibrary), id:selected.cover, label:'Main Cover'} : null, ...(selected.photos || []).map(p => ({...p, src: resolvePhotoSrc(p, photoLibrary)}))].filter(p => p && p.src);
                   if(images[selectedPhoto]) openPhotoViewer(images[selectedPhoto]);
                 }}>
                   {(() => {
-                    const images = [selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean);
+                    const images = [selected.cover ? {src: mainImage(selected, photoLibrary), id:selected.cover, label:'Main Cover'} : null, ...(selected.photos || []).map(p => ({...p, src: resolvePhotoSrc(p, photoLibrary)}))].filter(p => p && p.src);
                     const img = images[selectedPhoto];
                     return img ? <img src={img.src} alt={img.label}/> : <div className="bigcover-title">{selected.title}</div>;
                   })()}
                 </div>
                 <div className="photo-carousel">
-                  {[selected.cover ? {src:selected.cover,label:'Main Cover'} : null, ...(selected.photos || [])].filter(Boolean).map((p,i)=>(
+                  {[selected.cover ? {src: mainImage(selected, photoLibrary), id:selected.cover, label:'Main Cover'} : null, ...(selected.photos || []).map(p => ({...p, src: resolvePhotoSrc(p, photoLibrary)}))].filter(p => p && p.src).map((p,i)=>(
                     <div key={i} className={`carousel-thumb ${i===selectedPhoto?'active':''}`} onClick={()=>setSelectedPhoto(i)}>
-                      <img src={p.src}/><span>{p.label || 'Photo'}</span>
+                      <img src={resolvePhotoSrc(p, photoLibrary)}/><span>{p.label || 'Photo'}</span>
                     </div>
                   ))}
                 </div>
@@ -457,7 +578,7 @@ export default function App(){
                   <h3>Tape Photos</h3>
                   <p className="small">Use your camera for front cover, back cover, spine, tape label, or choose from gallery.</p>
                   <div className="photo-capture-tip">
-                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. Photos are compressed smaller in this stability build. A safer large-library photo system will come next.
+                    <strong>Photo tip:</strong> place the tape on a plain, high-contrast background and fill the frame. New photos are stored in IndexedDB for larger collections, with compression kept on for stability.
                   </div>
                   <div className="photo-buttons">
                     {['Front Cover','Back Cover','Spine','Tape Label'].map(label => (
@@ -474,8 +595,8 @@ export default function App(){
                   <div className="photo-grid">
                     {(selected.photos || []).map((p,i)=>(
                       <div className="photo" key={i}>
-                        <img src={p.src}/><div className="photo-label">{p.label}</div>
-                        <button onClick={()=>openPhotoViewer(p)}>View</button><button className="remove-photo" onClick={()=>removePhoto(i)}>Remove</button>
+                        <img src={resolvePhotoSrc(p, photoLibrary)}/><div className="photo-label">{p.label}</div>
+                        <button onClick={()=>openPhotoViewer({...p, src: resolvePhotoSrc(p, photoLibrary)})}>View</button><button className="remove-photo" onClick={()=>removePhoto(i)}>Remove</button>
                       </div>
                     ))}
                   </div>

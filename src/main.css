@@ -1185,3 +1185,9 @@ body{
     height:68vh;
   }
 }
+
+
+/* 7.5 Photo Library Upgrade */
+.photo-capture-tip{
+  border-style:solid;
+}

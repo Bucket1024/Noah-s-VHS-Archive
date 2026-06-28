@@ -1,20 +1,24 @@
-# VHS Archive 7.4.1 — Emergency Photo Stability Rollback
+# VHS Archive 7.5 — Photo Library Upgrade
 
-7.4.1 rolls back the crashed IndexedDB photo-storage experiment and restores the known-working photo system.
+7.5 is the proper large-library photo storage update.
 
-## Fixed
+## What changed
 
-- Restores app launch after the 7.4 startup crash
-- Keeps the zoom viewer
-- Uses smaller photo compression to reduce memory/storage pressure
-- Built from the stable 7.3.1 foundation
+- New photos are stored in IndexedDB instead of localStorage
+- Tape records store lightweight photo IDs
+- Existing localStorage photos still work
+- If IndexedDB is unavailable, the app falls back to the old method
+- Photo compression stays enabled for stability
+- Zoom viewer is preserved
+
+## Why this matters
+
+localStorage is too small for a real archive with hundreds or thousands of photos. IndexedDB is the browser/PWA storage system designed for larger local data.
 
 ## Important
 
-This is a stability rollback, not the final large-library photo solution.
-
-The proper long-term fix is still to move photos out of localStorage, but that needs a more careful rebuild and migration process.
+Existing photos already saved in localStorage will still take space there. Over time, retaking/re-adding important photos after 7.5 will move those new photos into IndexedDB.
 
 ## Suggested commit message
 
-Release 7.4.1 - Emergency Photo Stability Rollback
+Release 7.5 - Photo Library Upgrade
