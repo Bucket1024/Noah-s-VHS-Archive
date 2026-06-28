@@ -141,13 +141,71 @@ function TapeCard({ tape, onOpen, mini=false, photoLibrary={} }){
 }
 
 function Shelf({ title, subtitle, tapes, onOpen, photoLibrary={} }){
+  const shelfRef = useRef(null);
+  const [scrollState, setScrollState] = useState({ overflow:false, left:false, right:false });
+
+  useEffect(() => {
+    const node = shelfRef.current;
+    if(!node) return;
+
+    let frame = 0;
+
+    const updateScrollState = () => {
+      const maxScrollLeft = Math.max(0, node.scrollWidth - node.clientWidth);
+      const overflow = maxScrollLeft > 8;
+      const left = overflow && node.scrollLeft > 8;
+      const right = overflow && node.scrollLeft < maxScrollLeft - 8;
+
+      setScrollState(prev => (
+        prev.overflow === overflow && prev.left === left && prev.right === right
+          ? prev
+          : { overflow, left, right }
+      ));
+    };
+
+    const requestUpdate = () => {
+      cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateScrollState);
+    };
+
+    requestUpdate();
+    node.addEventListener('scroll', requestUpdate, { passive:true });
+    window.addEventListener('resize', requestUpdate);
+
+    let resizeObserver = null;
+    if(typeof ResizeObserver !== 'undefined'){
+      resizeObserver = new ResizeObserver(requestUpdate);
+      resizeObserver.observe(node);
+    }
+
+    return () => {
+      cancelAnimationFrame(frame);
+      node.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      resizeObserver?.disconnect();
+    };
+  }, [tapes.length]);
+
+  const shelfClassName = [
+    'shelf-shell',
+    scrollState.overflow ? 'is-overflowing' : '',
+    scrollState.left ? 'can-scroll-left' : '',
+    scrollState.right ? 'can-scroll-right' : ''
+  ].filter(Boolean).join(' ');
+
   return (
-    <>
+    <section className="shelf-section">
       <div className="section-head"><h3>{title}</h3><span className="small">{subtitle}</span></div>
-      <div className="shelf">
-        {tapes.length ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini photoLibrary={photoLibrary} />) : <div className="panel small">Nothing here yet.</div>}
+      <div className={shelfClassName}>
+        <div ref={shelfRef} className="shelf" aria-label={`${title} shelf`}>
+          {tapes.length
+            ? tapes.map(t => <TapeCard key={t.id} tape={t} onOpen={onOpen} mini photoLibrary={photoLibrary} />)
+            : <div className="panel small shelf-empty">Nothing here yet.</div>}
+        </div>
+        <div className="shelf-fade shelf-fade-left" aria-hidden="true"></div>
+        <div className="shelf-fade shelf-fade-right" aria-hidden="true"></div>
       </div>
-    </>
+    </section>
   );
 }
 
@@ -609,7 +667,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v7.7.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v7.7.7</div></div>
         </div>
       </header>
 

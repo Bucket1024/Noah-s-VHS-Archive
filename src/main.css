@@ -1488,3 +1488,112 @@ main.app-scroll{
     gap:8px !important;
   }
 }
+
+
+/* 7.7.7 Netflix-style Side Scroll Fix
+   Built from the real GitHub source. Makes Home shelves true horizontal carousels
+   while preserving normal vertical app scrolling. */
+
+.shelf-section{
+  position:relative;
+  margin:0 0 22px;
+}
+
+.shelf-shell{
+  position:relative;
+  max-width:100%;
+  overflow:hidden;
+}
+
+.app-scroll .shelf{
+  --shelf-card-width:154px;
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  gap:14px !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  padding:6px 4px 20px !important;
+  scroll-snap-type:x proximity !important;
+  overscroll-behavior-x:contain !important;
+  -webkit-overflow-scrolling:touch !important;
+  scrollbar-width:none !important;
+  -ms-overflow-style:none !important;
+  touch-action:pan-x pan-y !important;
+  border-bottom:7px solid rgba(114,74,36,.88);
+  box-shadow:0 12px 0 rgba(80,48,25,.55), inset 0 -10px 16px rgba(0,0,0,.25);
+}
+
+.app-scroll .shelf::-webkit-scrollbar{
+  display:none !important;
+  width:0 !important;
+  height:0 !important;
+}
+
+.app-scroll .shelf .tape-card{
+  width:var(--shelf-card-width) !important;
+  min-width:var(--shelf-card-width) !important;
+  max-width:var(--shelf-card-width) !important;
+  flex:0 0 var(--shelf-card-width) !important;
+  scroll-snap-align:start;
+}
+
+.app-scroll .shelf .tape-card,
+.app-scroll .shelf .tape-card *,
+.app-scroll .shelf .panel,
+.app-scroll .shelf .panel *{
+  touch-action:pan-x pan-y !important;
+}
+
+.shelf-empty{
+  min-width:220px;
+  flex:0 0 auto;
+}
+
+.shelf-fade{
+  position:absolute;
+  top:0;
+  bottom:18px;
+  width:34px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+  z-index:5;
+}
+
+.shelf-fade-left{
+  left:0;
+  background:linear-gradient(90deg,rgba(2,8,26,.9),rgba(2,8,26,0));
+}
+
+.shelf-fade-right{
+  right:0;
+  background:linear-gradient(270deg,rgba(2,8,26,.9),rgba(2,8,26,0));
+}
+
+.shelf-shell.can-scroll-left .shelf-fade-left,
+.shelf-shell.can-scroll-right .shelf-fade-right{
+  opacity:1;
+}
+
+@media(max-width:760px){
+  .app-scroll .shelf{
+    --shelf-card-width:146px;
+    gap:12px !important;
+    padding-left:2px !important;
+    padding-right:20px !important;
+    scroll-snap-type:x proximity !important;
+  }
+
+  .shelf-fade{
+    width:26px;
+  }
+}
+
+@media(max-width:380px){
+  .app-scroll .shelf{
+    --shelf-card-width:138px;
+  }
+}

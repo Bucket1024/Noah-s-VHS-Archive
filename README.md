@@ -1,16 +1,20 @@
-# VHS Archive 7.7.6 — Uploaded Header Logo
+# VHS Archive 7.7.7 — Side Scroll Fix
 
-7.7.6 replaces the in-app top-left header logo with the uploaded transparent VHS Archive ticket image.
+7.7.7 fixes the Home page shelves so they side-scroll properly like Netflix-style rows.
 
-## New in 7.7.6
+## New in 7.7.7
 
-- Uses your provided transparent ticket PNG for the in-app header
-- Home-screen installed app icon remains unchanged
-- Small version updated to v7.7.6
-- Keeps Catalog. Collect. Preserve. in the header
-- Keeps Be Kind, Rewind. on the home hero
-- No archive data changes
+- Home shelves are now real horizontal carousel rows
+- Swipe left/right directly on tape cards
+- Main page still scrolls up/down normally
+- Horizontal scrollbars are hidden
+- Subtle left/right fade hints show when more shelf content exists
+- Keeps the current header logo, motto, backup/import system, photo viewer, and PWA install setup
+
+## Important
+
+Importing an old JSON backup restores collection data only. It does not reverse app layout, logo, or code updates.
 
 ## Suggested commit message
 
-Release 7.7.6 - Uploaded Header Logo
+Release 7.7.7 - Side Scroll Fix
