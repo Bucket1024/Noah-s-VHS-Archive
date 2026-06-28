@@ -1,22 +1,31 @@
-# Noah's VHS Archive 6.6.1 — Video Store Edition Hotfix
+# Noah's VHS Archive 6.5 — Rental Shelf
 
-This hotfix keeps the 6.5 working foundation and applies the 6.6 visual polish more safely.
+6.5 is a polish and quality-of-life release that keeps the 6.4 layout.
 
-## Fixes
+## New in 6.5
 
-- Fixes the 6.6 blank-blue-screen React crash
-- Keeps 6.5 layout and working tracking
-- Updates cache version so old service workers are replaced
-- Keeps Movie Night with a safer Feature Presentation overlay
-- Keeps VHS archive stickers and blue/yellow video-store polish
+- VHS case depth and shine effects
+- Collector badges on tape cards
+- Badges shown in tape details
+- Quick Add Stack for adding multiple tapes quickly
+- Nintendo / Promo shelf
+- Disney shelf
+- More 90s rental-shelf styling
+
+## Kept from 6.4
+
+- Camera/photo return fix
+- Photo compression
+- Movie Night picker
+- Android/PWA install support
+- Search/filter
+- Timeline
+- Backup export
 
 ## Upload
 
-Upload everything inside this folder to GitHub and commit.
+Upload everything inside this folder to your GitHub repository and commit.
 
 Suggested commit message:
 
-Release 6.6.1 - Video Store Hotfix
-
-After Actions goes green, hard refresh on laptop.
-For phone stuck on 6.5, clear Chrome site data for the GitHub Pages site or uninstall/reinstall the home-screen app.
+Release 6.5 - Rental Shelf
