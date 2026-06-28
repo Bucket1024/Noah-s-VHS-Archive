@@ -936,3 +936,57 @@ body.is-auto-scrolling *{
     scroll-behavior:smooth !important;
   }
 }
+
+
+/* 7.2.7 Touch Scroll Fix
+   The installed PWA was only accepting scroll gestures from the bottom tab area.
+   This restores vertical touch scrolling for the main content. */
+
+html,
+body,
+#root,
+main{
+  touch-action:pan-y !important;
+  overflow-y:auto !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+body *{
+  touch-action:pan-y !important;
+}
+
+button,
+input,
+select,
+textarea,
+.bottom-nav,
+.bottom-nav *,
+.app-header{
+  touch-action:manipulation !important;
+}
+
+/* Horizontal shelves/carousels still need sideways swipe support */
+.shelf,
+.shelf *,
+.photo-carousel,
+.photo-carousel *{
+  touch-action:pan-x pan-y !important;
+  -webkit-overflow-scrolling:touch !important;
+}
+
+/* Fixed overlays should not block scroll when inactive */
+body:before,
+body:after{
+  pointer-events:none !important;
+}
+
+/* Cards should not steal vertical scroll gestures */
+.tape-card,
+.cover,
+.meta,
+.panel,
+.detail-card,
+.hero,
+.stat{
+  touch-action:pan-y !important;
+}

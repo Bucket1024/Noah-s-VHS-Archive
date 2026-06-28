@@ -341,7 +341,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <div className="ticket">VHS</div>
-          <div><h1>VHS ARCHIVE</h1><div className="sub">App Scroll Restore • 7.2.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Touch Scroll Fix • 7.2.7</div></div>
         </div>
       </header>
 
@@ -350,7 +350,7 @@ export default function App(){
           <>
             <section className="hero">
               <h2>Catalog. Collect. Preserve.</h2>
-              <p>Catalog. Collect. Preserve. Version 7.2.6 restores native app scrolling.</p>
+              <p>Catalog. Collect. Preserve. Version 7.2.7 restores touch scrolling across the main app.</p>
               <div className="actions">
                 <button onClick={()=>goToView('browse')}>Browse the Shelves</button>
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>

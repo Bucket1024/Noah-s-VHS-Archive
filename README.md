@@ -1,15 +1,14 @@
-# VHS Archive 7.2.6 — App Scroll Restore
+# VHS Archive 7.2.7 — Touch Scroll Fix
 
-7.2.6 rolls back the custom 7.2.5 scroll animation and restores native app scrolling.
+7.2.7 fixes installed-app scrolling where only the bottom tab area recognized swipe gestures.
 
 ## Fixed
 
-- Restores scrolling in installed/PWA mode
-- Keeps stable VHS Archive branding
-- Keeps VHS-0001 archive IDs
-- Keeps sizing fixes from the stable build
-- Removes the custom scroll behavior that caused the installed app to lock
+- Restores vertical touch scrolling across the main content area
+- Keeps bottom navigation buttons working
+- Keeps horizontal shelf/photo carousel scrolling
+- Keeps VHS Archive branding and previous sizing fixes
 
 ## Suggested commit message
 
-Release 7.2.6 - App Scroll Restore
+Release 7.2.7 - Touch Scroll Fix
