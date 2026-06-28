@@ -1,15 +1,14 @@
-# VHS Archive 7.6.1 — Emergency Restore Tools
+# VHS Archive 7.5.2 — Photo Library Startup Fix
 
-7.6.1 fixes the backup import experience after the 7.6 import button did not open properly.
+7.5.2 fixes the remaining startup crash from the 7.5 photo-library update.
 
 ## Fixed
 
-- Adds a visible file picker for Import JSON Backup
-- Removes reliance on hidden file input button behavior
-- Imports tapes and wishlist
-- Restores included backup photos into IndexedDB where supported
-- Keeps the existing Export Backup JSON button
+- Shelf now safely receives the photoLibrary prop
+- Tape cards can resolve IndexedDB photos without crashing
+- Keeps IndexedDB photo storage from 7.5
+- Keeps zoom viewer and compression
 
 ## Suggested commit message
 
-Release 7.6.1 - Emergency Restore Tools
+Release 7.5.2 - Photo Library Startup Fix
