@@ -1,7 +1,7 @@
 {
   "name": "VHS Archive",
   "short_name": "VHS Archive",
-  "description": "Catalog. Collect. Preserve. A retro VHS collection archive.",
+  "description": "Catalog. Collect. Preserve.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

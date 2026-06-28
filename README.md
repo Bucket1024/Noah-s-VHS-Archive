@@ -1,18 +1,14 @@
-# VHS Archive 7.2.3 — Safe Branding Fix
+# VHS Archive 7.2.5 — Smooth Scroll Polish
 
-7.2.3 safely applies the branding changes without the new splash-screen code that caused the 7.2.2 startup crash.
+7.2.5 keeps the front-cover Browse layout and improves tap-to-top scrolling.
 
-## New in 7.2.3
+## New in 7.2.5
 
-- App/header renamed to VHS Archive
-- Top tagline changed to: Catalog. Collect. Preserve.
-- Archive IDs use VHS-0001 format
-- Keeps 7.2.1 scroll fix and photo fit improvements
-
-## Not included yet
-
-- The longer Be Kind, Rewind splash screen has been held back until it can be added safely.
+- Keeps front cover images in Browse
+- Adds a custom lightweight tap-to-top scroll animation
+- Temporarily reduces heavy visual effects during auto-scroll
+- Keeps stable branding and mobile sizing fixes
 
 ## Suggested commit message
 
-Release 7.2.3 - Safe Branding Fix
+Release 7.2.5 - Smooth Scroll Polish
