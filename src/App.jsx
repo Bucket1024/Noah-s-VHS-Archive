@@ -514,31 +514,54 @@ export default function App(){
 
   const selected = tapes.find(t => t.id === selectedId);
 
-  function pickMovieNight(){
+  
+function pickMovieNight(){
     if(!tapes.length) return;
 
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
     const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
 
-    setMovieNight({stage:'intro', choice, reel: reelPool});
+    let start = performance.now();
+    let duration = 2800;
+    let velocity = 30; // initial speed
+    let offset = 0;
 
-    let spin = 0;
-    const interval = setInterval(() => {
-      spin++;
-      const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
-      setMovieNight(prev => prev ? {...prev, reel: shuffled, stage:'shuffle'} : prev);
-      if(spin > 8){
-        clearInterval(interval);
+    setMovieNight({stage:'spin', choice, reel: reelPool, offset:0});
+
+    function easeOut(t){
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animate(now){
+      let t = Math.min(1, (now - start) / duration);
+      let eased = easeOut(t);
+
+      // decelerating movement
+      offset = eased * 1000;
+
+      setMovieNight(prev => prev ? ({
+        ...prev,
+        reel: reelPool,
+        stage: t < 1 ? 'spin' : 'result',
+        offset
+      }) : prev);
+
+      if(t < 1){
+        requestAnimationFrame(animate);
+      } else {
         setTimeout(() => {
-          setMovieNight({stage:'result', choice, reel: [choice]});
+          setMovieNight({stage:'result', choice, reel:[choice], offset});
           setTimeout(() => {
             setMovieNight(null);
             openTape(choice.id);
-          }, 1200);
-        }, 600);
+          }, 900);
+        }, 250);
       }
-    }, 180);
-  }
+    }
+
+    requestAnimationFrame(animate);
+}
+
 
   const genreOptions = useMemo(() => {
     const base = ['Other','Action / Adventure','Comedy','Family','Sci‑Fi / Fantasy','Drama','Horror','Animation','Documentary','Music','Sports','Christmas','Disney'];
