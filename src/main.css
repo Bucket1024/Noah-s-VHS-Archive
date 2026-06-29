@@ -1704,3 +1704,22 @@ main.app-scroll{
   from{transform:translateY(-4px);opacity:0}
   to{transform:translateY(0);opacity:1}
 }
+
+
+/* 8.2 Synth Music Settings */
+.music-toggle{
+  border-color:rgba(255,213,31,.45)!important;
+  background:rgba(255,213,31,.08)!important;
+}
+
+.music-toggle.on{
+  border-color:rgba(255,213,31,.95)!important;
+  background:linear-gradient(135deg,rgba(255,213,31,.26),rgba(0,74,173,.18))!important;
+  color:var(--bb-yellow,#ffd51f)!important;
+  box-shadow:0 0 18px rgba(255,213,31,.14);
+}
+
+.music-settings-panel .music-toggle{
+  width:100%;
+  margin-top:8px;
+}
