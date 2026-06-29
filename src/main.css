@@ -1597,3 +1597,59 @@ main.app-scroll{
     --shelf-card-width:138px;
   }
 }
+
+
+/* 8.0 Catalog Workflow Update */
+.stat-button{
+  text-align:left;
+  cursor:pointer;
+  width:100%;
+}
+
+.stat-button:active{
+  transform:translateY(1px) scale(.99);
+}
+
+.active-filter{
+  border-color:rgba(255,213,31,.85)!important;
+  background:rgba(255,213,31,.16)!important;
+  color:var(--bb-yellow,#ffd51f)!important;
+}
+
+.empty-state{
+  text-align:center;
+  padding:26px 18px;
+}
+
+.add-photo-box{
+  grid-column:1 / -1;
+  border:1px solid rgba(255,213,31,.35);
+  border-radius:18px;
+  padding:14px;
+  background:rgba(255,213,31,.05);
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+}
+
+.add-photo-box h3,
+.add-photo-box .small{
+  grid-column:1 / -1;
+  margin:0;
+}
+
+.add-photo-box input[type="file"]{
+  width:100%;
+  border:1px dashed rgba(255,213,31,.45);
+  border-radius:12px;
+  padding:10px;
+  background:rgba(0,0,0,.18);
+  color:#dbeafe;
+}
+
+@media(max-width:760px){
+  .add-photo-box{
+    grid-template-columns:1fr;
+  }
+}

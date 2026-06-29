@@ -1,12 +1,14 @@
-VHS ARCHIVE 7.7.7 — UPLOAD STEPS
+VHS ARCHIVE 8.0 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 7.7.7 - Side Scroll Fix.
+2. Commit message: Release 8.0 - Catalog Workflow Update.
 3. Wait for Actions green checkmark.
 4. Refresh the app.
 5. Test:
-   - Home shelves swipe left/right directly on tape cards
-   - Main app still scrolls vertically
-   - Browse grid still behaves normally
-   - Header logo and Be Kind, Rewind remain unchanged
-   - Backup/import still appears in Stats
+   - Back button / left-edge swipe between screens
+   - Browse tab resets search/filter and scrolls to top
+   - Need Photos card opens missing-photo list
+   - Add Tape can save photos while adding a tape
+   - Genre filter works in Browse
+   - Custom genre can be added from Add Tape
+   - Export/import backup still appears in Stats

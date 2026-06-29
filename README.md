@@ -1,20 +1,20 @@
-# VHS Archive 7.7.7 — Side Scroll Fix
+# VHS Archive 8.0 — Catalog Workflow Update
 
-7.7.7 fixes the Home page shelves so they side-scroll properly like Netflix-style rows.
+8.0 focuses on day-to-day cataloging improvements.
 
-## New in 7.7.7
+## New in 8.0
 
-- Home shelves are now real horizontal carousel rows
-- Swipe left/right directly on tape cards
-- Main page still scrolls up/down normally
-- Horizontal scrollbars are hidden
-- Subtle left/right fade hints show when more shelf content exists
-- Keeps the current header logo, motto, backup/import system, photo viewer, and PWA install setup
-
-## Important
-
-Importing an old JSON backup restores collection data only. It does not reverse app layout, logo, or code updates.
+- Android/browser back navigation now steps back through app screens where possible
+- Left-edge swipe inside the app attempts to go back to the previous app screen
+- Pressing Browse resets search/filter and scrolls to the top
+- Home stat now shows how many tapes still need photos
+- Tapping Need Photos opens Browse filtered to tapes without photos
+- If all tapes have photos, Browse shows "You're up to date"
+- Add Tape now supports taking/selecting photos during entry
+- Browse filter now uses Genre instead of Packaging
+- Add Tape includes a New Genre field for custom genre creation
+- Keeps existing photo storage, import/export, logo, Movie Night, and side-scroll shelves
 
 ## Suggested commit message
 
-Release 7.7.7 - Side Scroll Fix
+Release 8.0 - Catalog Workflow Update

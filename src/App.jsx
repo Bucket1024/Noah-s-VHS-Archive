@@ -224,8 +224,9 @@ export default function App(){
   });
   const [view,setView] = useState(() => sessionStorage.getItem('noahVhs6_lastView') || 'home');
   const [query,setQuery] = useState('');
-  const [pkg,setPkg] = useState('');
+  const [pkg,setPkg] = useState(''); // 8.0: pkg now stores genre filter
   const [edition,setEdition] = useState('');
+  const [missingPhotosOnly,setMissingPhotosOnly] = useState(false);
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [photoLibrary,setPhotoLibrary] = useState({});
@@ -237,6 +238,8 @@ export default function App(){
   const scrollAreaRef = useRef(null);
   const importBackupRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
+  const viewHistoryRef = useRef([]);
+  const touchStartRef = useRef(null);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -398,20 +401,59 @@ export default function App(){
     }, 50);
   }
 
-  function goToView(nextView){
+  function goToView(nextView, options = {}){
+    if(nextView === 'browse'){
+      if(options.resetBrowse || view === 'browse'){
+        setQuery('');
+        setPkg('');
+        setEdition('');
+        setMissingPhotosOnly(false);
+        sessionStorage.setItem('noahVhs_scroll_browse', '0');
+      }
+    }
+
     if(view === nextView){
       scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'});
       sessionStorage.setItem(`noahVhs_scroll_${nextView}`, '0');
       setScrollPositions(prev => ({...prev, [nextView]: 0}));
       return;
     }
+
+    if(!options.skipHistory){
+      viewHistoryRef.current.push(view);
+      try{ window.history.pushState({vhsView: nextView}, '', window.location.href); }catch(error){}
+    }
+
     saveScrollPosition(view);
     setView(nextView);
-    setTimeout(() => restoreScrollPosition(nextView), 80);
+    sessionStorage.setItem('noahVhs6_lastView', nextView);
+    setTimeout(() => {
+      if(nextView === 'browse' && (options.resetBrowse || view === 'browse')){
+        scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'});
+      } else {
+        restoreScrollPosition(nextView);
+      }
+    }, 80);
+  }
+
+  function goBackInApp(){
+    if(viewerPhoto){ closePhotoViewer(); return; }
+    if(view === 'detail'){ backToBrowse(); return; }
+    const previous = viewHistoryRef.current.pop();
+    if(previous){
+      saveScrollPosition(view);
+      setView(previous);
+      sessionStorage.setItem('noahVhs6_lastView', previous);
+      setTimeout(() => restoreScrollPosition(previous), 70);
+    } else if(view !== 'home'){
+      goToView('home', {skipHistory:true});
+    }
   }
 
   function openTape(id){
     saveScrollPosition(view);
+    viewHistoryRef.current.push(view);
+    try{ window.history.pushState({vhsView:'detail'}, '', window.location.href); }catch(error){}
     sessionStorage.setItem('noahVhs6_selectedTape', id);
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
     setSelectedId(id);
@@ -425,6 +467,51 @@ export default function App(){
     goToView('browse');
     restoreScrollPosition('browse');
   }
+
+  useEffect(() => {
+    const onPopState = (event) => {
+      event.preventDefault?.();
+      goBackInApp();
+    };
+    window.addEventListener('popstate', onPopState);
+    try{ window.history.replaceState({vhsView:view}, '', window.location.href); }catch(error){}
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [view, viewerPhoto]);
+
+  useEffect(() => {
+    const area = scrollAreaRef.current;
+    if(!area) return;
+
+    const onTouchStart = (e) => {
+      const touch = e.touches?.[0];
+      if(!touch) return;
+      if(touch.clientX <= 24){
+        touchStartRef.current = {x:touch.clientX, y:touch.clientY, time:Date.now()};
+      } else {
+        touchStartRef.current = null;
+      }
+    };
+
+    const onTouchEnd = (e) => {
+      const start = touchStartRef.current;
+      const touch = e.changedTouches?.[0];
+      touchStartRef.current = null;
+      if(!start || !touch) return;
+      const dx = touch.clientX - start.x;
+      const dy = Math.abs(touch.clientY - start.y);
+      if(dx > 70 && dy < 60 && Date.now() - start.time < 800){
+        goBackInApp();
+      }
+    };
+
+    area.addEventListener('touchstart', onTouchStart, {passive:true});
+    area.addEventListener('touchend', onTouchEnd, {passive:true});
+    return () => {
+      area.removeEventListener('touchstart', onTouchStart);
+      area.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [view, viewerPhoto]);
+
   const selected = tapes.find(t => t.id === selectedId);
 
   function pickMovieNight(){
@@ -438,16 +525,26 @@ export default function App(){
     }, 2200);
   }
 
+  const genreOptions = useMemo(() => {
+    const base = ['Other','Action / Adventure','Comedy','Family','Sci‑Fi / Fantasy','Drama','Horror','Animation','Documentary','Music','Sports','Christmas','Disney'];
+    const fromTapes = tapes.map(t => t.genre).filter(Boolean);
+    return [...new Set([...base, ...fromTapes])].sort((a,b)=>a.localeCompare(b));
+  }, [tapes]);
+
+  const tapesMissingPhotos = useMemo(() => tapes.filter(t => !mainImage(t, photoLibrary)), [tapes, photoLibrary]);
+
   const filtered = useMemo(() => {
     let list = tapes.filter(t => [t.title,t.studio,t.edition,t.packaging,t.notes,t.genre,t.tags,t.vhsYear].join(' ').toLowerCase().includes(query.toLowerCase()));
-    if(pkg) list = list.filter(t => t.packaging === pkg);
+    if(pkg) list = list.filter(t => (t.genre || 'Other') === pkg);
     if(edition) list = list.filter(t => has(t, new RegExp(edition,'i')));
+    if(missingPhotosOnly) list = list.filter(t => !mainImage(t, photoLibrary));
     return list.sort((a,b)=>a.title.localeCompare(b.title));
-  }, [tapes, query, pkg, edition]);
+  }, [tapes, query, pkg, edition, missingPhotosOnly, photoLibrary]);
 
   const stats = {
     total: tapes.length,
     photos: tapes.filter(t => mainImage(t, photoLibrary)).length,
+    photosNeeded: tapes.filter(t => !mainImage(t, photoLibrary)).length,
     favorites: tapes.filter(t => t.favorite).length,
     watched: tapes.filter(t => t.watched).length,
     screeners: tapes.filter(t => has(t,/screener/i)).length,
@@ -485,21 +582,27 @@ export default function App(){
     });
   }
 
+
+  async function saveTapePhoto(tapeId, label, file){
+    if(!file) return null;
+    const src = await compressImage(file);
+    const photoId = `${tapeId}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+    try{
+      await idbSavePhoto(photoId, src);
+      setPhotoLibrary(prev => ({...prev, [photoId]: src}));
+      return {photoId, label, date:new Date().toISOString().slice(0,10)};
+    }catch(storageError){
+      return {src, label, date:new Date().toISOString().slice(0,10)};
+    }
+  }
+
   async function addPhoto(label, file){
     if(!selected || !file) return;
     sessionStorage.setItem('noahVhs6_selectedTape', selected.id);
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
     try{
-      const src = await compressImage(file);
-      const photoId = `${selected.id}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
-      let photo;
-      try{
-        await idbSavePhoto(photoId, src);
-        setPhotoLibrary(prev => ({...prev, [photoId]: src}));
-        photo = {photoId, label, date:new Date().toISOString().slice(0,10)};
-      }catch(storageError){
-        photo = {src, label, date:new Date().toISOString().slice(0,10)};
-      }
+      const photo = await saveTapePhoto(selected.id, label, file);
+      if(!photo) return;
       const photos = [...(selected.photos || []), photo];
       updateTape(selected.id, {photos, cover: selected.cover || (photo.photoId || photo.src)});
       setSelectedPhoto(selected.cover ? photos.length : 0);
@@ -566,27 +669,50 @@ export default function App(){
     goToView('browse');
   }
 
-  function addTape(e){
+  async function addTape(e){
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const title = fd.get('title')?.trim();
     if(!title){ notify('Add a title first.'); return; }
+
     const next = 'VHS-' + String(tapes.length + 1).padStart(4,'0');
-    setTapes(prev => [...prev, normalizeTape({
+    const customGenre = fd.get('customGenre')?.trim();
+    const photoInputs = [
+      ['Front Cover', fd.get('photoFront')],
+      ['Back Cover', fd.get('photoBack')],
+      ['Spine', fd.get('photoSpine')],
+      ['Tape Label', fd.get('photoTape')]
+    ];
+
+    const savedPhotos = [];
+    for(const [label, file] of photoInputs){
+      if(file && file.size){
+        const photo = await saveTapePhoto(next, label, file);
+        if(photo) savedPhotos.push(photo);
+      }
+    }
+
+    const newTape = normalizeTape({
       id: next,
       title,
       vhsYear: fd.get('vhsYear') || '',
       studio: fd.get('studio') || 'Unknown',
       edition: fd.get('edition') || 'Standard',
       packaging: fd.get('packaging') || 'Sleeve',
-      genre: fd.get('genre') || 'Other',
+      genre: customGenre || fd.get('genre') || 'Other',
       tapeCondition: fd.get('tapeCondition') || '',
       notes: fd.get('notes') || '',
+      photos: savedPhotos,
+      cover: savedPhotos[0]?.photoId || savedPhotos[0]?.src || '',
       dateAcquired: new Date().toISOString().slice(0,10)
-    })]);
-    e.currentTarget.reset();
-    notify('Tape added.');
-    goToView('browse');
+    });
+
+    setTapes(prev => [...prev, newTape]);
+    form.reset();
+    notify(savedPhotos.length ? 'Tape added with photos.' : 'Tape added.');
+    setSelectedId(next);
+    goToView('detail');
   }
 
   async function exportBackup(){
@@ -667,7 +793,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v7.7.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.0</div></div>
         </div>
       </header>
 
@@ -685,7 +811,7 @@ export default function App(){
               </div>
               <div className="stats">
                 <div className="stat"><strong>{stats.total}</strong><span>Total Tapes</span></div>
-                <div className="stat"><strong>{stats.photos}</strong><span>With Photos</span></div>
+                <button className="stat stat-button" onClick={()=>{setMissingPhotosOnly(true); setQuery(""); setPkg(""); setEdition(""); goToView("browse", {resetBrowse:false});}}><strong>{stats.photosNeeded}</strong><span>Need Photos</span></button>
                 <div className="stat"><strong>{stats.favorites}</strong><span>Favorites</span></div>
                 <div className="stat"><strong>{stats.watched}</strong><span>Watched</span></div>
                 <div className="stat"><strong>{stats.screeners}</strong><span>Screeners</span></div>
@@ -711,17 +837,18 @@ export default function App(){
           <>
             <div className="controls">
               <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search title, studio, edition, notes, tags..." />
-              <select value={pkg} onChange={e=>setPkg(e.target.value)}><option value="">All packaging</option><option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option></select>
+              <select value={pkg} onChange={e=>setPkg(e.target.value)}><option value="">All genres</option>{genreOptions.map(g=><option key={g} value={g}>{g}</option>)}</select>
               <select value={edition} onChange={e=>setEdition(e.target.value)}><option value="">All editions</option><option>Standard</option><option>Screener</option><option>Collector</option><option>Special</option><option>Nintendo</option><option>Disney Parks</option><option>Custom</option><option>Widescreen</option></select>
+              <button type="button" className={missingPhotosOnly ? 'active-filter' : 'secondary'} onClick={()=>setMissingPhotosOnly(v=>!v)}>📸 Needs Photos</button>
             </div>
-            <div className="small" style={{margin:'8px 2px 14px'}}>{filtered.length} tapes showing • Title A-Z</div>
-            <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape} photoLibrary={photoLibrary}/>)}</div>
+            <div className="small" style={{margin:'8px 2px 14px'}}>{filtered.length} tapes showing • Title A-Z {missingPhotosOnly ? '• Missing photos only' : ''}</div>
+            {missingPhotosOnly && !filtered.length ? <div className="panel empty-state"><h3>You're up to date</h3><p className="small">Every tape currently has at least one photo.</p></div> : <div className="grid">{filtered.map(t => <TapeCard key={t.id} tape={t} onOpen={openTape} photoLibrary={photoLibrary}/>)}</div>}
           </>
         )}
 
         {view === 'detail' && selected && (
           <section>
-            <button className="secondary" onClick={()=>goToView('browse')}>← Back to collection</button>
+            <button className="secondary" onClick={backToBrowse}>← Back to collection</button>
             <div className="detail-layout" style={{marginTop:14}}>
               <div>
                 <div className={`bigcover ${mainImage(selected, photoLibrary) ? 'has-img':''}`} onClick={() => {
@@ -816,9 +943,11 @@ export default function App(){
             <label>Studio / Distributor</label><input name="studio"/>
             <label>Edition</label><select name="edition"><option>Standard</option><option>Widescreen</option><option>Screener</option><option>Collector's Edition</option><option>Special Edition</option><option>Custom Tape</option><option>Nintendo Power</option><option>Disney Parks</option></select>
             <label>Packaging</label><select name="packaging"><option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option></select>
-            <label>Genre</label><select name="genre"><option>Other</option><option>Action / Adventure</option><option>Comedy</option><option>Family</option><option>Sci‑Fi / Fantasy</option></select>
+            <label>Genre</label><select name="genre">{genreOptions.map(g=><option key={g}>{g}</option>)}</select>
+            <label>New Genre (optional)</label><input name="customGenre" placeholder="Add a new genre for this tape"/>
             <label>Tape Condition</label><select name="tapeCondition"><option></option><option>Mint</option><option>Excellent</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option></select>
             <label>Notes</label><textarea name="notes" rows="4"/>
+            <div className="add-photo-box"><h3>Photos While Adding</h3><p className="small">Optional, but handy if you want the tape fully logged right away.</p><label>Front Cover</label><input name="photoFront" type="file" accept="image/*" capture="environment"/><label>Back Cover</label><input name="photoBack" type="file" accept="image/*" capture="environment"/><label>Spine</label><input name="photoSpine" type="file" accept="image/*" capture="environment"/><label>Tape Label</label><input name="photoTape" type="file" accept="image/*" capture="environment"/></div>
             <button>Add Tape</button>
           </form>
         )}
@@ -907,7 +1036,7 @@ export default function App(){
       )}
 
       <nav className="bottom-nav">
-        {views.map(([id,ico,label]) => <button key={id} className={view===id?'active':''} onClick={()=>goToView(id)}><span className="ico">{ico}</span><span>{label}</span></button>)}
+        {views.map(([id,ico,label]) => <button key={id} className={view===id?'active':''} onClick={()=>goToView(id, id==='browse' ? {resetBrowse:true} : {})}><span className="ico">{ico}</span><span>{label}</span></button>)}
       </nav>
       <div className={`toast ${toast ? 'show':''}`}>{toast}</div>
     </>
