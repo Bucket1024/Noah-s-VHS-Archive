@@ -1729,3 +1729,9 @@ main.app-scroll{
 .music-settings-panel .small{
   line-height:1.45;
 }
+
+
+/* 8.2.2 Audio Focus Fix */
+.music-settings-panel{
+  position:relative;
+}

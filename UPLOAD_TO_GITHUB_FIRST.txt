@@ -1,12 +1,14 @@
-VHS ARCHIVE 8.2.1 — UPLOAD STEPS
+VHS ARCHIVE 8.2.2 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.2.1 - Theme Audio File Update.
+2. Commit message: Release 8.2.2 - Audio Focus Fix.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Tap Theme Music On
-   - Confirm the WAV track plays and loops
-   - Tap Theme Music Off
-   - Close and reopen app
-   - Confirm it stays off until turned back on
+   - Turn Theme Music On
+   - Confirm the new 45-second WAV plays
+   - Leave/switch away from the app
+   - Confirm music pauses
+   - Return to the app
+   - Confirm music resumes only if music is enabled
+   - Turn music off, close/reopen, confirm it stays off

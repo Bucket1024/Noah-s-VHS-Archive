@@ -1,17 +1,17 @@
-# VHS Archive 8.2.1 — Theme Audio File Update
+# VHS Archive 8.2.2 — Audio Focus Fix
 
-8.2.1 replaces the experimental Web Audio synth system with a real looping WAV file.
+8.2.2 updates the app soundtrack and fixes background playback behavior.
 
-## New in 8.2.1
+## New in 8.2.2
 
-- Adds `public/audio/vhs-theme.wav`
-- Music toggle now plays the real uploaded audio loop
-- Music loops while the app is open
-- Turning music off saves that preference
-- If music is off, it stays off next time until turned back on
-- Adds gentle fade in/out
-- Keeps existing archive data, photos, backups, and app layout unchanged
+- Replaces the old short music loop with the new 45-second crossfaded WAV
+- Keeps the file path as `public/audio/vhs-theme.wav`
+- Music pauses when the app goes into the background
+- Music resumes when the app is opened again, only if Music was On
+- If Music is Off, it stays off until turned back on
+- Keeps the Theme Music toggle and local storage preference
+- Keeps archive data, photos, backups, browsing, and layout unchanged
 
 ## Suggested commit message
 
-Release 8.2.1 - Theme Audio File Update
+Release 8.2.2 - Audio Focus Fix

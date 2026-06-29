@@ -241,6 +241,7 @@ export default function App(){
   const [musicEnabled,setMusicEnabled] = useState(() => localStorage.getItem('vhs_music_enabled') === 'true');
   const musicRef = useRef(null);
   const musicFadeRef = useRef(null);
+  const appWasPlayingRef = useRef(false);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
   const [toast,setToast] = useState('');
@@ -317,6 +318,33 @@ export default function App(){
     };
   }, [musicEnabled]);
 
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if(document.hidden){
+        pauseThemeForBackground();
+      } else {
+        resumeThemeFromBackground();
+      }
+    };
+
+    const handlePageHide = () => pauseThemeForBackground();
+    const handleBlur = () => pauseThemeForBackground();
+    const handleFocus = () => resumeThemeFromBackground();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('blur', handleBlur);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [musicEnabled]);
+
   useEffect(() => () => {
     if(musicFadeRef.current) clearInterval(musicFadeRef.current);
     const audio = musicRef.current;
@@ -326,13 +354,13 @@ export default function App(){
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
 
-  function fadeAudioTo(targetVolume, afterFade){
+  function fadeAudioTo(targetVolume, afterFade, stepMs = 45){
     const audio = musicRef.current;
     if(!audio) return;
 
     if(musicFadeRef.current) clearInterval(musicFadeRef.current);
 
-    const steps = 14;
+    const steps = 10;
     const startVolume = audio.volume;
     let step = 0;
 
@@ -346,7 +374,7 @@ export default function App(){
         audio.volume = targetVolume;
         afterFade?.();
       }
-    }, 55);
+    }, stepMs);
   }
 
   async function playThemeMusic(){
@@ -369,7 +397,24 @@ export default function App(){
 
     fadeAudioTo(0, () => {
       audio.pause();
-    });
+    }, 35);
+  }
+
+  function pauseThemeForBackground(){
+    const audio = musicRef.current;
+    if(!audio) return;
+    appWasPlayingRef.current = musicEnabled && !audio.paused;
+    if(musicFadeRef.current){
+      clearInterval(musicFadeRef.current);
+      musicFadeRef.current = null;
+    }
+    audio.pause();
+  }
+
+  function resumeThemeFromBackground(){
+    if(!musicEnabled) return;
+    if(!appWasPlayingRef.current) return;
+    playThemeMusic();
   }
 
   function toggleMusic(){
@@ -1098,7 +1143,7 @@ function pickMovieNight(){
             </div>
             <div className="panel music-settings-panel">
               <h3>Audio Settings</h3>
-              <p className="small">Turn on the looping VHS Archive background theme. Your choice is remembered on this device.</p>
+              <p className="small">Turn on the looping VHS Archive background theme. Music pauses when the app is backgrounded and your choice is remembered.</p>
               <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
             </div>
           </>
