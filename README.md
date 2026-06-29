@@ -1,17 +1,17 @@
-# VHS Archive 8.2 — Synth Music Settings
+# VHS Archive 8.2.1 — Theme Audio File Update
 
-8.2 adds optional looping 80s-style lo-fi synth background music.
+8.2.1 replaces the experimental Web Audio synth system with a real looping WAV file.
 
-## New in 8.2
+## New in 8.2.1
 
-- Adds procedural synthwave/lo-fi background music using Web Audio
-- Music button appears on Home
-- Audio Settings panel appears in Stats
-- Music preference is remembered on this device
-- If turned off, it stays off next time until turned back on
-- Starts only after a user tap/click, which keeps mobile browser audio rules happy
-- No copyrighted audio files are included
+- Adds `public/audio/vhs-theme.wav`
+- Music toggle now plays the real uploaded audio loop
+- Music loops while the app is open
+- Turning music off saves that preference
+- If music is off, it stays off next time until turned back on
+- Adds gentle fade in/out
+- Keeps existing archive data, photos, backups, and app layout unchanged
 
 ## Suggested commit message
 
-Release 8.2 - Synth Music Settings
+Release 8.2.1 - Theme Audio File Update

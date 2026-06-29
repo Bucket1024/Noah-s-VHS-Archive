@@ -239,9 +239,8 @@ export default function App(){
   const importBackupRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
   const [musicEnabled,setMusicEnabled] = useState(() => localStorage.getItem('vhs_music_enabled') === 'true');
-  const musicContextRef = useRef(null);
-  const musicNodesRef = useRef([]);
-  const musicTimerRef = useRef(null);
+  const musicRef = useRef(null);
+  const musicFadeRef = useRef(null);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
   const [toast,setToast] = useState('');
@@ -304,7 +303,7 @@ export default function App(){
     if(!musicEnabled) return;
 
     const unlockMusic = () => {
-      startSynthMusic();
+      playThemeMusic();
       window.removeEventListener('pointerdown', unlockMusic);
       window.removeEventListener('keydown', unlockMusic);
     };
@@ -318,130 +317,74 @@ export default function App(){
     };
   }, [musicEnabled]);
 
-  useEffect(() => () => stopSynthMusic(), []);
+  useEffect(() => () => {
+    if(musicFadeRef.current) clearInterval(musicFadeRef.current);
+    const audio = musicRef.current;
+    if(audio) audio.pause();
+  }, []);
 
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
 
-  function stopSynthMusic(){
-    if(musicTimerRef.current){
-      clearInterval(musicTimerRef.current);
-      musicTimerRef.current = null;
-    }
+  function fadeAudioTo(targetVolume, afterFade){
+    const audio = musicRef.current;
+    if(!audio) return;
 
-    musicNodesRef.current.forEach(node => {
-      try{ node.stop?.(); }catch(error){}
-      try{ node.disconnect?.(); }catch(error){}
-    });
-    musicNodesRef.current = [];
+    if(musicFadeRef.current) clearInterval(musicFadeRef.current);
 
-    if(musicContextRef.current){
-      try{ musicContextRef.current.close(); }catch(error){}
-      musicContextRef.current = null;
+    const steps = 14;
+    const startVolume = audio.volume;
+    let step = 0;
+
+    musicFadeRef.current = setInterval(() => {
+      step += 1;
+      const progress = step / steps;
+      audio.volume = Math.max(0, Math.min(1, startVolume + (targetVolume - startVolume) * progress));
+      if(step >= steps){
+        clearInterval(musicFadeRef.current);
+        musicFadeRef.current = null;
+        audio.volume = targetVolume;
+        afterFade?.();
+      }
+    }, 55);
+  }
+
+  async function playThemeMusic(){
+    const audio = musicRef.current;
+    if(!audio) return;
+
+    try{
+      audio.loop = true;
+      audio.volume = 0;
+      await audio.play();
+      fadeAudioTo(0.45);
+    }catch(error){
+      notify('Tap Music again to start audio.');
     }
   }
 
-  function startSynthMusic(){
-    if(musicContextRef.current) return;
+  function stopThemeMusic(){
+    const audio = musicRef.current;
+    if(!audio) return;
 
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if(!AudioContext){
-      notify('Music is not supported on this device.');
-      return;
-    }
-
-    const ctx = new AudioContext();
-    musicContextRef.current = ctx;
-
-    const master = ctx.createGain();
-    master.gain.value = 0.055;
-    master.connect(ctx.destination);
-    musicNodesRef.current.push(master);
-
-    const delay = ctx.createDelay(1.2);
-    delay.delayTime.value = 0.34;
-    const feedback = ctx.createGain();
-    feedback.gain.value = 0.22;
-    const delayGain = ctx.createGain();
-    delayGain.gain.value = 0.18;
-    delay.connect(feedback);
-    feedback.connect(delay);
-    delay.connect(delayGain);
-    delayGain.connect(master);
-    musicNodesRef.current.push(delay, feedback, delayGain);
-
-    const bassGain = ctx.createGain();
-    bassGain.gain.value = 0.10;
-    bassGain.connect(master);
-    musicNodesRef.current.push(bassGain);
-
-    const padGain = ctx.createGain();
-    padGain.gain.value = 0.032;
-    padGain.connect(master);
-    musicNodesRef.current.push(padGain);
-
-    const bassNotes = [55, 55, 65.41, 73.42, 49, 49, 65.41, 73.42];
-    const padChords = [
-      [220, 261.63, 329.63],
-      [196, 246.94, 293.66],
-      [174.61, 220, 261.63],
-      [196, 246.94, 329.63]
-    ];
-
-    function playTone(freq, start, duration, gainNode, type='sawtooth', peak=0.08, sendDelay=false){
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, start);
-      gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(peak, start + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-      osc.connect(gain);
-      gain.connect(gainNode);
-      if(sendDelay) gain.connect(delay);
-      osc.start(start);
-      osc.stop(start + duration + 0.04);
-      musicNodesRef.current.push(osc, gain);
-    }
-
-    let step = 0;
-    function scheduleLoop(){
-      if(!musicContextRef.current) return;
-      const now = ctx.currentTime + 0.04;
-      const beat = 0.48;
-
-      for(let i=0;i<8;i++){
-        const note = bassNotes[(step + i) % bassNotes.length];
-        playTone(note, now + i*beat, 0.34, bassGain, 'triangle', 0.16, false);
-      }
-
-      const chord = padChords[Math.floor(step / 8) % padChords.length];
-      chord.forEach((freq, idx) => {
-        playTone(freq, now, beat*8 - 0.18, padGain, idx === 1 ? 'sine' : 'sawtooth', 0.026, true);
-      });
-
-      step += 8;
-    }
-
-    scheduleLoop();
-    musicTimerRef.current = setInterval(scheduleLoop, 3600);
-
-    ctx.resume?.();
+    fadeAudioTo(0, () => {
+      audio.pause();
+    });
   }
 
   function toggleMusic(){
     const next = !musicEnabled;
     setMusicEnabled(next);
     localStorage.setItem('vhs_music_enabled', String(next));
+
     if(next){
-      startSynthMusic();
-      notify('Synth music on.');
+      playThemeMusic();
+      notify('Theme music on.');
     } else {
-      stopSynthMusic();
-      notify('Synth music off.');
+      stopThemeMusic();
+      notify('Theme music off.');
     }
   }
-
 
 
   function openPhotoViewer(photo){
@@ -973,7 +916,7 @@ function pickMovieNight(){
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
                 <button className="movie-night" onClick={pickMovieNight}>🎲 Movie Night</button>
                 {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
-                <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Synth Music {musicEnabled ? "On" : "Off"}</button>
+                <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
               </div>
               <div className="stats">
                 <div className="stat"><strong>{stats.total}</strong><span>Total Tapes</span></div>
@@ -1155,12 +1098,14 @@ function pickMovieNight(){
             </div>
             <div className="panel music-settings-panel">
               <h3>Audio Settings</h3>
-              <p className="small">Turn on a looping 80s-style lo-fi synth background track. Your choice is remembered on this device.</p>
-              <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Synth Music {musicEnabled ? "On" : "Off"}</button>
+              <p className="small">Turn on the looping VHS Archive background theme. Your choice is remembered on this device.</p>
+              <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
             </div>
           </>
         )}
       </main>
+
+      <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
 
       {movieNight && (
         <div className="movie-night-overlay">

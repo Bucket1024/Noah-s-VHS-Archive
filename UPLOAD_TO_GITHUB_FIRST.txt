@@ -1,12 +1,12 @@
-VHS ARCHIVE 8.2 — UPLOAD STEPS
+VHS ARCHIVE 8.2.1 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.2 - Synth Music Settings.
+2. Commit message: Release 8.2.1 - Theme Audio File Update.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Tap Synth Music On
-   - Confirm music starts
-   - Tap Synth Music Off
+   - Tap Theme Music On
+   - Confirm the WAV track plays and loops
+   - Tap Theme Music Off
    - Close and reopen app
    - Confirm it stays off until turned back on

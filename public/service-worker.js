@@ -1,11 +1,12 @@
-const CACHE_NAME = 'vhs-archive-8-2';
+const CACHE_NAME = 'vhs-archive-8-2-1';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icon.svg',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './audio/vhs-theme.wav'
 ];
 
 self.addEventListener('install', event => {

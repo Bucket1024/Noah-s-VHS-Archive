@@ -1723,3 +1723,9 @@ main.app-scroll{
   width:100%;
   margin-top:8px;
 }
+
+
+/* 8.2.1 Theme Audio File Update */
+.music-settings-panel .small{
+  line-height:1.45;
+}
