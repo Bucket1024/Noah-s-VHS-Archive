@@ -521,45 +521,25 @@ function pickMovieNight(){
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
     const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
 
-    let start = performance.now();
-    let duration = 2800;
-    let velocity = 30; // initial speed
-    let offset = 0;
+    setMovieNight({stage:'intro', choice, reel: reelPool});
 
-    setMovieNight({stage:'spin', choice, reel: reelPool, offset:0});
+    let spin = 0;
+    const interval = setInterval(() => {
+      spin++;
+      const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
+      setMovieNight(prev => prev ? {...prev, reel: shuffled, stage:'shuffle'} : prev);
 
-    function easeOut(t){
-      return 1 - Math.pow(1 - t, 3);
-    }
-
-    function animate(now){
-      let t = Math.min(1, (now - start) / duration);
-      let eased = easeOut(t);
-
-      // decelerating movement
-      offset = eased * 1000;
-
-      setMovieNight(prev => prev ? ({
-        ...prev,
-        reel: reelPool,
-        stage: t < 1 ? 'spin' : 'result',
-        offset
-      }) : prev);
-
-      if(t < 1){
-        requestAnimationFrame(animate);
-      } else {
+      if(spin > 8){
+        clearInterval(interval);
         setTimeout(() => {
-          setMovieNight({stage:'result', choice, reel:[choice], offset});
+          setMovieNight({stage:'result', choice, reel:[choice]});
           setTimeout(() => {
             setMovieNight(null);
             openTape(choice.id);
-          }, 900);
-        }, 250);
+          }, 1200);
+        }, 600);
       }
-    }
-
-    requestAnimationFrame(animate);
+    }, 180);
 }
 
 
