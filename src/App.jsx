@@ -516,13 +516,28 @@ export default function App(){
 
   function pickMovieNight(){
     if(!tapes.length) return;
+
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 10);
-    setMovieNight({stage:'shuffle', choice, reel: shuffled});
-    setTimeout(() => {
-      setMovieNight(null);
-      openTape(choice.id);
-    }, 2200);
+    const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
+
+    setMovieNight({stage:'intro', choice, reel: reelPool});
+
+    let spin = 0;
+    const interval = setInterval(() => {
+      spin++;
+      const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
+      setMovieNight(prev => prev ? {...prev, reel: shuffled, stage:'shuffle'} : prev);
+      if(spin > 8){
+        clearInterval(interval);
+        setTimeout(() => {
+          setMovieNight({stage:'result', choice, reel: [choice]});
+          setTimeout(() => {
+            setMovieNight(null);
+            openTape(choice.id);
+          }, 1200);
+        }, 600);
+      }
+    }, 180);
   }
 
   const genreOptions = useMemo(() => {
@@ -793,7 +808,7 @@ export default function App(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.0</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.1</div></div>
         </div>
       </header>
 
@@ -995,7 +1010,7 @@ export default function App(){
         <div className="movie-night-overlay">
           <div className="movie-night-card">
             <div className="movie-night-kicker">NOAH'S FEATURE PRESENTATION</div>
-            <h2>Choosing Tonight's Tape...</h2>
+            <h2>Spinning the reels...</h2>
             <div className="tape-reel">
               {movieNight.reel.map(t => <span key={t.id}>{t.title}</span>)}
             </div>
