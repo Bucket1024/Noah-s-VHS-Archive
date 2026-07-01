@@ -827,7 +827,10 @@ function pickMovieNight(){
   }
 
   function saveEdit(){
-    updateTape(selected.id, form);
+    const {customGenre, ...cleanForm} = form;
+    const nextGenre = customGenre?.trim() || cleanForm.genre || 'Other';
+    updateTape(selected.id, {...cleanForm, genre: nextGenre});
+    setForm({...cleanForm, genre: nextGenre, customGenre:''});
     setEditOpen(false);
     notify('Tape details saved.');
   }
@@ -982,7 +985,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.3</div></div>
         </div>
       </header>
 
@@ -1108,8 +1111,30 @@ function pickMovieNight(){
                   <h3>Edit Details</h3>
                   <div className="formgrid">
                     {['title','vhsYear','studio','edition','packaging','genre','tapeCondition','sleeveCondition','inserts','rating','dateAcquired','purchaseLocation','purchasePrice','tags'].map(f=>(
-                      <React.Fragment key={f}><label>{f}</label><input type={f==='dateAcquired'?'date':'text'} value={form[f] || ''} onChange={e=>setForm({...form,[f]:e.target.value})}/></React.Fragment>
+                      <React.Fragment key={f}>
+                        <label>{f}</label>
+                        {f === 'genre' ? (
+                          <select value={form.genre || 'Other'} onChange={e=>setForm({...form, genre:e.target.value})}>
+                            {genreOptions.map(g=><option key={g} value={g}>{g}</option>)}
+                          </select>
+                        ) : f === 'packaging' ? (
+                          <select value={form.packaging || 'Sleeve'} onChange={e=>setForm({...form, packaging:e.target.value})}>
+                            <option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option>
+                          </select>
+                        ) : f === 'edition' ? (
+                          <select value={form.edition || 'Standard'} onChange={e=>setForm({...form, edition:e.target.value})}>
+                            <option>Standard</option><option>Widescreen</option><option>Screener</option><option>Collector's Edition</option><option>Special Edition</option><option>Custom Tape</option><option>Nintendo Power</option><option>Disney Parks</option>
+                          </select>
+                        ) : f === 'tapeCondition' || f === 'sleeveCondition' ? (
+                          <select value={form[f] || ''} onChange={e=>setForm({...form,[f]:e.target.value})}>
+                            <option></option><option>Mint</option><option>Excellent</option><option>Very Good</option><option>Good</option><option>Fair</option><option>Poor</option>
+                          </select>
+                        ) : (
+                          <input type={f==='dateAcquired'?'date':'text'} value={form[f] || ''} onChange={e=>setForm({...form,[f]:e.target.value})}/>
+                        )}
+                      </React.Fragment>
                     ))}
+                    <label>New Genre (optional)</label><input placeholder="Type a new genre here" value={form.customGenre || ''} onChange={e=>setForm({...form,customGenre:e.target.value})}/>
                     <label>notes</label><textarea rows="4" value={form.notes || ''} onChange={e=>setForm({...form,notes:e.target.value})}/>
                     <button onClick={saveEdit}>Save Changes</button>
                   </div>

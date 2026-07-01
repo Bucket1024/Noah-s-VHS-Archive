@@ -1741,3 +1741,13 @@ main.app-scroll{
 .music-settings-panel .small{
   line-height:1.45;
 }
+
+
+/* 8.3 Genre Dropdown Polish */
+.edit-panel select{
+  width:100%;
+}
+
+.edit-panel input::placeholder{
+  color:rgba(219,234,254,.45);
+}

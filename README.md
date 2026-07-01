@@ -1,18 +1,17 @@
-# VHS Archive 8.2.3 — Audio Resume Polish
+# VHS Archive 8.3 — Genre Dropdown Update
 
-8.2.3 improves the theme music behavior and fixes version tracking.
+8.3 improves editing tape details.
 
-## New in 8.2.3
+## New in 8.3
 
-- Keeps the 45-second crossfaded VHS Archive theme
-- Pauses music when the app is backgrounded or loses focus
-- Attempts to resume music automatically when the app reopens, if Music is On
-- Falls back to starting on the first tap if Android blocks automatic audio resume
-- Keeps Music Off remembered until turned back on
-- Updates the visible app version badge to v8.2.3
-- Updates package.json, index.html, and service-worker cache name
-- Keeps archive data, photos, backups, browsing, and layout unchanged
+- Visible app header version updated to v8.3
+- Genre in Edit Details is now a dropdown instead of plain text
+- Genre dropdown uses all existing genres from the archive
+- Optional New Genre field lets you add a new genre during edit
+- Packaging, edition, and condition fields use dropdowns in edit mode
+- package.json, index.html, and service-worker cache are updated
+- Keeps archive data, photos, backups, music, and layout unchanged
 
 ## Suggested commit message
 
-Release 8.2.3 - Audio Resume Polish
+Release 8.3 - Genre Dropdown Update
