@@ -799,33 +799,124 @@ export default function App(){
   
 function pickMovieNight(){
     if(!tapes.length) return;
-    const choice=tapes[Math.floor(Math.random()*tapes.length)];
-    const others=tapes.filter(t=>t.id!==choice.id).sort(()=>0.5-Math.random());
-    const centerIndex=10;
-    const reel=[];
-    for(let i=0;i<centerIndex;i++) reel.push(others[i%others.length]||choice);
-    reel.push(choice);
-    for(let i=0;i<10;i++) reel.push(others[(centerIndex+i)%others.length]||choice);
-    const cardStep=(window.innerWidth<=520)?168+18:172+18;
-    const finalOffset=centerIndex*cardStep;
-    const musicWasOn=musicEnabled&&musicRef.current&&!musicRef.current.paused;
-    if(musicWasOn) stopThemeMusic();
-    setMovieNight({stage:'spin',choice,reel,offset:0,musicWasOn});
+
+    // Winner is chosen first and placed at a fixed landing index.
+    const choice = tapes[Math.floor(Math.random() * tapes.length)];
+    const pool = tapes.filter(t => t.id !== choice.id).sort(() => 0.5 - Math.random());
+    const winnerIndex = 10;
+
+    const before = [];
+    const after = [];
+
+    for(let i = 0; i < winnerIndex; i++){
+      before.push(pool[i % Math.max(pool.length, 1)] || choice);
+    }
+
+    for(let i = 0; i < 10; i++){
+      after.push(pool[(winnerIndex + i) % Math.max(pool.length, 1)] || choice);
+    }
+
+    const reel = [...before, choice, ...after];
+
+    /*
+      8.6.4 exact center fix:
+      CSS now pads the reel by (50% - half-card-width), so each card center
+      lands under the yellow marker at offset = index * (cardWidth + gap).
+    */
+    const cardWidth = window.innerWidth <= 520 ? 150 : 172;
+    const cardGap = 18;
+    const cardStep = cardWidth + cardGap;
+    const finalOffset = winnerIndex * cardStep;
+    const overshootOffset = finalOffset + 12;
+
+    const musicWasOn = musicEnabled && musicRef.current && !musicRef.current.paused;
+    if(musicWasOn){
+      stopThemeMusic();
+    }
+
+    setMovieNight({
+      stage:'spin',
+      choice,
+      reel,
+      offset:0,
+      finalOffset,
+      winnerIndex,
+      musicWasOn
+    });
+
     playPrizeWheelSpin();
-    const start=performance.now(),dur=3400;
-    const ease=t=>1-Math.pow(1-t,4);
-    const anim=n=>{
-      const p=Math.min(1,(n-start)/dur);
-      const off=finalOffset*ease(p);
-      setMovieNight(v=>v?{...v,offset:off,stage:p<1?'spin':'result'}:v);
-      if(p<1) requestAnimationFrame(anim);
-      else{
-        setMovieNight(v=>v?{...v,offset:finalOffset,stage:'present'}:v);
-        playFeatureDings();
-        setTimeout(()=>{if(musicWasOn)playThemeMusic(); setMovieNight(null); openTape(choice.id);},2100);
+
+    const start = performance.now();
+    const duration = 3300;
+    const settleDuration = 420;
+
+    function easeOutQuart(t){
+      return 1 - Math.pow(1 - t, 4);
+    }
+
+    function easeOutCubic(t){
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function spin(now){
+      const progress = Math.min(1, (now - start) / duration);
+      const offset = overshootOffset * easeOutQuart(progress);
+
+      setMovieNight(prev => prev ? ({
+        ...prev,
+        stage:'spin',
+        choice,
+        offset
+      }) : prev);
+
+      if(progress < 1){
+        requestAnimationFrame(spin);
+      } else {
+        const settleStart = performance.now();
+
+        function settle(settleNow){
+          const settleProgress = Math.min(1, (settleNow - settleStart) / settleDuration);
+          const eased = easeOutCubic(settleProgress);
+          const offset = overshootOffset + (finalOffset - overshootOffset) * eased;
+
+          setMovieNight(prev => prev ? ({
+            ...prev,
+            stage: settleProgress < 1 ? 'spin' : 'result',
+            choice,
+            offset: settleProgress < 1 ? offset : finalOffset
+          }) : prev);
+
+          if(settleProgress < 1){
+            requestAnimationFrame(settle);
+          } else {
+            setMovieNight(prev => prev ? ({
+              ...prev,
+              stage:'result',
+              choice,
+              offset: finalOffset
+            }) : prev);
+
+            playFeatureDings();
+
+            setTimeout(() => {
+              setMovieNight(prev => prev ? {...prev, stage:'present', choice, offset: finalOffset} : prev);
+            }, 520);
+
+            setTimeout(() => {
+              if(musicWasOn){
+                playThemeMusic();
+              }
+              setMovieNight(null);
+              openTape(choice.id);
+            }, 2200);
+          }
+        }
+
+        requestAnimationFrame(settle);
       }
-    };
-    requestAnimationFrame(anim);
+    }
+
+    requestAnimationFrame(spin);
   }
 
 
@@ -1100,7 +1191,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.4</div></div>
         </div>
       </header>
 
@@ -1363,7 +1454,7 @@ function pickMovieNight(){
                 style={{transform:`translate3d(-${movieNight.offset || 0}px,0,0)`}}
               >
                 {movieNight.reel.map((t, index) => (
-                  <div className={`feature-reel-tape ${movieNight.stage !== 'spin' && t.id === movieNight.choice.id ? 'winner':''}`} key={`${t.id}-${index}`}>
+                  <div className={`feature-reel-tape ${movieNight.stage !== 'spin' && index === movieNight.winnerIndex ? 'winner':''}`} key={`${t.id}-${index}`}>
                     <div className="feature-reel-cover">
                       {mainImage(t, photoLibrary)
                         ? <img src={mainImage(t, photoLibrary)} alt="" />

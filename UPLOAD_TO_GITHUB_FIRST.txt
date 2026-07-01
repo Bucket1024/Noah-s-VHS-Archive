@@ -1,13 +1,12 @@
-VHS ARCHIVE 8.6.1 — FULL PROJECT UPLOAD STEPS
+VHS ARCHIVE 8.6.4 — FULL PROJECT UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.6.1 - Movie Night Center Landing.
+2. Commit message: Release 8.6.4 - Hard Center Landing Fix.
 3. Wait for Actions green checkmark.
-4. Refresh/reopen the app.
-5. Test:
-   - Top header shows v8.6.1
-   - Press Movie Night
-   - Confirm sound effects are louder
-   - Confirm reel stops with the chosen tape centered under the marker
-   - Confirm reveal chimes play
-   - Confirm chosen tape opens
+4. Open the app.
+5. If the app still shows 8.6.2, uninstall/reinstall the PWA or clear site data for the GitHub Pages site.
+6. Test Movie Night:
+   - Top header shows v8.6.4
+   - Yellow line lands on the center of a tape
+   - Result text matches that centered tape
+   - Opened detail page is that same tape
