@@ -1,0 +1,13 @@
+VHS Archive 8.5.2
+
+Added:
+- Smooth one-motion VHS Case Reveal
+- Removed staged center pause/blockiness at animation start
+- v8.5.2 visible header version
+
+Kept:
+- Audio system
+- Genre dropdown
+- Backup/import
+- Photo storage
+- GitHub Pages workflow

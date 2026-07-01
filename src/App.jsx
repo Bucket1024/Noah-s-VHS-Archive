@@ -644,14 +644,14 @@ export default function App(){
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
 
-      const scaleX = (viewportW * 1.18) / Math.max(rect.width, 1);
-      const scaleY = (viewportH * 1.18) / Math.max(rect.height, 1);
-      const scale = Math.max(scaleX, scaleY);
-
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const moveX = viewportW / 2 - centerX;
       const moveY = viewportH / 2 - centerY;
+      const scale = Math.max(
+        (viewportW * 1.25) / Math.max(rect.width, 1),
+        (viewportH * 1.25) / Math.max(rect.height, 1)
+      );
 
       setOpeningTape({
         id,
@@ -666,9 +666,9 @@ export default function App(){
         scale
       });
 
-      // Switch page once the cover has grown large enough to fully hide the swap.
-      setTimeout(switchToDetail, 240);
-      setTimeout(() => setOpeningTape(null), 720);
+      // Page switch happens only after the cover is already large enough to hide it.
+      setTimeout(switchToDetail, 300);
+      setTimeout(() => setOpeningTape(null), 740);
     } else {
       switchToDetail();
     }
@@ -1025,7 +1025,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5.2</div></div>
         </div>
       </header>
 
@@ -1254,9 +1254,9 @@ function pickMovieNight(){
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage vhs-case-reveal-stage" aria-hidden="true">
+        <div className="tape-open-stage vhs-case-reveal-stage smooth-case-stage" aria-hidden="true">
           <div
-            className="tape-open-overlay vhs-case-reveal"
+            className="tape-open-overlay vhs-case-reveal smooth-case-reveal"
             style={{
               '--start-x': `${openingTape.x}px`,
               '--start-y': `${openingTape.y}px`,
