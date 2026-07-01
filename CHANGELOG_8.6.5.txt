@@ -1,0 +1,3 @@
+VHS Archive 8.6.5
+
+Added SFX On/Off toggle. Increased Movie Night SFX volume.

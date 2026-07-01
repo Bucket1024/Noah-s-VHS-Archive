@@ -240,6 +240,7 @@ export default function App(){
   const importBackupRef = useRef(null);
   const [movieNight,setMovieNight] = useState(null);
   const [musicEnabled,setMusicEnabled] = useState(() => localStorage.getItem('vhs_music_enabled') === 'true');
+  const [sfxEnabled,setSfxEnabled] = useState(() => localStorage.getItem('vhs_sfx_enabled') !== 'false');
   const musicRef = useRef(null);
   const musicFadeRef = useRef(null);
   const appWasPlayingRef = useRef(false);
@@ -376,7 +377,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.24;
+    master.gain.value = 0.288;
     master.connect(ctx.destination);
 
     steps.forEach(step => {
@@ -403,7 +404,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.20;
+    master.gain.value = 0.30;
     master.connect(ctx.destination);
 
     const duration = 3.1;
@@ -418,7 +419,7 @@ export default function App(){
       osc.type = 'square';
       osc.frequency.setValueAtTime(260 - progress * 105, ctx.currentTime + t);
       gain.gain.setValueAtTime(0.0001, ctx.currentTime + t);
-      gain.gain.exponentialRampToValueAtTime(0.13 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.195 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + 0.035);
       osc.connect(gain);
       gain.connect(master);
@@ -537,6 +538,13 @@ export default function App(){
       stopThemeMusic();
       notify('Theme music off.');
     }
+  }
+
+  function toggleSfx(){
+    const next = !sfxEnabled;
+    setSfxEnabled(next);
+    localStorage.setItem('vhs_sfx_enabled', String(next));
+    notify(next ? 'SFX on.' : 'SFX off.');
   }
 
 
@@ -844,7 +852,7 @@ function pickMovieNight(){
       musicWasOn
     });
 
-    playPrizeWheelSpin();
+    if(sfxEnabled) playPrizeWheelSpin();
 
     const start = performance.now();
     const duration = 3300;
@@ -896,7 +904,7 @@ function pickMovieNight(){
               offset: finalOffset
             }) : prev);
 
-            playFeatureDings();
+            if(sfxEnabled) playFeatureDings();
 
             setTimeout(() => {
               setMovieNight(prev => prev ? {...prev, stage:'present', choice, offset: finalOffset} : prev);
@@ -1191,7 +1199,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.4</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.5</div></div>
         </div>
       </header>
 
@@ -1411,6 +1419,7 @@ function pickMovieNight(){
               <h3>Audio Settings</h3>
               <p className="small">Turn on the looping VHS Archive background theme. Music pauses when the app is backgrounded and tries to resume when the app reopens.</p>
               <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
+              <button type="button" className={sfxEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleSfx}>🔊 SFX {sfxEnabled ? "On" : "Off"}</button>
             </div>
           </>
         )}

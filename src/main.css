@@ -2493,3 +2493,6 @@ main.app-scroll{
     width:150px !important;
   }
 }
+
+/* 8.6.5 SFX Settings */
+.music-settings-panel .music-toggle + .music-toggle{margin-top:8px;}
