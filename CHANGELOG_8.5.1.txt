@@ -1,0 +1,13 @@
+VHS Archive 8.5.1
+
+Added:
+- VHS Case Reveal transition
+- Tape expands through the screen to hide page switch
+- v8.5.1 visible header version
+
+Kept:
+- Audio system
+- Genre dropdown
+- Backup/import
+- Photo storage
+- GitHub Pages workflow

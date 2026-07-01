@@ -1999,3 +1999,102 @@ main.app-scroll{
     animation:none!important;
   }
 }
+
+
+/* 8.5.1 VHS Case Reveal
+   The tape expands through the screen, hiding the page switch behind the cover. */
+.vhs-case-reveal-stage{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  background:rgba(1,7,24,0);
+  overflow:hidden;
+  animation:vhsCaseRevealBackdrop .72s ease forwards !important;
+}
+
+.vhs-case-reveal{
+  position:fixed;
+  left:0;
+  top:0;
+  width:var(--start-w);
+  height:var(--start-h);
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(9,35,91,.98),rgba(1,12,45,.98));
+  transform-origin:center center;
+  transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+  animation:vhsCaseRevealMove .72s cubic-bezier(.16,.78,.22,1) forwards !important;
+  will-change:transform, opacity, filter;
+  box-shadow:0 16px 38px rgba(0,0,0,.48);
+}
+
+.vhs-case-reveal img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform:translateZ(0);
+}
+
+@keyframes vhsCaseRevealBackdrop{
+  0%{background:rgba(1,7,24,0);}
+  24%{background:rgba(1,7,24,.22);}
+  52%{background:rgba(1,7,24,.42);}
+  74%{background:rgba(1,7,24,.22);}
+  100%{background:rgba(1,7,24,0);}
+}
+
+@keyframes vhsCaseRevealMove{
+  0%{
+    transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+    opacity:1;
+    filter:brightness(1);
+    box-shadow:0 12px 28px rgba(0,0,0,.42);
+  }
+  22%{
+    transform:translate3d(
+      calc(var(--start-x) + (var(--move-x) * .18)),
+      calc(var(--start-y) + (var(--move-y) * .18) - 18px),
+      0
+    ) scale(1.08);
+    opacity:1;
+    filter:brightness(1.08);
+    box-shadow:0 30px 58px rgba(0,0,0,.58);
+  }
+  52%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--reveal-scale));
+    opacity:1;
+    filter:brightness(1.03) blur(.2px);
+    box-shadow:0 42px 78px rgba(0,0,0,.68);
+  }
+  76%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--reveal-scale));
+    opacity:.55;
+    filter:brightness(1) blur(.5px);
+  }
+  100%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--reveal-scale));
+    opacity:0;
+    filter:brightness(1) blur(1px);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .vhs-case-reveal-stage,
+  .vhs-case-reveal{
+    animation:none!important;
+  }
+}
