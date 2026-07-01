@@ -405,7 +405,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.42;
+    master.gain.value = 0.525;
     master.connect(ctx.destination);
 
     const duration = 3.1;
@@ -420,7 +420,7 @@ export default function App(){
       osc.type = 'square';
       osc.frequency.setValueAtTime(260 - progress * 105, ctx.currentTime + t);
       gain.gain.setValueAtTime(0.0001, ctx.currentTime + t);
-      gain.gain.exponentialRampToValueAtTime(0.273 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.341 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + 0.035);
       osc.connect(gain);
       gain.connect(master);
@@ -440,7 +440,7 @@ export default function App(){
 
     try{
       audio.currentTime = 0;
-      audio.volume = 0.9;
+      audio.volume = 0.675;
       audio.play().catch(() => {});
     }catch(error){}
   }
@@ -1203,7 +1203,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.6.1</div></div>
         </div>
       </header>
 

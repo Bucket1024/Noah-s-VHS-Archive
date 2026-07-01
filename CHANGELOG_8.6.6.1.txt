@@ -1,0 +1,4 @@
+8.6.6.1
+- Reduced MP3 reveal playback volume by 25%
+- Increased reel spinner SFX by 25%
+- Updated version to 8.6.6.1
