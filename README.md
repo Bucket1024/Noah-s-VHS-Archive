@@ -1,17 +1,15 @@
-# VHS Archive 8.3 — Genre Dropdown Update
+# VHS Archive 8.4 — Tape Opening Animation
 
-8.3 improves editing tape details.
+8.4 adds a tactile tape-card opening animation.
 
-## New in 8.3
+## New in 8.4
 
-- Visible app header version updated to v8.3
-- Genre in Edit Details is now a dropdown instead of plain text
-- Genre dropdown uses all existing genres from the archive
-- Optional New Genre field lets you add a new genre during edit
-- Packaging, edition, and condition fields use dropdowns in edit mode
-- package.json, index.html, and service-worker cache are updated
-- Keeps archive data, photos, backups, music, and layout unchanged
+- Visible app header version updated to v8.4
+- Tapping a tape card now gives a small lift/floating animation
+- The selected tape cover floats forward and fades into the detail page
+- Tape detail opens at the top/photo area instead of visibly scrolling upward from the bottom
+- Keeps archive data, photos, backups, music, genres, and layout unchanged
 
 ## Suggested commit message
 
-Release 8.3 - Genre Dropdown Update
+Release 8.4 - Tape Opening Animation

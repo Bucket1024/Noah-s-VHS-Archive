@@ -11,11 +11,8 @@
     "react-dom": "latest",
     "lucide-react": "latest"
   },
-  "devDependencies": {
-    "@vitejs/plugin-react": "latest",
-    "vite": "latest"
-  },
+  "devDependencies": {},
   "name": "vhs-archive",
-  "version": "8.4.1",
+  "version": "8.4.0",
   "private": true
 }

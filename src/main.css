@@ -1752,60 +1752,87 @@ main.app-scroll{
   color:rgba(219,234,254,.45);
 }
 
-/* 8.4 Tape Card Open Animation */
+
+/* 8.4 Tape Card Opening Animation */
+.tape-card{
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.tape-card:active{
+  transform:translateY(-4px) scale(1.025);
+  filter:brightness(1.08);
+}
+
 .tape-open-stage{
   position:fixed;
   inset:0;
   z-index:9998;
   pointer-events:none;
-  background:rgba(1,6,18,0);
-  animation:tapeStageDim 360ms ease forwards;
+  background:rgba(1,7,24,.08);
+  animation:tapeOpenStageFade .36s ease forwards;
 }
 
-.tape-open-card{
+.tape-open-overlay{
   position:fixed;
+  border-radius:18px;
   overflow:hidden;
-  border:1px solid rgba(255,213,31,.52);
-  border-radius:16px;
-  background:linear-gradient(180deg,#111827,#060d1a);
-  box-shadow:0 18px 32px rgba(0,0,0,.42);
+  background:linear-gradient(145deg,rgba(9,35,91,.96),rgba(1,12,45,.98));
+  box-shadow:0 12px 30px rgba(0,0,0,.42);
   transform-origin:center center;
-  animation:tapeCardOpen 360ms cubic-bezier(.18,.85,.24,1) forwards;
+  animation:tapeLiftToScreen .36s cubic-bezier(.18,.82,.24,1) forwards;
+  will-change:transform, opacity, left, top, width, height;
 }
 
-.tape-open-card .cover{
-  height:70%;
+.tape-open-overlay img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
-.tape-open-card .meta{
-  padding:10px;
+.tape-open-title{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14px;
+  color:#ffd51f;
+  font-weight:900;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  background:linear-gradient(145deg,#061b55,#020b2b);
 }
 
-@keyframes tapeStageDim{
-  0%{background:rgba(1,6,18,0)}
-  65%{background:rgba(1,6,18,.28)}
-  100%{background:rgba(1,6,18,0)}
+@keyframes tapeOpenStageFade{
+  0%{background:rgba(1,7,24,0);}
+  100%{background:rgba(1,7,24,.26);}
 }
 
-@keyframes tapeCardOpen{
-  0%{opacity:1; transform:translate3d(0,0,0) scale(1)}
-  55%{opacity:.9; transform:translate3d(0,-22px,0) scale(1.08)}
-  100%{opacity:0; transform:translate3d(0,-58px,0) scale(1.18)}
+@keyframes tapeLiftToScreen{
+  0%{
+    transform:translate3d(0,0,0) scale(1);
+    opacity:1;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  55%{
+    transform:translate3d(0,-18px,0) scale(1.08);
+    opacity:1;
+    box-shadow:0 28px 46px rgba(0,0,0,.5);
+  }
+  100%{
+    transform:translate3d(0,-26px,0) scale(1.18);
+    opacity:0;
+    box-shadow:0 34px 60px rgba(0,0,0,.58);
+  }
 }
 
-.detail-card{
-  animation:detailReveal 220ms ease both;
-}
-
-@keyframes detailReveal{
-  from{opacity:0; transform:translateY(8px)}
-  to{opacity:1; transform:translateY(0)}
-}
-
-@media (prefers-reduced-motion: reduce){
+@media(prefers-reduced-motion:reduce){
+  .tape-card,
   .tape-open-stage,
-  .tape-open-card,
-  .detail-card{
+  .tape-open-overlay{
     animation:none!important;
+    transition:none!important;
   }
 }
