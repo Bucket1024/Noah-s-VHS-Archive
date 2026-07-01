@@ -1,13 +1,13 @@
-VHS ARCHIVE 8.5.2 — FULL PROJECT UPLOAD STEPS
+VHS ARCHIVE 8.5.3 — FULL PROJECT UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.5.2 - Smooth Case Reveal.
+2. Commit message: Release 8.5.3 - Settings Tab Cleanup.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Top header shows v8.5.2
-   - Tap a tape card in Browse
-   - Confirm the case opens in one continuous lift/expand/fade motion
-   - Confirm the page switch is hidden behind the expanded cover
-   - Confirm music still works
-   - Confirm genre dropdown still works
+   - Top header shows v8.5.3
+   - Home no longer shows Theme Music button
+   - Bottom tab says Settings instead of Stats
+   - Theme Music toggle still appears in Settings
+   - Music still works
+   - Backup/import tools still appear

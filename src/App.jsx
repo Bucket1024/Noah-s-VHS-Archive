@@ -64,7 +64,7 @@ const views = [
   ['browse','📼','Browse'],
   ['add','➕','Add'],
   ['timeline','🗓️','Timeline'],
-  ['stats','📊','Stats'],
+  ['stats','📊','Settings'],
 ];
 
 function normalizeTape(t){
@@ -1025,7 +1025,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5.3</div></div>
         </div>
       </header>
 
@@ -1040,7 +1040,6 @@ function pickMovieNight(){
                 <button className="secondary" onClick={()=>goToView('timeline')}>Collection Timeline</button>
                 <button className="movie-night" onClick={pickMovieNight}>🎲 Movie Night</button>
                 {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
-                <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
               </div>
               <div className="stats">
                 <div className="stat"><strong>{stats.total}</strong><span>Total Tapes</span></div>
@@ -1224,7 +1223,7 @@ function pickMovieNight(){
 
         {view === 'stats' && (
           <>
-            <div className="panel"><h3>Collection Stats</h3><div className="stats">
+            <div className="panel"><h3>Collection Settings</h3><div className="stats">
               {Object.entries(stats).map(([k,v])=><div className="stat" key={k}><strong>{v}</strong><span>{k}</span></div>)}
             </div></div>
             <div className="panel">

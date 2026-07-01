@@ -1,16 +1,17 @@
-# VHS Archive 8.5.2 — Smooth Case Reveal
+# VHS Archive 8.5.3 — Settings Tab Cleanup
 
-8.5.2 smooths the VHS case reveal transition by removing the blocky staged center pause.
+8.5.3 cleans up the Home tab and makes Settings the home for app controls.
 
-## New in 8.5.2
+## New in 8.5.3
 
-- Visible app header version updated to v8.5.2
-- Tape opens in one continuous lift/expand/fade motion
-- Removes the early expand-pause-center-expand feel from 8.5.1
-- Page change remains hidden behind the expanded cover
+- Visible app header version updated to v8.5.3
+- Removes Theme Music button from the Home tab
+- Renames the bottom Stats tab to Settings
+- Keeps Theme Music toggle inside Settings only
+- Keeps stats, backup/export, and import tools inside Settings
 - Full project release with GitHub Actions workflow included
-- Keeps archive data, photos, backups, music, genres, and layout unchanged
+- Keeps archive data, photos, backups, music, genres, and transitions unchanged
 
 ## Suggested commit message
 
-Release 8.5.2 - Smooth Case Reveal
+Release 8.5.3 - Settings Tab Cleanup

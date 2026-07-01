@@ -2202,3 +2202,9 @@ main.app-scroll{
     animation:none!important;
   }
 }
+
+
+/* 8.5.3 Settings Tab Cleanup */
+.music-settings-panel{
+  scroll-margin-top:18px;
+}

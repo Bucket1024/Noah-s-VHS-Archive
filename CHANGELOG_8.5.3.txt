@@ -1,0 +1,17 @@
+VHS Archive 8.5.3
+
+Added:
+- Settings tab label
+- Home tab cleanup
+- v8.5.3 visible header version
+
+Changed:
+- Theme Music toggle now lives only in Settings
+
+Kept:
+- Audio system
+- Smooth Case Reveal transition
+- Genre dropdown
+- Backup/import
+- Photo storage
+- GitHub Pages workflow
