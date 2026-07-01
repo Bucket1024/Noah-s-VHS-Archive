@@ -371,6 +371,77 @@ export default function App(){
 
   function notify(msg){ setToast(msg); setTimeout(()=>setToast(''), 2400); }
 
+  function playToneSequence(steps){
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    const ctx = new AudioContext();
+    const master = ctx.createGain();
+    master.gain.value = 0.16;
+    master.connect(ctx.destination);
+
+    steps.forEach(step => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = step.type || 'sine';
+      osc.frequency.setValueAtTime(step.freq, ctx.currentTime + step.at);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + step.at);
+      gain.gain.exponentialRampToValueAtTime(step.gain || 0.18, ctx.currentTime + step.at + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + step.at + step.dur);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(ctx.currentTime + step.at);
+      osc.stop(ctx.currentTime + step.at + step.dur + 0.05);
+    });
+
+    setTimeout(() => {
+      try{ ctx.close(); }catch(error){}
+    }, Math.ceil((Math.max(...steps.map(s => s.at + s.dur)) + 0.4) * 1000));
+  }
+
+  function playPrizeWheelSpin(){
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if(!AudioContext) return;
+    const ctx = new AudioContext();
+    const master = ctx.createGain();
+    master.gain.value = 0.12;
+    master.connect(ctx.destination);
+
+    const duration = 3.1;
+    let t = 0;
+    let tick = 0.035;
+
+    while(t < duration){
+      const progress = t / duration;
+      const spacing = 0.035 + progress * progress * 0.18;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(260 - progress * 105, ctx.currentTime + t);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.08 * (1 - progress * 0.35), ctx.currentTime + t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + 0.035);
+      osc.connect(gain);
+      gain.connect(master);
+      osc.start(ctx.currentTime + t);
+      osc.stop(ctx.currentTime + t + 0.05);
+      t += spacing;
+    }
+
+    setTimeout(() => {
+      try{ ctx.close(); }catch(error){}
+    }, 3800);
+  }
+
+  function playFeatureDings(){
+    playToneSequence([
+      {freq:784, at:0.00, dur:0.22, gain:0.20, type:'sine'},
+      {freq:988, at:0.28, dur:0.22, gain:0.18, type:'sine'},
+      {freq:1175, at:0.56, dur:0.34, gain:0.16, type:'sine'}
+    ]);
+  }
+
+
+
   function fadeAudioTo(targetVolume, afterFade, stepMs = 45){
     const audio = musicRef.current;
     if(!audio) return;
@@ -730,28 +801,64 @@ function pickMovieNight(){
     if(!tapes.length) return;
 
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
+    const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, Math.min(18, tapes.length));
+    const reel = [...reelPool, choice];
 
-    setMovieNight({stage:'intro', choice, reel: reelPool});
+    const musicWasOn = musicEnabled && musicRef.current && !musicRef.current.paused;
+    if(musicWasOn){
+      stopThemeMusic();
+    }
 
-    let spin = 0;
-    const interval = setInterval(() => {
-      spin++;
-      const shuffled = [...tapes].sort(() => 0.5 - Math.random()).slice(0, 12);
-      setMovieNight(prev => prev ? {...prev, reel: shuffled, stage:'shuffle'} : prev);
+    setMovieNight({
+      stage:'spin',
+      choice,
+      reel,
+      offset:0,
+      musicWasOn
+    });
 
-      if(spin > 8){
-        clearInterval(interval);
+    playPrizeWheelSpin();
+
+    const start = performance.now();
+    const duration = 3300;
+    const cardW = 190;
+    const totalTravel = Math.max(900, (reel.length - 1) * cardW);
+
+    function easeOutCubic(t){
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animate(now){
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = easeOutCubic(progress);
+      const offset = totalTravel * eased;
+
+      setMovieNight(prev => prev ? ({
+        ...prev,
+        stage: progress < 1 ? 'spin' : 'result',
+        offset
+      }) : prev);
+
+      if(progress < 1){
+        requestAnimationFrame(animate);
+      } else {
+        playFeatureDings();
         setTimeout(() => {
-          setMovieNight({stage:'result', choice, reel:[choice]});
-          setTimeout(() => {
-            setMovieNight(null);
-            openTape(choice.id);
-          }, 1200);
-        }, 600);
+          setMovieNight(prev => prev ? {...prev, stage:'present'} : prev);
+        }, 500);
+
+        setTimeout(() => {
+          if(musicWasOn){
+            playThemeMusic();
+          }
+          setMovieNight(null);
+          openTape(choice.id);
+        }, 2100);
       }
-    }, 180);
-}
+    }
+
+    requestAnimationFrame(animate);
+  }
 
 
   const genreOptions = useMemo(() => {
@@ -1025,7 +1132,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5.3</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6</div></div>
         </div>
       </header>
 
@@ -1276,14 +1383,45 @@ function pickMovieNight(){
       )}
 
       {movieNight && (
-        <div className="movie-night-overlay">
-          <div className="movie-night-card">
-            <div className="movie-night-kicker">NOAH'S FEATURE PRESENTATION</div>
-            <h2>Spinning the reels...</h2>
-            <div className="tape-reel">
-              {movieNight.reel.map(t => <span key={t.id}>{t.title}</span>)}
+        <div className={`movie-night-overlay feature-night-overlay ${movieNight.stage}`}>
+          <div className="feature-night-card">
+            <div className="movie-night-kicker">VHS ARCHIVE PRESENTS</div>
+            <h2>{movieNight.stage === 'present' ? "Tonight's Feature" : 'Spinning the reels...'}</h2>
+
+            <div className="feature-reel-window">
+              <div className="feature-reel-marker"></div>
+              <div
+                className="feature-reel-track"
+                style={{transform:`translate3d(-${movieNight.offset || 0}px,0,0)`}}
+              >
+                {movieNight.reel.map((t, index) => (
+                  <div className={`feature-reel-tape ${movieNight.stage !== 'spin' && t.id === movieNight.choice.id ? 'winner':''}`} key={`${t.id}-${index}`}>
+                    <div className="feature-reel-cover">
+                      {mainImage(t, photoLibrary)
+                        ? <img src={mainImage(t, photoLibrary)} alt="" />
+                        : <span>{t.title}</span>}
+                    </div>
+                    <strong>{t.title}</strong>
+                    <small>{t.vhsYear || 'No year'} • {t.studio || 'Unknown'}</small>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p className="movie-night-hint">Loading surprise selection...</p>
+
+            <div className="feature-result">
+              <div className="feature-stars">✦ ✦ ✦</div>
+              <h3>{movieNight.choice.title}</h3>
+              <p>{movieNight.choice.vhsYear || 'No year'} • {movieNight.choice.studio || 'Unknown'}</p>
+              <div className="feature-ding-text">ding • ding • ding</div>
+            </div>
+
+            <p className="movie-night-hint">
+              {movieNight.stage === 'spin'
+                ? 'Choosing tonight’s movie...'
+                : movieNight.stage === 'result'
+                  ? 'Locked in...'
+                  : 'Enjoy the show.'}
+            </p>
           </div>
         </div>
       )}

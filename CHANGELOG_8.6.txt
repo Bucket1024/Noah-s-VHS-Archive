@@ -1,0 +1,16 @@
+VHS Archive 8.6
+
+Added:
+- Feature Presentation Movie Night overlay
+- Reel/spinner sound effect
+- Three reveal chimes
+- Music fade out/in around Movie Night
+- v8.6 visible header version
+
+Kept:
+- Settings tab cleanup
+- Smooth Case Reveal transition
+- Audio system
+- Genre dropdown
+- Backup/import
+- GitHub Pages workflow
