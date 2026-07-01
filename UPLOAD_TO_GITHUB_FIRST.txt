@@ -1,14 +1,15 @@
-VHS ARCHIVE 8.2.2 — UPLOAD STEPS
+VHS ARCHIVE 8.2.3 — UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.2.2 - Audio Focus Fix.
+2. Commit message: Release 8.2.3 - Audio Resume Polish.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
+   - Confirm top header shows v8.2.3
    - Turn Theme Music On
-   - Confirm the new 45-second WAV plays
    - Leave/switch away from the app
    - Confirm music pauses
    - Return to the app
-   - Confirm music resumes only if music is enabled
+   - Confirm music resumes automatically if Android allows it
+   - If it does not resume automatically, tap once and confirm it resumes
    - Turn music off, close/reopen, confirm it stays off

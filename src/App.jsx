@@ -242,6 +242,7 @@ export default function App(){
   const musicRef = useRef(null);
   const musicFadeRef = useRef(null);
   const appWasPlayingRef = useRef(false);
+  const appReturnTimerRef = useRef(null);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
   const [toast,setToast] = useState('');
@@ -319,34 +320,49 @@ export default function App(){
   }, [musicEnabled]);
 
 
+
   useEffect(() => {
+    const attemptResume = () => {
+      if(appReturnTimerRef.current) clearTimeout(appReturnTimerRef.current);
+      appReturnTimerRef.current = setTimeout(() => {
+        if(!document.hidden && musicEnabled){
+          resumeThemeFromBackground();
+        }
+      }, 120);
+    };
+
     const handleVisibilityChange = () => {
       if(document.hidden){
         pauseThemeForBackground();
       } else {
-        resumeThemeFromBackground();
+        attemptResume();
       }
     };
 
     const handlePageHide = () => pauseThemeForBackground();
     const handleBlur = () => pauseThemeForBackground();
-    const handleFocus = () => resumeThemeFromBackground();
+    const handleFocus = () => attemptResume();
+    const handlePageShow = () => attemptResume();
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('pagehide', handlePageHide);
     window.addEventListener('blur', handleBlur);
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('pageshow', handlePageShow);
 
     return () => {
+      if(appReturnTimerRef.current) clearTimeout(appReturnTimerRef.current);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pagehide', handlePageHide);
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('pageshow', handlePageShow);
     };
   }, [musicEnabled]);
 
   useEffect(() => () => {
     if(musicFadeRef.current) clearInterval(musicFadeRef.current);
+    if(appReturnTimerRef.current) clearTimeout(appReturnTimerRef.current);
     const audio = musicRef.current;
     if(audio) audio.pause();
   }, []);
@@ -379,15 +395,16 @@ export default function App(){
 
   async function playThemeMusic(){
     const audio = musicRef.current;
-    if(!audio) return;
+    if(!audio) return false;
 
     try{
       audio.loop = true;
-      audio.volume = 0;
+      audio.volume = Math.max(0.01, audio.volume || 0.01);
       await audio.play();
-      fadeAudioTo(0.45);
+      fadeAudioTo(0.45, undefined, 40);
+      return true;
     }catch(error){
-      notify('Tap Music again to start audio.');
+      return false;
     }
   }
 
@@ -403,18 +420,36 @@ export default function App(){
   function pauseThemeForBackground(){
     const audio = musicRef.current;
     if(!audio) return;
+
     appWasPlayingRef.current = musicEnabled && !audio.paused;
+
     if(musicFadeRef.current){
       clearInterval(musicFadeRef.current);
       musicFadeRef.current = null;
     }
+
     audio.pause();
   }
 
   function resumeThemeFromBackground(){
     if(!musicEnabled) return;
-    if(!appWasPlayingRef.current) return;
-    playThemeMusic();
+    const audio = musicRef.current;
+    if(!audio) return;
+
+    // Try automatic resume first. Some Android/Chrome builds may still require a tap.
+    playThemeMusic().then(started => {
+      if(!started){
+        const startOnTap = () => {
+          playThemeMusic();
+          window.removeEventListener('pointerdown', startOnTap);
+          window.removeEventListener('keydown', startOnTap);
+          window.removeEventListener('touchstart', startOnTap);
+        };
+        window.addEventListener('pointerdown', startOnTap, {once:true});
+        window.addEventListener('keydown', startOnTap, {once:true});
+        window.addEventListener('touchstart', startOnTap, {once:true});
+      }
+    });
   }
 
   function toggleMusic(){
@@ -423,8 +458,9 @@ export default function App(){
     localStorage.setItem('vhs_music_enabled', String(next));
 
     if(next){
-      playThemeMusic();
-      notify('Theme music on.');
+      playThemeMusic().then(started => {
+        notify(started ? 'Theme music on.' : 'Tap once to start audio.');
+      });
     } else {
       stopThemeMusic();
       notify('Theme music off.');
@@ -1143,7 +1179,7 @@ function pickMovieNight(){
             </div>
             <div className="panel music-settings-panel">
               <h3>Audio Settings</h3>
-              <p className="small">Turn on the looping VHS Archive background theme. Music pauses when the app is backgrounded and your choice is remembered.</p>
+              <p className="small">Turn on the looping VHS Archive background theme. Music pauses when the app is backgrounded and tries to resume when the app reopens.</p>
               <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
             </div>
           </>

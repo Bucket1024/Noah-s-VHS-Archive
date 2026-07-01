@@ -1735,3 +1735,9 @@ main.app-scroll{
 .music-settings-panel{
   position:relative;
 }
+
+
+/* 8.2.3 Audio Resume Polish */
+.music-settings-panel .small{
+  line-height:1.45;
+}

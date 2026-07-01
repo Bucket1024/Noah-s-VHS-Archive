@@ -1,17 +1,18 @@
-# VHS Archive 8.2.2 — Audio Focus Fix
+# VHS Archive 8.2.3 — Audio Resume Polish
 
-8.2.2 updates the app soundtrack and fixes background playback behavior.
+8.2.3 improves the theme music behavior and fixes version tracking.
 
-## New in 8.2.2
+## New in 8.2.3
 
-- Replaces the old short music loop with the new 45-second crossfaded WAV
-- Keeps the file path as `public/audio/vhs-theme.wav`
-- Music pauses when the app goes into the background
-- Music resumes when the app is opened again, only if Music was On
-- If Music is Off, it stays off until turned back on
-- Keeps the Theme Music toggle and local storage preference
+- Keeps the 45-second crossfaded VHS Archive theme
+- Pauses music when the app is backgrounded or loses focus
+- Attempts to resume music automatically when the app reopens, if Music is On
+- Falls back to starting on the first tap if Android blocks automatic audio resume
+- Keeps Music Off remembered until turned back on
+- Updates the visible app version badge to v8.2.3
+- Updates package.json, index.html, and service-worker cache name
 - Keeps archive data, photos, backups, browsing, and layout unchanged
 
 ## Suggested commit message
 
-Release 8.2.2 - Audio Focus Fix
+Release 8.2.3 - Audio Resume Polish
