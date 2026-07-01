@@ -1751,3 +1751,88 @@ main.app-scroll{
 .edit-panel input::placeholder{
   color:rgba(219,234,254,.45);
 }
+
+
+/* 8.4 Tape Card Opening Animation */
+.tape-card{
+  transition:transform .16s ease, filter .16s ease, box-shadow .16s ease;
+}
+
+.tape-card:active{
+  transform:translateY(-3px) scale(1.018);
+  filter:brightness(1.06);
+}
+
+.tape-open-stage{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  background:rgba(1,7,24,.06);
+  animation:tapeOpenStageFade .32s ease forwards;
+}
+
+.tape-open-overlay{
+  position:fixed;
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(9,35,91,.96),rgba(1,12,45,.98));
+  box-shadow:0 12px 30px rgba(0,0,0,.42);
+  transform-origin:center center;
+  animation:tapeLiftToScreen .32s cubic-bezier(.18,.82,.24,1) forwards;
+  will-change:transform, opacity;
+}
+
+.tape-open-overlay img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.tape-open-title{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14px;
+  color:#ffd51f;
+  font-weight:900;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  background:linear-gradient(145deg,#061b55,#020b2b);
+}
+
+@keyframes tapeOpenStageFade{
+  0%{background:rgba(1,7,24,0);}
+  100%{background:rgba(1,7,24,.22);}
+}
+
+@keyframes tapeLiftToScreen{
+  0%{
+    transform:translate3d(0,0,0) scale(1);
+    opacity:1;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+  55%{
+    transform:translate3d(0,-16px,0) scale(1.055);
+    opacity:1;
+    box-shadow:0 24px 42px rgba(0,0,0,.5);
+  }
+  100%{
+    transform:translate3d(0,-24px,0) scale(1.12);
+    opacity:0;
+    box-shadow:0 32px 56px rgba(0,0,0,.58);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .tape-card,
+  .tape-open-stage,
+  .tape-open-overlay{
+    animation:none!important;
+    transition:none!important;
+  }
+}

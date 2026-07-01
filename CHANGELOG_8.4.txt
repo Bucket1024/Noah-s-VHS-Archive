@@ -1,0 +1,13 @@
+VHS Archive 8.4
+
+Added:
+- Tape card opening animation
+- v8.4 visible header version
+- Full project release package
+
+Kept:
+- Music system
+- Genre dropdown
+- Backup/import
+- Photo storage
+- GitHub Pages workflow

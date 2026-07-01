@@ -123,7 +123,7 @@ function TapeCard({ tape, onOpen, mini=false, photoLibrary={} }){
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
   const badges = badgeList(tape);
   return (
-    <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
+    <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={(e) => onOpen(tape.id, e.currentTarget)}>
       <div className={`cover ${img ? 'has-img':''}`}>
         {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title"><span className="coming-soon">PHOTO NEEDED</span><br />{tape.title}</div>}
         <div className="case-shine"></div>
@@ -229,6 +229,7 @@ export default function App(){
   const [missingPhotosOnly,setMissingPhotosOnly] = useState(false);
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
+  const [openingTape,setOpeningTape] = useState(null);
   const [photoLibrary,setPhotoLibrary] = useState({});
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [viewerZoom,setViewerZoom] = useState(1);
@@ -621,17 +622,39 @@ export default function App(){
     }
   }
 
-  function openTape(id){
-    saveScrollPosition(view);
-    viewHistoryRef.current.push(view);
-    try{ window.history.pushState({vhsView:'detail'}, '', window.location.href); }catch(error){}
-    sessionStorage.setItem('noahVhs6_selectedTape', id);
-    sessionStorage.setItem('noahVhs6_lastView', 'detail');
-    setSelectedId(id);
-    setSelectedPhoto(0);
-    setEditOpen(false);
-    setView('detail');
-    setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'}), 50);
+  function openTape(id, sourceEl = null){
+    const tape = tapes.find(t => t.id === id);
+    const img = tape ? mainImage(tape, photoLibrary) : '';
+
+    const finishOpen = () => {
+      saveScrollPosition(view);
+      viewHistoryRef.current.push(view);
+      try{ window.history.pushState({vhsView:'detail'}, '', window.location.href); }catch(error){}
+      sessionStorage.setItem('noahVhs6_selectedTape', id);
+      sessionStorage.setItem('noahVhs6_lastView', 'detail');
+      setSelectedId(id);
+      setSelectedPhoto(0);
+      setEditOpen(false);
+      setView('detail');
+      setOpeningTape(null);
+      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 40);
+    };
+
+    if(sourceEl && tape && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const rect = sourceEl.getBoundingClientRect();
+      setOpeningTape({
+        id,
+        title: tape.title,
+        img,
+        x: rect.left,
+        y: rect.top,
+        w: rect.width,
+        h: rect.height
+      });
+      setTimeout(finishOpen, 320);
+    } else {
+      finishOpen();
+    }
   }
 
   function backToBrowse(){
@@ -985,7 +1008,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.3</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.4</div></div>
         </div>
       </header>
 
@@ -1212,6 +1235,22 @@ function pickMovieNight(){
       </main>
 
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
+
+      {openingTape && (
+        <div className="tape-open-stage" aria-hidden="true">
+          <div
+            className="tape-open-overlay"
+            style={{
+              left: openingTape.x,
+              top: openingTape.y,
+              width: openingTape.w,
+              height: openingTape.h
+            }}
+          >
+            {openingTape.img ? <img src={openingTape.img} alt="" /> : <div className="tape-open-title">{openingTape.title}</div>}
+          </div>
+        </div>
+      )}
 
       {movieNight && (
         <div className="movie-night-overlay">
