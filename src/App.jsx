@@ -637,11 +637,17 @@ export default function App(){
       setEditOpen(false);
       setView('detail');
       setOpeningTape(null);
-      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 40);
+      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 30);
     };
 
     if(sourceEl && tape && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       const rect = sourceEl.getBoundingClientRect();
+      const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
+      const targetW = Math.min(330, viewportW - 42);
+      const targetH = Math.round(targetW * 1.42);
+      const targetX = Math.max(18, (viewportW - targetW) / 2);
+      const targetY = 92;
+
       setOpeningTape({
         id,
         title: tape.title,
@@ -649,9 +655,13 @@ export default function App(){
         x: rect.left,
         y: rect.top,
         w: rect.width,
-        h: rect.height
+        h: rect.height,
+        targetX,
+        targetY,
+        targetW,
+        targetH
       });
-      setTimeout(finishOpen, 320);
+      setTimeout(finishOpen, 430);
     } else {
       finishOpen();
     }
@@ -1008,7 +1018,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.4</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.4.1</div></div>
         </div>
       </header>
 
@@ -1237,12 +1247,20 @@ function pickMovieNight(){
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage" aria-hidden="true">
+        <div className="tape-open-stage shared-vhs-stage" aria-hidden="true">
           <div
-            className="tape-open-overlay"
+            className="tape-open-overlay shared-vhs-transition"
             style={{
-              left: openingTape.x,
-              top: openingTape.y,
+              '--start-x': `${openingTape.x}px`,
+              '--start-y': `${openingTape.y}px`,
+              '--start-w': `${openingTape.w}px`,
+              '--start-h': `${openingTape.h}px`,
+              '--end-x': `${openingTape.targetX}px`,
+              '--end-y': `${openingTape.targetY}px`,
+              '--end-w': `${openingTape.targetW}px`,
+              '--end-h': `${openingTape.targetH}px`,
+              left: 0,
+              top: 0,
               width: openingTape.w,
               height: openingTape.h
             }}
