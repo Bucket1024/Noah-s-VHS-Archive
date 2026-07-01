@@ -1,0 +1,24 @@
+VHS ARCHIVE — FULL 8.3 RESCUE REUPLOAD
+
+Use this ZIP after deleting everything from the GitHub repository.
+
+Upload EVERYTHING inside this folder to the root of your repository.
+
+This package includes:
+- .github/workflows/deploy.yml
+- public/
+- src/
+- package.json
+- vite.config.js
+- index.html
+- README.md
+
+Suggested commit message:
+Restore full stable 8.3 project
+
+After uploading:
+1. Go to the Actions tab.
+2. Wait for the workflow to finish with a green checkmark.
+3. Go to Settings > Pages.
+4. Make sure Source is set to GitHub Actions.
+5. Open the app and hard refresh/reopen the PWA.
