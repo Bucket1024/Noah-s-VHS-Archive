@@ -799,82 +799,33 @@ export default function App(){
   
 function pickMovieNight(){
     if(!tapes.length) return;
-
-    const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    const shuffled = [...tapes].sort(() => 0.5 - Math.random()).filter(t => t.id !== choice.id);
-
-    const visibleCardW = window.innerWidth <= 520 ? 168 : 190;
-    const winnerIndex = Math.min(14, Math.max(7, shuffled.length));
-    const before = [];
-    const after = [];
-
-    for(let i = 0; i < winnerIndex; i++){
-      before.push(shuffled[i % Math.max(shuffled.length, 1)] || choice);
-    }
-
-    for(let i = 0; i < 8; i++){
-      after.push(shuffled[(winnerIndex + i) % Math.max(shuffled.length, 1)] || choice);
-    }
-
-    const reel = [...before, choice, ...after];
-    const finalOffset = winnerIndex * visibleCardW;
-
-    const musicWasOn = musicEnabled && musicRef.current && !musicRef.current.paused;
-    if(musicWasOn){
-      stopThemeMusic();
-    }
-
-    setMovieNight({
-      stage:'spin',
-      choice,
-      reel,
-      offset:0,
-      finalOffset,
-      winnerIndex,
-      musicWasOn
-    });
-
+    const choice=tapes[Math.floor(Math.random()*tapes.length)];
+    const others=tapes.filter(t=>t.id!==choice.id).sort(()=>0.5-Math.random());
+    const centerIndex=10;
+    const reel=[];
+    for(let i=0;i<centerIndex;i++) reel.push(others[i%others.length]||choice);
+    reel.push(choice);
+    for(let i=0;i<10;i++) reel.push(others[(centerIndex+i)%others.length]||choice);
+    const cardStep=(window.innerWidth<=520)?168+18:172+18;
+    const finalOffset=centerIndex*cardStep;
+    const musicWasOn=musicEnabled&&musicRef.current&&!musicRef.current.paused;
+    if(musicWasOn) stopThemeMusic();
+    setMovieNight({stage:'spin',choice,reel,offset:0,musicWasOn});
     playPrizeWheelSpin();
-
-    const start = performance.now();
-    const duration = 3400;
-
-    function easeOutQuint(t){
-      return 1 - Math.pow(1 - t, 5);
-    }
-
-    function animate(now){
-      const progress = Math.min(1, (now - start) / duration);
-      const eased = easeOutQuint(progress);
-      const offset = finalOffset * eased;
-
-      setMovieNight(prev => prev ? ({
-        ...prev,
-        stage: progress < 1 ? 'spin' : 'result',
-        offset
-      }) : prev);
-
-      if(progress < 1){
-        requestAnimationFrame(animate);
-      } else {
-        setMovieNight(prev => prev ? ({...prev, offset: finalOffset, stage:'result'}) : prev);
+    const start=performance.now(),dur=3400;
+    const ease=t=>1-Math.pow(1-t,4);
+    const anim=n=>{
+      const p=Math.min(1,(n-start)/dur);
+      const off=finalOffset*ease(p);
+      setMovieNight(v=>v?{...v,offset:off,stage:p<1?'spin':'result'}:v);
+      if(p<1) requestAnimationFrame(anim);
+      else{
+        setMovieNight(v=>v?{...v,offset:finalOffset,stage:'present'}:v);
         playFeatureDings();
-
-        setTimeout(() => {
-          setMovieNight(prev => prev ? {...prev, stage:'present'} : prev);
-        }, 520);
-
-        setTimeout(() => {
-          if(musicWasOn){
-            playThemeMusic();
-          }
-          setMovieNight(null);
-          openTape(choice.id);
-        }, 2200);
+        setTimeout(()=>{if(musicWasOn)playThemeMusic(); setMovieNight(null); openTape(choice.id);},2100);
       }
-    }
-
-    requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(anim);
   }
 
 
@@ -1149,7 +1100,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.2</div></div>
         </div>
       </header>
 
