@@ -1,0 +1,13 @@
+VHS Archive 8.5
+
+Added:
+- Cinematic tape transition
+- Page switch hidden underneath transition overlay
+- v8.5 visible header version
+
+Kept:
+- Audio system
+- Genre dropdown
+- Backup/import
+- Photo storage
+- GitHub Pages workflow

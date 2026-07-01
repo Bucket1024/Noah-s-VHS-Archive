@@ -1,13 +1,13 @@
-VHS ARCHIVE 8.4.1 — FULL PROJECT UPLOAD STEPS
+VHS ARCHIVE 8.5 — FULL PROJECT UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.4.1 - Shared VHS Transition.
+2. Commit message: Release 8.5 - Cinematic Tape Transitions.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Top header shows v8.4.1
+   - Top header shows v8.5
    - Tap a tape card in Browse
-   - Confirm the card lifts and moves upward toward the cover/detail area
+   - Confirm transition is smoother and page flash is hidden
    - Confirm tape detail opens at the photo/top area
    - Confirm music still works
    - Confirm genre dropdown still works

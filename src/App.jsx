@@ -626,7 +626,7 @@ export default function App(){
     const tape = tapes.find(t => t.id === id);
     const img = tape ? mainImage(tape, photoLibrary) : '';
 
-    const finishOpen = () => {
+    const switchToDetail = () => {
       saveScrollPosition(view);
       viewHistoryRef.current.push(view);
       try{ window.history.pushState({vhsView:'detail'}, '', window.location.href); }catch(error){}
@@ -636,8 +636,7 @@ export default function App(){
       setSelectedPhoto(0);
       setEditOpen(false);
       setView('detail');
-      setOpeningTape(null);
-      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 30);
+      setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 20);
     };
 
     if(sourceEl && tape && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -646,7 +645,11 @@ export default function App(){
       const targetW = Math.min(330, viewportW - 42);
       const targetH = Math.round(targetW * 1.42);
       const targetX = Math.max(18, (viewportW - targetW) / 2);
-      const targetY = 92;
+      const targetY = 96;
+      const scaleX = targetW / Math.max(rect.width, 1);
+      const scaleY = targetH / Math.max(rect.height, 1);
+      const dx = targetX - rect.left;
+      const dy = targetY - rect.top;
 
       setOpeningTape({
         id,
@@ -656,14 +659,17 @@ export default function App(){
         y: rect.top,
         w: rect.width,
         h: rect.height,
-        targetX,
-        targetY,
-        targetW,
-        targetH
+        dx,
+        dy,
+        scaleX,
+        scaleY
       });
-      setTimeout(finishOpen, 430);
+
+      // Switch pages underneath the overlay, so the user does not see the screen swap.
+      setTimeout(switchToDetail, 90);
+      setTimeout(() => setOpeningTape(null), 620);
     } else {
-      finishOpen();
+      switchToDetail();
     }
   }
 
@@ -1018,7 +1024,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.4.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.5</div></div>
         </div>
       </header>
 
@@ -1247,18 +1253,18 @@ function pickMovieNight(){
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage shared-vhs-stage" aria-hidden="true">
+        <div className="tape-open-stage cinematic-vhs-stage" aria-hidden="true">
           <div
-            className="tape-open-overlay shared-vhs-transition"
+            className="tape-open-overlay cinematic-vhs-transition"
             style={{
               '--start-x': `${openingTape.x}px`,
               '--start-y': `${openingTape.y}px`,
               '--start-w': `${openingTape.w}px`,
               '--start-h': `${openingTape.h}px`,
-              '--end-x': `${openingTape.targetX}px`,
-              '--end-y': `${openingTape.targetY}px`,
-              '--end-w': `${openingTape.targetW}px`,
-              '--end-h': `${openingTape.targetH}px`,
+              '--move-x': `${openingTape.dx}px`,
+              '--move-y': `${openingTape.dy}px`,
+              '--scale-x': openingTape.scaleX,
+              '--scale-y': openingTape.scaleY,
               left: 0,
               top: 0,
               width: openingTape.w,

@@ -1897,3 +1897,105 @@ main.app-scroll{
     animation:none!important;
   }
 }
+
+
+/* 8.5 Cinematic Tape Transition
+   Uses a fixed overlay and transform-only movement so the page can switch underneath without flashing. */
+.cinematic-vhs-stage{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  background:rgba(1,7,24,0);
+  backdrop-filter:blur(0px);
+  animation:cinematicVhsStageFade .62s ease forwards !important;
+}
+
+.cinematic-vhs-transition{
+  position:fixed;
+  left:0;
+  top:0;
+  width:var(--start-w);
+  height:var(--start-h);
+  border-radius:18px;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(9,35,91,.98),rgba(1,12,45,.98));
+  transform-origin:top left;
+  transform:translate3d(var(--start-x), var(--start-y), 0) scale(1,1);
+  animation:cinematicVhsMove .62s cubic-bezier(.18,.82,.24,1) forwards !important;
+  will-change:transform, opacity, filter;
+  box-shadow:0 14px 32px rgba(0,0,0,.45);
+}
+
+.cinematic-vhs-transition img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform:translateZ(0);
+}
+
+@keyframes cinematicVhsStageFade{
+  0%{
+    background:rgba(1,7,24,0);
+    backdrop-filter:blur(0px);
+  }
+  20%{
+    background:rgba(1,7,24,.24);
+    backdrop-filter:blur(2px);
+  }
+  76%{
+    background:rgba(1,7,24,.20);
+    backdrop-filter:blur(2px);
+  }
+  100%{
+    background:rgba(1,7,24,0);
+    backdrop-filter:blur(0px);
+  }
+}
+
+@keyframes cinematicVhsMove{
+  0%{
+    transform:translate3d(var(--start-x), var(--start-y), 0) scale(1,1);
+    opacity:1;
+    filter:brightness(1);
+    box-shadow:0 12px 28px rgba(0,0,0,.42);
+  }
+  24%{
+    transform:translate3d(
+      calc(var(--start-x) + (var(--move-x) * .18)),
+      calc(var(--start-y) + (var(--move-y) * .18) - 22px),
+      0
+    ) scale(1.055,1.055);
+    opacity:1;
+    filter:brightness(1.08);
+    box-shadow:0 30px 54px rgba(0,0,0,.58);
+  }
+  72%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--scale-x),var(--scale-y));
+    opacity:1;
+    filter:brightness(1.03);
+    box-shadow:0 26px 48px rgba(0,0,0,.52);
+  }
+  100%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--scale-x),var(--scale-y));
+    opacity:0;
+    filter:brightness(1);
+    box-shadow:0 18px 34px rgba(0,0,0,.38);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .cinematic-vhs-stage,
+  .cinematic-vhs-transition{
+    animation:none!important;
+  }
+}
