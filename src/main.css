@@ -1751,3 +1751,61 @@ main.app-scroll{
 .edit-panel input::placeholder{
   color:rgba(219,234,254,.45);
 }
+
+/* 8.4 Tape Card Open Animation */
+.tape-open-stage{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  background:rgba(1,6,18,0);
+  animation:tapeStageDim 360ms ease forwards;
+}
+
+.tape-open-card{
+  position:fixed;
+  overflow:hidden;
+  border:1px solid rgba(255,213,31,.52);
+  border-radius:16px;
+  background:linear-gradient(180deg,#111827,#060d1a);
+  box-shadow:0 18px 32px rgba(0,0,0,.42);
+  transform-origin:center center;
+  animation:tapeCardOpen 360ms cubic-bezier(.18,.85,.24,1) forwards;
+}
+
+.tape-open-card .cover{
+  height:70%;
+}
+
+.tape-open-card .meta{
+  padding:10px;
+}
+
+@keyframes tapeStageDim{
+  0%{background:rgba(1,6,18,0)}
+  65%{background:rgba(1,6,18,.28)}
+  100%{background:rgba(1,6,18,0)}
+}
+
+@keyframes tapeCardOpen{
+  0%{opacity:1; transform:translate3d(0,0,0) scale(1)}
+  55%{opacity:.9; transform:translate3d(0,-22px,0) scale(1.08)}
+  100%{opacity:0; transform:translate3d(0,-58px,0) scale(1.18)}
+}
+
+.detail-card{
+  animation:detailReveal 220ms ease both;
+}
+
+@keyframes detailReveal{
+  from{opacity:0; transform:translateY(8px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .tape-open-stage,
+  .tape-open-card,
+  .detail-card{
+    animation:none!important;
+  }
+}

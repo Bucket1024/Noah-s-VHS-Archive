@@ -123,7 +123,7 @@ function TapeCard({ tape, onOpen, mini=false, photoLibrary={} }){
   const special = /screener|collector|special|custom|nintendo|disney parks/i.test(tape.edition || '');
   const badges = badgeList(tape);
   return (
-    <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={() => onOpen(tape.id)}>
+    <article className={`tape-card ${mini ? 'mini-card':''}`} onClick={(event) => onOpen(tape.id, event)}>
       <div className={`cover ${img ? 'has-img':''}`}>
         {img ? <img src={img} alt={`${tape.title} cover`} /> : <div className="cover-title"><span className="coming-soon">PHOTO NEEDED</span><br />{tape.title}</div>}
         <div className="case-shine"></div>
@@ -229,6 +229,7 @@ export default function App(){
   const [missingPhotosOnly,setMissingPhotosOnly] = useState(false);
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
+  const [openingTape,setOpeningTape] = useState(null);
   const [photoLibrary,setPhotoLibrary] = useState({});
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [viewerZoom,setViewerZoom] = useState(1);
@@ -621,17 +622,38 @@ export default function App(){
     }
   }
 
-  function openTape(id){
+  function openTape(id, event){
+    const card = event?.currentTarget;
+    const rect = card?.getBoundingClientRect?.();
+    const tape = tapes.find(t => t.id === id);
+    const img = mainImage(tape || {}, photoLibrary);
+    const title = tape?.title || 'Opening tape';
+
     saveScrollPosition(view);
     viewHistoryRef.current.push(view);
     try{ window.history.pushState({vhsView:'detail'}, '', window.location.href); }catch(error){}
     sessionStorage.setItem('noahVhs6_selectedTape', id);
     sessionStorage.setItem('noahVhs6_lastView', 'detail');
-    setSelectedId(id);
-    setSelectedPhoto(0);
-    setEditOpen(false);
-    setView('detail');
-    setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'smooth'}), 50);
+
+    if(rect){
+      setOpeningTape({
+        id,
+        title,
+        img,
+        style:{ left:rect.left, top:rect.top, width:rect.width, height:rect.height }
+      });
+    }
+
+    setTimeout(() => {
+      setSelectedId(id);
+      setSelectedPhoto(0);
+      setEditOpen(false);
+      setView('detail');
+      setTimeout(() => {
+        scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'});
+        setOpeningTape(null);
+      }, 45);
+    }, rect ? 360 : 0);
   }
 
   function backToBrowse(){
@@ -985,7 +1007,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.3</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.4</div></div>
         </div>
       </header>
 
@@ -1210,6 +1232,21 @@ function pickMovieNight(){
           </>
         )}
       </main>
+
+
+      {openingTape && (
+        <div className="tape-open-stage" aria-hidden="true">
+          <div className="tape-open-card" style={openingTape.style}>
+            <div className={`cover ${openingTape.img ? 'has-img':''}`}>
+              {openingTape.img ? <img src={openingTape.img} alt="" /> : <div className="cover-title"><span className="coming-soon">OPENING</span><br />{openingTape.title}</div>}
+              <div className="case-shine"></div>
+            </div>
+            <div className="meta">
+              <div className="title">{openingTape.title}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
 

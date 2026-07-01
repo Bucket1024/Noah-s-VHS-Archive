@@ -1,0 +1,10 @@
+VHS Archive 8.4 - Tape Card Open Animation
+
+Changes:
+- Added a tap-to-open animation for tape cards.
+- Tapped cards now lift/float forward and fade before opening details.
+- Tape detail now opens at the top/photo area without visible smooth scrolling.
+- Updated visible app version badge to v8.4.
+
+Suggested commit message:
+Release 8.4 - Tape Card Open Animation
