@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="90" fill="#02030a"/>
-<rect x="50" y="120" width="412" height="260" rx="32" fill="#101827" stroke="#ffd51f" stroke-width="18"/>
-<circle cx="172" cy="250" r="60" fill="#0058ff"/>
-<circle cx="340" cy="250" r="60" fill="#0058ff"/>
-<rect x="143" y="324" width="226" height="40" rx="14" fill="#ffd51f"/>
-<text x="256" y="92" font-family="Arial Black,Arial" font-size="56" font-weight="900" fill="#ffd51f" text-anchor="middle">VHS</text>
-</svg>
