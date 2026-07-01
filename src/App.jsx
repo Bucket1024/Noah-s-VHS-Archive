@@ -376,7 +376,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.16;
+    master.gain.value = 0.24;
     master.connect(ctx.destination);
 
     steps.forEach(step => {
@@ -403,7 +403,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.12;
+    master.gain.value = 0.20;
     master.connect(ctx.destination);
 
     const duration = 3.1;
@@ -418,7 +418,7 @@ export default function App(){
       osc.type = 'square';
       osc.frequency.setValueAtTime(260 - progress * 105, ctx.currentTime + t);
       gain.gain.setValueAtTime(0.0001, ctx.currentTime + t);
-      gain.gain.exponentialRampToValueAtTime(0.08 * (1 - progress * 0.35), ctx.currentTime + t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.13 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + 0.035);
       osc.connect(gain);
       gain.connect(master);
@@ -434,9 +434,9 @@ export default function App(){
 
   function playFeatureDings(){
     playToneSequence([
-      {freq:784, at:0.00, dur:0.22, gain:0.20, type:'sine'},
-      {freq:988, at:0.28, dur:0.22, gain:0.18, type:'sine'},
-      {freq:1175, at:0.56, dur:0.34, gain:0.16, type:'sine'}
+      {freq:784, at:0.00, dur:0.24, gain:0.28, type:'sine'},
+      {freq:988, at:0.30, dur:0.24, gain:0.26, type:'sine'},
+      {freq:1175, at:0.62, dur:0.46, gain:0.24, type:'sine'}
     ]);
   }
 
@@ -801,8 +801,23 @@ function pickMovieNight(){
     if(!tapes.length) return;
 
     const choice = tapes[Math.floor(Math.random() * tapes.length)];
-    const reelPool = [...tapes].sort(() => 0.5 - Math.random()).slice(0, Math.min(18, tapes.length));
-    const reel = [...reelPool, choice];
+    const shuffled = [...tapes].sort(() => 0.5 - Math.random()).filter(t => t.id !== choice.id);
+
+    const visibleCardW = window.innerWidth <= 520 ? 168 : 190;
+    const winnerIndex = Math.min(14, Math.max(7, shuffled.length));
+    const before = [];
+    const after = [];
+
+    for(let i = 0; i < winnerIndex; i++){
+      before.push(shuffled[i % Math.max(shuffled.length, 1)] || choice);
+    }
+
+    for(let i = 0; i < 8; i++){
+      after.push(shuffled[(winnerIndex + i) % Math.max(shuffled.length, 1)] || choice);
+    }
+
+    const reel = [...before, choice, ...after];
+    const finalOffset = winnerIndex * visibleCardW;
 
     const musicWasOn = musicEnabled && musicRef.current && !musicRef.current.paused;
     if(musicWasOn){
@@ -814,24 +829,24 @@ function pickMovieNight(){
       choice,
       reel,
       offset:0,
+      finalOffset,
+      winnerIndex,
       musicWasOn
     });
 
     playPrizeWheelSpin();
 
     const start = performance.now();
-    const duration = 3300;
-    const cardW = 190;
-    const totalTravel = Math.max(900, (reel.length - 1) * cardW);
+    const duration = 3400;
 
-    function easeOutCubic(t){
-      return 1 - Math.pow(1 - t, 3);
+    function easeOutQuint(t){
+      return 1 - Math.pow(1 - t, 5);
     }
 
     function animate(now){
       const progress = Math.min(1, (now - start) / duration);
-      const eased = easeOutCubic(progress);
-      const offset = totalTravel * eased;
+      const eased = easeOutQuint(progress);
+      const offset = finalOffset * eased;
 
       setMovieNight(prev => prev ? ({
         ...prev,
@@ -842,10 +857,12 @@ function pickMovieNight(){
       if(progress < 1){
         requestAnimationFrame(animate);
       } else {
+        setMovieNight(prev => prev ? ({...prev, offset: finalOffset, stage:'result'}) : prev);
         playFeatureDings();
+
         setTimeout(() => {
           setMovieNight(prev => prev ? {...prev, stage:'present'} : prev);
-        }, 500);
+        }, 520);
 
         setTimeout(() => {
           if(musicWasOn){
@@ -853,7 +870,7 @@ function pickMovieNight(){
           }
           setMovieNight(null);
           openTape(choice.id);
-        }, 2100);
+        }, 2200);
       }
     }
 
@@ -1132,7 +1149,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.1</div></div>
         </div>
       </header>
 

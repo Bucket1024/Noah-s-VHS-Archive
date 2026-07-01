@@ -2407,3 +2407,41 @@ main.app-scroll{
     height:150px;
   }
 }
+
+
+/* 8.6.1 Movie Night Center Landing + Louder FX */
+.feature-reel-track{
+  gap:18px;
+  padding:18px 50%;
+}
+
+.feature-reel-tape{
+  flex:0 0 172px;
+}
+
+.feature-reel-tape.winner{
+  transform:scale(1.14) translateY(-4px);
+  filter:drop-shadow(0 0 22px rgba(255,213,31,.55)) brightness(1.08);
+  animation:winnerTapePop .72s ease both;
+}
+
+.feature-night-overlay.result .feature-reel-marker,
+.feature-night-overlay.present .feature-reel-marker{
+  box-shadow:0 0 26px rgba(255,213,31,.95);
+}
+
+@keyframes winnerTapePop{
+  0%{transform:scale(1) translateY(0);}
+  42%{transform:scale(1.16) translateY(-7px);}
+  100%{transform:scale(1.12) translateY(-4px);}
+}
+
+@media(max-width:520px){
+  .feature-reel-track{
+    gap:18px;
+  }
+
+  .feature-reel-tape{
+    flex-basis:150px;
+  }
+}
