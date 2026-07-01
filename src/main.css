@@ -2496,3 +2496,9 @@ main.app-scroll{
 
 /* 8.6.5 SFX Settings */
 .music-settings-panel .music-toggle + .music-toggle{margin-top:8px;}
+
+
+/* 8.6.6 MP3 Reveal SFX */
+.music-settings-panel .music-toggle + .music-toggle{
+  margin-top:8px;
+}

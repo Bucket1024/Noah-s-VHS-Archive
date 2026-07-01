@@ -1,0 +1,10 @@
+VHS Archive 8.6.6
+
+Added:
+- MP3 reveal sound for Movie Night
+- Reveal audio file in public/audio
+
+Changed:
+- Replaced synthesized reveal dings
+- Spinner SFX boosted another 40%
+- v8.6.6 visible header version

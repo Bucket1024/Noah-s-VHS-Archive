@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vhs-archive-8-6-5';
+const CACHE_NAME = 'vhs-archive-8-6-6';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,8 @@ const APP_SHELL = [
   './icon.svg',
   './icon-192.png',
   './icon-512.png',
-  './audio/vhs-theme.wav'
+  './audio/vhs-theme.wav',
+  './audio/movie-night-reveal.mp3'
 ];
 
 self.addEventListener('install', event => {

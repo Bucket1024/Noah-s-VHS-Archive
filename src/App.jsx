@@ -242,6 +242,7 @@ export default function App(){
   const [musicEnabled,setMusicEnabled] = useState(() => localStorage.getItem('vhs_music_enabled') === 'true');
   const [sfxEnabled,setSfxEnabled] = useState(() => localStorage.getItem('vhs_sfx_enabled') !== 'false');
   const musicRef = useRef(null);
+  const revealSfxRef = useRef(null);
   const musicFadeRef = useRef(null);
   const appWasPlayingRef = useRef(false);
   const appReturnTimerRef = useRef(null);
@@ -404,7 +405,7 @@ export default function App(){
     if(!AudioContext) return;
     const ctx = new AudioContext();
     const master = ctx.createGain();
-    master.gain.value = 0.30;
+    master.gain.value = 0.42;
     master.connect(ctx.destination);
 
     const duration = 3.1;
@@ -419,7 +420,7 @@ export default function App(){
       osc.type = 'square';
       osc.frequency.setValueAtTime(260 - progress * 105, ctx.currentTime + t);
       gain.gain.setValueAtTime(0.0001, ctx.currentTime + t);
-      gain.gain.exponentialRampToValueAtTime(0.195 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.273 * (1 - progress * 0.25), ctx.currentTime + t + 0.006);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + t + 0.035);
       osc.connect(gain);
       gain.connect(master);
@@ -434,11 +435,14 @@ export default function App(){
   }
 
   function playFeatureDings(){
-    playToneSequence([
-      {freq:784, at:0.00, dur:0.24, gain:0.28, type:'sine'},
-      {freq:988, at:0.30, dur:0.24, gain:0.26, type:'sine'},
-      {freq:1175, at:0.62, dur:0.46, gain:0.24, type:'sine'}
-    ]);
+    const audio = revealSfxRef.current;
+    if(!audio) return;
+
+    try{
+      audio.currentTime = 0;
+      audio.volume = 0.9;
+      audio.play().catch(() => {});
+    }catch(error){}
   }
 
 
@@ -1199,7 +1203,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.5</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.6</div></div>
         </div>
       </header>
 
@@ -1426,6 +1430,7 @@ function pickMovieNight(){
       </main>
 
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
+      <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
       {openingTape && (
         <div className="tape-open-stage vhs-case-reveal-stage smooth-case-stage" aria-hidden="true">

@@ -1,3 +1,12 @@
-VHS ARCHIVE 8.6.5
+VHS ARCHIVE 8.6.6 — FULL PROJECT UPLOAD STEPS
 
-Upload all files to GitHub. Commit: Release 8.6.5 - SFX Settings Update.
+1. Upload everything inside this folder to GitHub.
+2. Commit message: Release 8.6.6 - MP3 Reveal SFX.
+3. Wait for Actions green checkmark.
+4. Refresh/reopen the app.
+5. Test:
+   - Top header shows v8.6.6
+   - Movie Night spinner is louder
+   - MP3 reveal sound plays when the winning tape lands
+   - SFX Off silences spinner and reveal sounds
+   - Music toggle still works separately
