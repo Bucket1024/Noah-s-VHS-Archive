@@ -2445,3 +2445,37 @@ main.app-scroll{
     flex-basis:150px;
   }
 }
+
+
+/* 8.6.3 Exact Center Winner Fix */
+.feature-reel-track{
+  gap:18px !important;
+  padding:18px 50% !important;
+}
+
+.feature-reel-tape{
+  flex:0 0 172px !important;
+}
+
+.feature-reel-tape.winner{
+  transform:scale(1.15) translateY(-5px) !important;
+  filter:drop-shadow(0 0 26px rgba(255,213,31,.62)) brightness(1.1) !important;
+  animation:centerWinnerPop .8s ease both !important;
+}
+
+.feature-reel-marker{
+  width:4px !important;
+  box-shadow:0 0 28px rgba(255,213,31,.95), 0 0 6px rgba(255,213,31,.95) !important;
+}
+
+@keyframes centerWinnerPop{
+  0%{transform:scale(1) translateY(0);}
+  45%{transform:scale(1.17) translateY(-8px);}
+  100%{transform:scale(1.13) translateY(-5px);}
+}
+
+@media(max-width:520px){
+  .feature-reel-tape{
+    flex-basis:150px !important;
+  }
+}
