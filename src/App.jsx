@@ -726,32 +726,27 @@ export default function App(){
       const rect = sourceEl.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
-
+      const scale = Math.max((viewportW * 1.35) / Math.max(rect.width,1), (viewportH * 1.35) / Math.max(rect.height,1));
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const moveX = viewportW / 2 - centerX;
       const moveY = viewportH / 2 - centerY;
-      const scale = Math.max(
-        (viewportW * 1.25) / Math.max(rect.width, 1),
-        (viewportH * 1.25) / Math.max(rect.height, 1)
-      );
 
       setOpeningTape({
         id,
-        title: tape.title,
+        title:tape.title,
         img,
-        x: rect.left,
-        y: rect.top,
-        w: rect.width,
-        h: rect.height,
+        x:rect.left,
+        y:rect.top,
+        w:rect.width,
+        h:rect.height,
         moveX,
         moveY,
         scale
       });
 
-      // Page switch happens only after the cover is already large enough to hide it.
-      setTimeout(switchToDetail, 300);
-      setTimeout(() => setOpeningTape(null), 740);
+      setTimeout(switchToDetail, 210);
+      setTimeout(() => setOpeningTape(null), 520);
     } else {
       switchToDetail();
     }
@@ -1203,7 +1198,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.6.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.6.2</div></div>
         </div>
       </header>
 
@@ -1433,9 +1428,9 @@ function pickMovieNight(){
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage vhs-case-reveal-stage smooth-case-stage" aria-hidden="true">
+        <div className="tape-open-stage simple-tape-open-stage" aria-hidden="true">
           <div
-            className="tape-open-overlay vhs-case-reveal smooth-case-reveal"
+            className="tape-open-overlay simple-tape-open"
             style={{
               '--start-x': `${openingTape.x}px`,
               '--start-y': `${openingTape.y}px`,
@@ -1443,7 +1438,7 @@ function pickMovieNight(){
               '--start-h': `${openingTape.h}px`,
               '--move-x': `${openingTape.moveX}px`,
               '--move-y': `${openingTape.moveY}px`,
-              '--reveal-scale': openingTape.scale,
+              '--open-scale': openingTape.scale,
               left: 0,
               top: 0,
               width: openingTape.w,

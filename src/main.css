@@ -2502,3 +2502,77 @@ main.app-scroll{
 .music-settings-panel .music-toggle + .music-toggle{
   margin-top:8px;
 }
+
+
+/* 8.6.6.2 Simple Tape Open Animation
+   One smooth zoom/fade instead of multi-step movement. */
+.simple-tape-open-stage{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  overflow:hidden;
+  background:rgba(1,7,24,0);
+  animation:simpleOpenBackdrop .52s ease forwards !important;
+}
+
+.simple-tape-open{
+  position:fixed;
+  left:0;
+  top:0;
+  width:var(--start-w);
+  height:var(--start-h);
+  border-radius:18px;
+  overflow:hidden;
+  transform-origin:center center;
+  transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+  animation:simpleTapeOpen .52s cubic-bezier(.2,.75,.18,1) forwards !important;
+  will-change:transform, opacity;
+  box-shadow:0 16px 38px rgba(0,0,0,.48);
+  backface-visibility:hidden;
+}
+
+.simple-tape-open img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+
+@keyframes simpleOpenBackdrop{
+  0%{background:rgba(1,7,24,0);}
+  40%{background:rgba(1,7,24,.45);}
+  100%{background:rgba(1,7,24,0);}
+}
+
+@keyframes simpleTapeOpen{
+  0%{
+    transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+    opacity:1;
+  }
+  68%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--open-scale));
+    opacity:1;
+  }
+  100%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--open-scale));
+    opacity:0;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .simple-tape-open-stage,
+  .simple-tape-open{
+    animation:none!important;
+  }
+}

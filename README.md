@@ -1,16 +1,14 @@
-# VHS Archive 8.6.6 — MP3 Reveal SFX
+# VHS Archive 8.6.6.2 — Simple Tape Open Animation
 
-8.6.6 replaces the synthesized Movie Night reveal dings with the uploaded MP3 reveal sound.
+8.6.6.2 simplifies the Browse tape opening animation.
 
-## New in 8.6.6
+## New in 8.6.6.2
 
-- Visible app header version updated to v8.6.6
-- Adds `public/audio/movie-night-reveal.mp3`
-- Replaces synthesized ding/ding/ding with the MP3 reveal sound
-- Spinner/click SFX boosted another 40%
-- SFX toggle controls both spinner and reveal sound
-- Full project release with GitHub Actions workflow included
+- Visible app header version updated to v8.6.6.2
+- Tape opening animation changed to one smooth zoom/fade
+- Removes the stepped/staged movement feeling
+- Movie Night and audio remain unchanged
 
 ## Suggested commit message
 
-Release 8.6.6 - MP3 Reveal SFX
+Release 8.6.6.2 - Simple Tape Open Animation
