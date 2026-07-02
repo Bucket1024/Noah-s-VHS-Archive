@@ -1,12 +1,13 @@
-VHS ARCHIVE 8.6.6 — FULL PROJECT UPLOAD STEPS
+VHS ARCHIVE 8.6.7 — FULL PROJECT UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 8.6.6 - MP3 Reveal SFX.
+2. Commit message: Release 8.6.7 - Transparent Cover Dissolve.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Top header shows v8.6.6
-   - Movie Night spinner is louder
-   - MP3 reveal sound plays when the winning tape lands
-   - SFX Off silences spinner and reveal sounds
-   - Music toggle still works separately
+   - Top header shows v8.6.7
+   - Tap a tape in Browse
+   - Confirm the tape expands to full screen
+   - Confirm the cover fades to transparency
+   - Confirm the detail page is revealed underneath
+   - Confirm Movie Night and SFX still work

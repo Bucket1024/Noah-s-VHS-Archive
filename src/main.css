@@ -2601,3 +2601,86 @@ main.app-scroll{
     transform:translate3d(calc(var(--start-x) + var(--move-x)),calc(var(--start-y) + var(--move-y)),0) scale(calc(var(--open-scale) * 1.03));
   }
 }
+
+
+/* 8.6.7 Transparent Full-Screen VHS Cover Dissolve
+   The tape expands to cover the screen, then the cover itself fades to transparency
+   while the details page is already loaded underneath. */
+.transparent-cover-stage{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  overflow:hidden;
+  background:rgba(1,7,24,0);
+  animation:transparentCoverStage867 .82s ease forwards !important;
+}
+
+.transparent-cover-open{
+  position:fixed;
+  left:0;
+  top:0;
+  width:var(--start-w);
+  height:var(--start-h);
+  border-radius:18px;
+  overflow:hidden;
+  transform-origin:center center;
+  transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+  animation:transparentCoverOpen867 .82s cubic-bezier(.2,.8,.15,1) forwards !important;
+  will-change:transform, opacity;
+  box-shadow:0 18px 46px rgba(0,0,0,.52);
+  backface-visibility:hidden;
+}
+
+.transparent-cover-open img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  backface-visibility:hidden;
+  transform:translateZ(0);
+}
+
+@keyframes transparentCoverStage867{
+  0%{background:rgba(1,7,24,0);}
+  45%{background:rgba(1,7,24,.08);}
+  100%{background:rgba(1,7,24,0);}
+}
+
+@keyframes transparentCoverOpen867{
+  0%{
+    transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+    opacity:1;
+  }
+  54%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--open-scale));
+    opacity:1;
+  }
+  72%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(var(--open-scale));
+    opacity:.88;
+  }
+  100%{
+    transform:translate3d(
+      calc(var(--start-x) + var(--move-x)),
+      calc(var(--start-y) + var(--move-y)),
+      0
+    ) scale(calc(var(--open-scale) * 1.03));
+    opacity:0;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .transparent-cover-stage,
+  .transparent-cover-open{
+    animation:none!important;
+  }
+}
