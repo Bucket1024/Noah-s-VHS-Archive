@@ -2576,3 +2576,28 @@ main.app-scroll{
     animation:none!important;
   }
 }
+
+
+/* 8.6.7 Seamless dissolve */
+.simple-tape-open-stage{
+  animation:simpleBackdrop867 .72s ease forwards!important;
+}
+.simple-tape-open{
+  animation:simpleTapeOpen867 .72s cubic-bezier(.2,.8,.15,1) forwards!important;
+}
+@keyframes simpleBackdrop867{
+  from{background:rgba(1,7,24,0);}
+  30%{background:rgba(1,7,24,.08);}
+  to{background:rgba(1,7,24,0);}
+}
+@keyframes simpleTapeOpen867{
+  0%{opacity:1;transform:translate3d(var(--start-x),var(--start-y),0) scale(1);}
+  78%{
+    opacity:1;
+    transform:translate3d(calc(var(--start-x) + var(--move-x)),calc(var(--start-y) + var(--move-y)),0) scale(var(--open-scale));
+  }
+  100%{
+    opacity:0;
+    transform:translate3d(calc(var(--start-x) + var(--move-x)),calc(var(--start-y) + var(--move-y)),0) scale(calc(var(--open-scale) * 1.03));
+  }
+}
