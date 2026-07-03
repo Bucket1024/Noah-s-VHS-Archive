@@ -62,10 +62,9 @@ async function idbDeletePhoto(id){
 const views = [
   ['home','🏠','Home'],
   ['browse','📼','Browse'],
-  ['wishlist','⭐','Wishlist'],
   ['add','➕','Add'],
-  ['timeline','🗓️','Timeline'],
-  ['stats','📊','Settings'],
+  ['wishlist','⭐','Wishlist'],
+  ['stats','⚙️','Settings'],
 ];
 
 function normalizeTape(t){

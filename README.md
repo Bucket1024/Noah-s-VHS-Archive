@@ -4,10 +4,11 @@
 
 ## New in 8.7
 
-- New bottom tab: Wishlist
+- Bottom navigation: Home, Browse, Add, Wishlist, Settings
+- Timeline remains accessible from the Home screen
 - Add wanted tapes with title, year, studio, edition, packaging, genre, priority, and notes
-- Sorts wanted tapes by priority
-- “Found It — Add to Collection” moves the tape into your main collection
+- Sort wanted tapes by priority
+- “Found It!” moves the tape into your main collection
 - Wishlist is included in backup/export
 - Uses one `CHANGELOG.md` going forward
 
