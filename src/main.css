@@ -2839,10 +2839,10 @@ main.app-scroll{
 .simultaneous-dissolve-open,
 .transparent-cover-open{
   transition:
-    transform 680ms cubic-bezier(.22,1,.36,1)!important,
-    opacity 680ms linear!important,
-    border-radius 680ms ease!important,
-    box-shadow 680ms ease!important;
+    transform 680ms cubic-bezier(.22,1,.36,1),
+    opacity 680ms linear,
+    border-radius 680ms ease,
+    box-shadow 680ms ease !important;
   animation:none!important;
   transform-origin:center center!important;
   will-change:transform,opacity!important;
