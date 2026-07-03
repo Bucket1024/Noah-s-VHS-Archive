@@ -726,7 +726,7 @@ export default function App(){
       const rect = sourceEl.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
-      const scale = Math.max((viewportW * 1.55) / Math.max(rect.width,1), (viewportH * 1.55) / Math.max(rect.height,1));
+      const scale = Math.max((viewportW * 1.52) / Math.max(rect.width,1), (viewportH * 1.52) / Math.max(rect.height,1));
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const moveX = viewportW / 2 - centerX;
@@ -742,18 +742,11 @@ export default function App(){
         h:rect.height,
         moveX,
         moveY,
-        scale,
-        active:false
+        scale
       });
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setOpeningTape(prev => prev && prev.id === id ? {...prev, active:true} : prev);
-        });
-      });
-
-      setTimeout(switchToDetail, 320);
-      setTimeout(() => setOpeningTape(null), 720);
+      setTimeout(switchToDetail, 360);
+      setTimeout(() => setOpeningTape(null), 760);
     } else {
       switchToDetail();
     }
@@ -1205,7 +1198,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v9.0.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.8</div></div>
         </div>
       </header>
 
@@ -1435,9 +1428,9 @@ function pickMovieNight(){
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage transition-tape-stage" aria-hidden="true">
+        <div className="tape-open-stage simultaneous-dissolve-stage" aria-hidden="true">
           <div
-            className={`tape-open-overlay transition-tape-open ${openingTape.active ? 'active' : ''}`}
+            className="tape-open-overlay simultaneous-dissolve-open"
             style={{
               '--start-x': `${openingTape.x}px`,
               '--start-y': `${openingTape.y}px`,

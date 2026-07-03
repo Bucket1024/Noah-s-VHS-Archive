@@ -1,11 +1,12 @@
-VHS ARCHIVE 9.0 — FULL PROJECT UPLOAD STEPS
+VHS ARCHIVE 8.6.8 — FULL PROJECT UPLOAD STEPS
 
 1. Upload everything inside this folder to GitHub.
-2. Commit message: Release 9.0 - Single Motion Tape Transition.
+2. Commit message: Release 8.6.8 - Simultaneous Dissolve Animation.
 3. Wait for Actions green checkmark.
 4. Refresh/reopen the app.
 5. Test:
-   - Top header shows v9.0
+   - Top header shows v8.6.8
    - Tap a tape in Browse
-   - Confirm the tape expands/fades in one smooth motion
+   - Confirm the tape fades while expanding
+   - Confirm the details page appears underneath smoothly
    - Confirm Movie Night and SFX still work
