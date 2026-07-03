@@ -1,0 +1,12 @@
+VHS Archive 9.0
+
+Changed:
+- Replaced tape open keyframe animation with CSS transition-based single-motion animation.
+- Updated version to v9.0.
+
+Kept:
+- Movie Night
+- SFX settings
+- Audio balance
+- Genre dropdown
+- Backup/import

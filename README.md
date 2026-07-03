@@ -1,15 +1,15 @@
-# VHS Archive 8.6.8 — Simultaneous Dissolve
+# VHS Archive 9.0 — Single-Motion Transition
 
-8.6.8 refines the tape-opening animation.
+9.0 replaces the browse tape-opening animation with a cleaner CSS-transition system.
 
-## New in 8.6.8
+## New in 9.0
 
-- Visible app header version updated to v8.6.8
-- Tape now fades to transparency while it expands
-- Removes the “expand first, fade after” feeling
-- Detail page appears underneath as the cover dissolves
+- Visible app header version updated to v9.0
+- Tape opening animation now uses one continuous transition instead of multi-step keyframes
+- Cover expands and fades to transparency in one natural motion
+- Detail page appears underneath as the cover disappears
 - Movie Night, SFX, music, and archive features are preserved
 
 ## Suggested commit message
 
-Release 8.6.8 - Simultaneous Dissolve Animation
+Release 9.0 - Single Motion Tape Transition
