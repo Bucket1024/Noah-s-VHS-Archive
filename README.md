@@ -1,15 +1,16 @@
-# VHS Archive 8.6.8 — Simultaneous Dissolve
+# VHS Archive 8.7 — Wishlist / Wanted Tapes
 
-8.6.8 refines the tape-opening animation.
+8.7 adds a dedicated Wishlist tab for tapes you are hunting for.
 
-## New in 8.6.8
+## New in 8.7
 
-- Visible app header version updated to v8.6.8
-- Tape now fades to transparency while it expands
-- Removes the “expand first, fade after” feeling
-- Detail page appears underneath as the cover dissolves
-- Movie Night, SFX, music, and archive features are preserved
+- New bottom tab: Wishlist
+- Add wanted tapes with title, year, studio, edition, packaging, genre, priority, and notes
+- Sorts wanted tapes by priority
+- “Found It — Add to Collection” moves the tape into your main collection
+- Wishlist is included in backup/export
+- Uses one `CHANGELOG.md` going forward
 
 ## Suggested commit message
 
-Release 8.6.8 - Simultaneous Dissolve Animation
+Release 8.7 - Wishlist Wanted Tapes

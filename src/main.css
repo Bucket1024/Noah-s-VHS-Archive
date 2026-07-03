@@ -2773,3 +2773,128 @@ main.app-scroll{
     animation:none!important;
   }
 }
+
+
+/* 8.7 Wishlist / Wanted Tapes */
+.wishlist-hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.wishlist-count{
+  min-width:94px;
+  border-radius:18px;
+  border:1px solid rgba(255,213,31,.28);
+  background:rgba(255,213,31,.08);
+  padding:12px 14px;
+  text-align:center;
+}
+
+.wishlist-count strong{
+  display:block;
+  font-size:2rem;
+  line-height:1;
+  color:#ffd51f;
+}
+
+.wishlist-count span{
+  font-size:.78rem;
+  color:rgba(219,234,254,.72);
+  text-transform:uppercase;
+  letter-spacing:.7px;
+}
+
+.wishlist-form{
+  margin-top:14px;
+}
+
+.wishlist-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:14px;
+  margin-top:14px;
+  padding-bottom:16px;
+}
+
+.wishlist-card{
+  border-radius:22px;
+  border:1px solid rgba(148,163,184,.22);
+  background:linear-gradient(145deg,rgba(5,25,72,.92),rgba(2,10,38,.96));
+  box-shadow:0 16px 38px rgba(0,0,0,.34);
+  padding:16px;
+  position:relative;
+  overflow:hidden;
+}
+
+.wishlist-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.18;
+  background:radial-gradient(circle at top right,rgba(255,213,31,.28),transparent 34%);
+}
+
+.wishlist-card h3{
+  margin:10px 0 4px;
+  color:#f8fafc;
+}
+
+.wishlist-card-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.wishlist-priority{
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  color:#061225;
+  background:#ffd51f;
+  border-radius:999px;
+  padding:5px 9px;
+  font-weight:900;
+}
+
+.priority-medium .wishlist-priority{
+  background:#93c5fd;
+}
+
+.priority-low .wishlist-priority{
+  background:#cbd5e1;
+}
+
+.danger-lite{
+  padding:7px 10px;
+  font-size:.76rem;
+}
+
+.wishlist-notes{
+  color:rgba(219,234,254,.82);
+  font-size:.9rem;
+  line-height:1.45;
+  min-height:38px;
+}
+
+.found-it-button{
+  width:100%;
+  margin-top:12px;
+  background:linear-gradient(135deg,#ffd51f,#f59e0b);
+  color:#061225;
+  font-weight:900;
+}
+
+@media(max-width:560px){
+  .wishlist-hero{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .wishlist-count{
+    width:100%;
+  }
+}
