@@ -1,15 +1,15 @@
-# VHS Archive 8.6.7 — Transparent Cover Dissolve
+# VHS Archive 8.6.8 — Simultaneous Dissolve
 
-8.6.7 rebuilds the tape-opening animation from the latest current project.
+8.6.8 refines the tape-opening animation.
 
-## New in 8.6.7
+## New in 8.6.8
 
-- Visible app header version updated to v8.6.7
-- Tape expands until it fills the screen
-- Once full screen, the VHS cover fades to transparency
-- Tape detail page loads underneath the transparent cover
-- Movie Night, SFX, music, and audio balance are preserved from the current build
+- Visible app header version updated to v8.6.8
+- Tape now fades to transparency while it expands
+- Removes the “expand first, fade after” feeling
+- Detail page appears underneath as the cover dissolves
+- Movie Night, SFX, music, and archive features are preserved
 
 ## Suggested commit message
 
-Release 8.6.7 - Transparent Cover Dissolve
+Release 8.6.8 - Simultaneous Dissolve Animation

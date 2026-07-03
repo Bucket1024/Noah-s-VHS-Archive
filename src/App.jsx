@@ -726,7 +726,7 @@ export default function App(){
       const rect = sourceEl.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
-      const scale = Math.max((viewportW * 1.45) / Math.max(rect.width,1), (viewportH * 1.45) / Math.max(rect.height,1));
+      const scale = Math.max((viewportW * 1.52) / Math.max(rect.width,1), (viewportH * 1.52) / Math.max(rect.height,1));
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       const moveX = viewportW / 2 - centerX;
@@ -745,10 +745,8 @@ export default function App(){
         scale
       });
 
-      // Details load only after the VHS cover has filled the screen.
-      setTimeout(switchToDetail, 430);
-      // Overlay remains long enough to fade fully transparent over the details page.
-      setTimeout(() => setOpeningTape(null), 820);
+      setTimeout(switchToDetail, 360);
+      setTimeout(() => setOpeningTape(null), 760);
     } else {
       switchToDetail();
     }
@@ -1200,7 +1198,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.6.8</div></div>
         </div>
       </header>
 
@@ -1430,9 +1428,9 @@ function pickMovieNight(){
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
       {openingTape && (
-        <div className="tape-open-stage transparent-cover-stage" aria-hidden="true">
+        <div className="tape-open-stage simultaneous-dissolve-stage" aria-hidden="true">
           <div
-            className="tape-open-overlay transparent-cover-open"
+            className="tape-open-overlay simultaneous-dissolve-open"
             style={{
               '--start-x': `${openingTape.x}px`,
               '--start-y': `${openingTape.y}px`,
