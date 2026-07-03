@@ -2832,3 +2832,23 @@ main.app-scroll{
     transition:none!important;
   }
 }
+
+
+/* 9.0.1 smoother shared transition */
+.transition-tape-open,
+.simultaneous-dissolve-open,
+.transparent-cover-open{
+  transition:
+    transform 680ms cubic-bezier(.22,1,.36,1)!important,
+    opacity 680ms linear!important,
+    border-radius 680ms ease!important,
+    box-shadow 680ms ease!important;
+  animation:none!important;
+  transform-origin:center center!important;
+  will-change:transform,opacity!important;
+}
+.transition-tape-open.active,
+.simultaneous-dissolve-open.active,
+.transparent-cover-open.active{
+  opacity:0!important;
+}
