@@ -1342,7 +1342,7 @@ function pickMovieNight(){
             <section className="wishlist-grid">
               {wishlist.length ? wishlist
                 .slice()
-                .sort((a,b) => ({High:0,Medium:1,Low:2}[a.priority || 'Medium'] - ({High:0,Medium:1,Low:2}[b.priority || 'Medium']))
+                .sort((a,b) => ({High:0,Medium:1,Low:2}[a.priority || 'Medium'] - ({High:0,Medium:1,Low:2}[b.priority || 'Medium'])))
                 .map(item => (
                   <article className={`wishlist-card priority-${(item.priority || 'Medium').toLowerCase()}`} key={item.id}>
                     <div className="wishlist-card-top">

@@ -1,5 +1,9 @@
 # VHS Archive Changelog
 
+## v8.7 Fixed
+- Fixed Wishlist JSX syntax error in the priority sort line.
+- Keeps Wishlist / Wanted Tapes feature.
+
 ## v8.7
 - Added Wishlist bottom tab.
 - Added Wanted Tapes form.
