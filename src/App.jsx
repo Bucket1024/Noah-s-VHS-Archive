@@ -1316,7 +1316,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.3</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.4</div></div>
         </div>
       </header>
 
@@ -1332,9 +1332,11 @@ function pickMovieNight(){
                 <button className="movie-night" onClick={pickMovieNight}>🎲 Movie Night</button>
                 {!isStandalone && <button className="install-button" onClick={installApp}>📲 Install App</button>}
               </div>
-              <div className="stats">
-                <div className="stat"><strong>{stats.total}</strong><span>Total Tapes</span></div>
-                <button className="stat stat-button" onClick={()=>{setMissingPhotosOnly(true); setQuery(""); setPkg(""); setEdition(""); goToView("browse", {resetBrowse:false});}}><strong>{stats.photosNeeded}</strong><span>Need Photos</span></button>
+              <div className="stats home-focus-stats">
+                <button className="stat stat-button" onClick={()=>goToView("browse", {resetBrowse:true})}><strong>{stats.total}</strong><span>Inventory</span></button>
+                <button className="stat stat-button" onClick={()=>goToView("wishlist")}><strong>{wishlist.length}</strong><span>Wishlist</span></button>
+              </div>
+<button className="stat stat-button" onClick={()=>{setMissingPhotosOnly(true); setQuery(""); setPkg(""); setEdition(""); goToView("browse", {resetBrowse:false});}}><strong>{stats.photosNeeded}</strong><span>Need Photos</span></button>
                 <div className="stat"><strong>{stats.favorites}</strong><span>Favorites</span></div>
                 <div className="stat"><strong>{stats.watched}</strong><span>Watched</span></div>
                 <button className="stat stat-button" onClick={()=>goToView("wishlist")}><strong>{wishlist.length}</strong><span>Wishlist</span></button>
