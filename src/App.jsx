@@ -1316,7 +1316,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.4</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.5</div></div>
         </div>
       </header>
 
@@ -1335,15 +1335,6 @@ function pickMovieNight(){
               <div className="stats home-focus-stats">
                 <button className="stat stat-button" onClick={()=>goToView("browse", {resetBrowse:true})}><strong>{stats.total}</strong><span>Inventory</span></button>
                 <button className="stat stat-button" onClick={()=>goToView("wishlist")}><strong>{wishlist.length}</strong><span>Wishlist</span></button>
-              </div>
-<button className="stat stat-button" onClick={()=>{setMissingPhotosOnly(true); setQuery(""); setPkg(""); setEdition(""); goToView("browse", {resetBrowse:false});}}><strong>{stats.photosNeeded}</strong><span>Need Photos</span></button>
-                <div className="stat"><strong>{stats.favorites}</strong><span>Favorites</span></div>
-                <div className="stat"><strong>{stats.watched}</strong><span>Watched</span></div>
-                <button className="stat stat-button" onClick={()=>goToView("wishlist")}><strong>{wishlist.length}</strong><span>Wishlist</span></button>
-                <div className="stat"><strong>{stats.screeners}</strong><span>Screeners</span></div>
-                <div className="stat"><strong>{stats.specials}</strong><span>Special Tapes</span></div>
-                <div className="stat"><strong>{stats.clamshells}</strong><span>Clamshells</span></div>
-                <div className="stat"><strong>{stats.sleeves}</strong><span>Sleeves</span></div>
               </div>
             </section>
             {!isStandalone && <section className="panel install-panel">
