@@ -974,6 +974,26 @@ function pickMovieNight(){
     setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
+  function removeTape(id){
+    const tape = tapes.find(t => t.id === id);
+    if(!tape) return;
+    const confirmed = window.confirm(`Remove "${tape.title}" from your collection? This cannot be undone unless you restore from a backup.`);
+    if(!confirmed) return;
+
+    (tape.photos || []).forEach(p => {
+      if(p?.photoId){
+        idbDeletePhoto(p.photoId).catch(()=>{});
+      }
+    });
+
+    setTapes(prev => prev.filter(t => t.id !== id));
+    setSelectedId(null);
+    setSelectedPhoto(0);
+    setEditOpen(false);
+    notify('Tape removed from collection.');
+    goToView('browse');
+  }
+
   function compressImage(file, maxSize = 1100, quality = 0.74){
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -1296,7 +1316,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.3</div></div>
         </div>
       </header>
 
@@ -1356,7 +1376,7 @@ function pickMovieNight(){
             <section className="panel wishlist-hero">
               <div>
                 <h3>Wanted Tapes</h3>
-                <p className="small">Tap a wanted tape to edit its details. When you find one, tap <b>Found It!</b> to move it into your collection.</p>
+                <p className="small">Tap a wanted tape to edit it right where it sits. When you find one, tap <b>Found It!</b> to move it into your collection.</p>
               </div>
               <div className="wishlist-count"><strong>{wishlist.length}</strong><span>wanted</span></div>
             </section>
@@ -1388,44 +1408,6 @@ function pickMovieNight(){
               )}
             </section>
 
-            {editingWishlist && (
-              <section className="panel wishlist-edit-panel">
-                <div className="wishlist-edit-head">
-                  <div>
-                    <h3>Edit Wanted Tape</h3>
-                    <p className="small">Update the details for this wishlist item.</p>
-                  </div>
-                  <button type="button" className="secondary" onClick={()=>setEditingWishlist(null)}>Close</button>
-                </div>
-
-                <form className="formgrid compact-wishlist-form" onSubmit={updateWishlistItem}>
-                  <label>Title</label><input name="editWishlistTitle" defaultValue={editingWishlist.title} />
-                  <label>VHS Release Year</label><input name="editWishlistYear" defaultValue={editingWishlist.vhsYear} />
-                  <label>Studio / Distributor</label><input name="editWishlistStudio" defaultValue={editingWishlist.studio} />
-                  <label>Edition</label><input name="editWishlistEdition" defaultValue={editingWishlist.edition} />
-                  <label>Packaging</label>
-                  <select name="editWishlistPackaging" defaultValue={editingWishlist.packaging || 'Sleeve'}>
-                    <option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option><option>Big Box</option>
-                  </select>
-                  <label>Genre</label>
-                  <select name="editWishlistGenre" defaultValue={editingWishlist.genre || 'Other'}>
-                    {genreOptions.map(g=><option key={g}>{g}</option>)}
-                  </select>
-                  <label>Priority</label>
-                  <select name="editWishlistPriority" defaultValue={editingWishlist.priority || 'Medium'}>
-                    <option>High</option><option>Medium</option><option>Low</option>
-                  </select>
-                  <label>Notes</label><textarea name="editWishlistNotes" rows="4" defaultValue={editingWishlist.notes} />
-
-                  <div className="wishlist-edit-actions">
-                    <button type="submit">Save Changes</button>
-                    <button type="button" className="found-it-button" onClick={()=>foundWishlistItem(editingWishlist)}>📼 Found It!</button>
-                    <button type="button" className="secondary danger-lite" onClick={()=>removeWishlistItem(editingWishlist.id)}>Remove</button>
-                  </div>
-                </form>
-              </section>
-            )}
-
             <section className="wishlist-grid">
               {wishlist.length ? (
                 wishlist
@@ -1436,25 +1418,59 @@ function pickMovieNight(){
                   })
                   .map(item => (
                     <article
-                      className={`wishlist-card priority-${(item.priority || 'Medium').toLowerCase()} ${editingWishlist?.id === item.id ? 'editing' : ''}`}
+                      className={`wishlist-card priority-${(item.priority || 'Medium').toLowerCase()} ${editingWishlist?.id === item.id ? 'editing inline-editing' : ''}`}
                       key={item.id}
-                      onClick={()=>setEditingWishlist(item)}
-                      role="button"
-                      tabIndex="0"
                     >
-                      <div className="wishlist-card-top">
-                        <span className="wishlist-priority">{item.priority || 'Medium'} Priority</span>
-                        <button type="button" className="secondary danger-lite" onClick={(e)=>{e.stopPropagation(); removeWishlistItem(item.id);}}>Remove</button>
+                      <div
+                        className="wishlist-card-summary"
+                        onClick={()=>setEditingWishlist(editingWishlist?.id === item.id ? null : item)}
+                        role="button"
+                        tabIndex="0"
+                      >
+                        <div className="wishlist-card-top">
+                          <span className="wishlist-priority">{item.priority || 'Medium'} Priority</span>
+                          <button type="button" className="secondary danger-lite" onClick={(e)=>{e.stopPropagation(); removeWishlistItem(item.id);}}>Remove</button>
+                        </div>
+                        <h3>{item.title}</h3>
+                        <div className="small">{item.vhsYear || 'No year'} • {item.studio || 'Unknown studio'}</div>
+                        <div className="badge-row">
+                          <span className="tag alt">{item.edition || 'Wanted'}</span>
+                          <span className="mini-badge">{item.packaging || 'Sleeve'}</span>
+                          <span className="mini-badge">{item.genre || 'Other'}</span>
+                        </div>
+                        {item.notes && <p className="wishlist-notes">{item.notes}</p>}
                       </div>
-                      <h3>{item.title}</h3>
-                      <div className="small">{item.vhsYear || 'No year'} • {item.studio || 'Unknown studio'}</div>
-                      <div className="badge-row">
-                        <span className="tag alt">{item.edition || 'Wanted'}</span>
-                        <span className="mini-badge">{item.packaging || 'Sleeve'}</span>
-                        <span className="mini-badge">{item.genre || 'Other'}</span>
-                      </div>
-                      {item.notes && <p className="wishlist-notes">{item.notes}</p>}
-                      <button type="button" className="found-it-button" onClick={(e)=>{e.stopPropagation(); foundWishlistItem(item);}}>📼 Found It!</button>
+
+                      {editingWishlist?.id === item.id ? (
+                        <form className="wishlist-inline-edit formgrid compact-wishlist-form" onSubmit={updateWishlistItem}>
+                          <h3>Edit Wanted Tape</h3>
+                          <label>Title</label><input name="editWishlistTitle" defaultValue={editingWishlist.title} />
+                          <label>VHS Release Year</label><input name="editWishlistYear" defaultValue={editingWishlist.vhsYear} />
+                          <label>Studio / Distributor</label><input name="editWishlistStudio" defaultValue={editingWishlist.studio} />
+                          <label>Edition</label><input name="editWishlistEdition" defaultValue={editingWishlist.edition} />
+                          <label>Packaging</label>
+                          <select name="editWishlistPackaging" defaultValue={editingWishlist.packaging || 'Sleeve'}>
+                            <option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option><option>Big Box</option>
+                          </select>
+                          <label>Genre</label>
+                          <select name="editWishlistGenre" defaultValue={editingWishlist.genre || 'Other'}>
+                            {genreOptions.map(g=><option key={g}>{g}</option>)}
+                          </select>
+                          <label>Priority</label>
+                          <select name="editWishlistPriority" defaultValue={editingWishlist.priority || 'Medium'}>
+                            <option>High</option><option>Medium</option><option>Low</option>
+                          </select>
+                          <label>Notes</label><textarea name="editWishlistNotes" rows="4" defaultValue={editingWishlist.notes} />
+
+                          <div className="wishlist-edit-actions">
+                            <button type="submit">Save Changes</button>
+                            <button type="button" className="found-it-button" onClick={()=>foundWishlistItem(editingWishlist)}>📼 Found It!</button>
+                            <button type="button" className="secondary" onClick={()=>setEditingWishlist(null)}>Cancel</button>
+                          </div>
+                        </form>
+                      ) : (
+                        <button type="button" className="found-it-button" onClick={(e)=>{e.stopPropagation(); foundWishlistItem(item);}}>📼 Found It!</button>
+                      )}
                     </article>
                   ))
               ) : (
@@ -1565,6 +1581,11 @@ function pickMovieNight(){
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="panel remove-tape-bottom">
+              <h3>Remove Tape</h3>
+              <p className="small">This removes the tape from your collection on this device. Export a backup first if you may want to restore it later.</p>
+              <button type="button" className="remove-tape-button" onClick={()=>removeTape(selected.id)}>Remove Tape</button>
             </div>
           </section>
         )}

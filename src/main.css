@@ -3041,3 +3041,48 @@ main.app-scroll{
     align-items:center;
   }
 }
+
+
+/* 8.7.3 Inline Wishlist Edit + Remove Tape */
+.wishlist-card-summary{
+  cursor:pointer;
+}
+
+.wishlist-inline-edit{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,213,31,.22);
+  animation:inlineWishlistOpen .22s ease both;
+}
+
+.inline-editing{
+  grid-column:span 1;
+  border-color:rgba(255,213,31,.55)!important;
+}
+
+@keyframes inlineWishlistOpen{
+  from{opacity:0; transform:translateY(-6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.remove-tape-bottom{
+  margin-top:18px;
+  border-color:rgba(248,113,113,.32);
+  background:linear-gradient(145deg,rgba(69,10,10,.38),rgba(2,10,38,.94));
+}
+
+.remove-tape-bottom h3{
+  color:#fecaca;
+}
+
+.remove-tape-button{
+  width:100%;
+  background:linear-gradient(135deg,#ef4444,#991b1b);
+  color:white;
+  font-weight:900;
+  margin-top:8px;
+}
+
+.remove-tape-button:hover{
+  filter:brightness(1.08);
+}

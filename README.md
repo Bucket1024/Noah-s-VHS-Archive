@@ -1,15 +1,14 @@
-# VHS Archive 8.7.2 — Editable Wishlist
+# VHS Archive 8.7.3 — Inline Wishlist Edit
 
-8.7.2 improves the Wishlist with editable wanted tape details and a special Found It moment.
+8.7.3 improves Wishlist editing and adds a safe Remove Tape option.
 
-## New in 8.7.2
+## New in 8.7.3
 
-- Tap a wishlist card to edit it
-- Save wishlist changes
-- Remove wishlist item from the edit panel
-- Found It now shows a green ADDED TO COLLECTION stamp animation
-- Found items move into the main collection and open the new tape details
+- Wishlist edit form opens directly inside the wishlist card
+- Save, Cancel, and Found It actions stay in place
+- Remove Tape button added to the bottom of the tape details page
+- Remove Tape requires confirmation before deleting
 
 ## Suggested commit message
 
-Release 8.7.2 - Editable Wishlist
+Release 8.7.3 - Inline Wishlist Edit
