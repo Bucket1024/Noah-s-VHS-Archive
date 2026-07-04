@@ -260,6 +260,7 @@ export default function App(){
   const appReturnTimerRef = useRef(null);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
+  const tapeOpenTimersRef = useRef([]);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -300,8 +301,8 @@ export default function App(){
   }, [tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
-  // 8.7.7 overlay cleanup effect
-  useEffect(()=>{ if(view !== 'detail') setOpeningTape(null); },[view]);
+  // 8.7.8 overlay cleanup effect
+  useEffect(()=>{ if(view !== 'browse') clearTapeOpenOverlay(); },[view]);
   useEffect(()=>{
     if(selectedId) sessionStorage.setItem('noahVhs6_selectedTape', selectedId);
   },[selectedId]);
@@ -417,8 +418,23 @@ export default function App(){
     }, Math.ceil((Math.max(...steps.map(s => s.at + s.dur)) + 0.4) * 1000));
   }
 
+  function cancelTapeOpenTimers(){
+    tapeOpenTimersRef.current.forEach(timer => clearTimeout(timer));
+    tapeOpenTimersRef.current = [];
+  }
+
   function clearTapeOpenOverlay(){
+    cancelTapeOpenTimers();
     setOpeningTape(null);
+  }
+
+  function scheduleTapeOpenTimer(callback, delay){
+    const timer = setTimeout(() => {
+      tapeOpenTimersRef.current = tapeOpenTimersRef.current.filter(t => t !== timer);
+      callback();
+    }, delay);
+    tapeOpenTimersRef.current.push(timer);
+    return timer;
   }
 
   function playPrizeWheelSpin(){
@@ -730,6 +746,7 @@ export default function App(){
 
   function openTape(id, sourceEl = null){
     clearTapeOpenOverlay();
+
     const tape = tapes.find(t => t.id === id);
     const img = tape ? mainImage(tape, photoLibrary) : '';
 
@@ -746,7 +763,7 @@ export default function App(){
       setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 20);
     };
 
-    if(sourceEl && tape && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    if(sourceEl && tape && view === 'browse' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       const rect = sourceEl.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
@@ -776,8 +793,8 @@ export default function App(){
         });
       });
 
-      setTimeout(switchToDetail, 300);
-      setTimeout(() => setOpeningTape(null), 760);
+      scheduleTapeOpenTimer(switchToDetail, 300);
+      scheduleTapeOpenTimer(() => setOpeningTape(null), 760);
     } else {
       switchToDetail();
     }
@@ -821,7 +838,6 @@ export default function App(){
       const dx = touch.clientX - start.x;
       const dy = Math.abs(touch.clientY - start.y);
       if(dx > 70 && dy < 60 && Date.now() - start.time < 800){
-        clearTapeOpenOverlay();
         goBackInApp();
       }
     };
@@ -1334,7 +1350,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.8</div></div>
         </div>
       </header>
 
@@ -1672,7 +1688,7 @@ function pickMovieNight(){
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
-      {openingTape && (
+      {view === 'browse' && openingTape && (
         <div className="tape-open-stage one-motion-tape-stage" aria-hidden="true">
           <div
             className={`tape-open-overlay one-motion-tape-open ${openingTape.active ? 'active' : ''}`}

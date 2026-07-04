@@ -1,9 +1,9 @@
 # VHS Archive Changelog
 
-## v8.7.7 — Swipe-Back Overlay Fix
-- Clears the tape-open overlay immediately when navigating back.
-- Fixes the split-second ghost tape that could appear during left-edge swipe-back.
-- Keeps the one-motion tape transition from v8.7.6.
+## v8.7.8 — Strong Swipe-Back Overlay Guard
+- Tape-open overlay now only renders while Browse is active.
+- Cancels pending tape-open timers during back/swipe navigation.
+- Prevents the final expanded semi-transparent tape frame from appearing during swipe-back.
 
 ## v8.7.6 — One-Motion Tape Transition
 - Rebuilt the tape-open transition as a two-state CSS transition.
