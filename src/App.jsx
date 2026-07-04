@@ -267,6 +267,8 @@ export default function App(){
   const [form,setForm] = useState({});
   const [quickRows,setQuickRows] = useState('');
   const [wishlistFormOpen,setWishlistFormOpen] = useState(false);
+  const [editingWishlist,setEditingWishlist] = useState(null);
+  const [foundCelebration,setFoundCelebration] = useState(null);
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
 
@@ -1158,30 +1160,62 @@ function pickMovieNight(){
     notify('Added to wishlist.');
   }
 
+  function updateWishlistItem(e){
+    e.preventDefault();
+    if(!editingWishlist) return;
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const title = fd.get('editWishlistTitle')?.trim();
+    if(!title){ notify('Wishlist item needs a title.'); return; }
+
+    const updated = normalizeWishlistItem({
+      ...editingWishlist,
+      title,
+      vhsYear: fd.get('editWishlistYear') || '',
+      studio: fd.get('editWishlistStudio') || '',
+      edition: fd.get('editWishlistEdition') || '',
+      packaging: fd.get('editWishlistPackaging') || 'Sleeve',
+      genre: fd.get('editWishlistGenre') || 'Other',
+      priority: fd.get('editWishlistPriority') || 'Medium',
+      notes: fd.get('editWishlistNotes') || ''
+    });
+
+    setWishlist(prev => prev.map(item => item.id === updated.id ? updated : item));
+    setEditingWishlist(null);
+    notify('Wishlist details saved.');
+  }
+
   function removeWishlistItem(id){
     setWishlist(prev => prev.filter(item => item.id !== id));
+    if(editingWishlist?.id === id) setEditingWishlist(null);
     notify('Removed from wishlist.');
   }
 
   function foundWishlistItem(item){
     const next = 'VHS-' + String(tapes.length + 1).padStart(4,'0');
-    const newTape = normalizeTape({
-      id: next,
-      title: item.title,
-      vhsYear: item.vhsYear || '',
-      studio: item.studio || 'Unknown',
-      edition: item.edition || 'Standard',
-      packaging: item.packaging || 'Sleeve',
-      genre: item.genre || 'Other',
-      notes: item.notes ? `Found from wishlist. ${item.notes}` : 'Found from wishlist.',
-      dateAcquired: new Date().toISOString().slice(0,10)
-    });
+    setFoundCelebration(item);
 
-    setTapes(prev => [...prev, newTape]);
-    setWishlist(prev => prev.filter(w => w.id !== item.id));
-    setSelectedId(next);
-    notify('Wishlist tape moved to collection.');
-    goToView('detail');
+    setTimeout(() => {
+      const newTape = normalizeTape({
+        id: next,
+        title: item.title,
+        vhsYear: item.vhsYear || '',
+        studio: item.studio || 'Unknown',
+        edition: item.edition || 'Standard',
+        packaging: item.packaging || 'Sleeve',
+        genre: item.genre || 'Other',
+        notes: item.notes ? `Found from wishlist. ${item.notes}` : 'Found from wishlist.',
+        dateAcquired: new Date().toISOString().slice(0,10)
+      });
+
+      setTapes(prev => [...prev, newTape]);
+      setWishlist(prev => prev.filter(w => w.id !== item.id));
+      if(editingWishlist?.id === item.id) setEditingWishlist(null);
+      setSelectedId(next);
+      setFoundCelebration(null);
+      notify(`${item.title} added to your collection.`);
+      goToView('detail');
+    }, 850);
   }
 
   async function exportBackup(){
@@ -1262,7 +1296,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.2</div></div>
         </div>
       </header>
 
@@ -1322,7 +1356,7 @@ function pickMovieNight(){
             <section className="panel wishlist-hero">
               <div>
                 <h3>Wanted Tapes</h3>
-                <p className="small">Keep track of the tapes you are hunting for. When you find one, tap <b>Found It</b> to move it into your collection.</p>
+                <p className="small">Tap a wanted tape to edit its details. When you find one, tap <b>Found It!</b> to move it into your collection.</p>
               </div>
               <div className="wishlist-count"><strong>{wishlist.length}</strong><span>wanted</span></div>
             </section>
@@ -1354,29 +1388,78 @@ function pickMovieNight(){
               )}
             </section>
 
+            {editingWishlist && (
+              <section className="panel wishlist-edit-panel">
+                <div className="wishlist-edit-head">
+                  <div>
+                    <h3>Edit Wanted Tape</h3>
+                    <p className="small">Update the details for this wishlist item.</p>
+                  </div>
+                  <button type="button" className="secondary" onClick={()=>setEditingWishlist(null)}>Close</button>
+                </div>
+
+                <form className="formgrid compact-wishlist-form" onSubmit={updateWishlistItem}>
+                  <label>Title</label><input name="editWishlistTitle" defaultValue={editingWishlist.title} />
+                  <label>VHS Release Year</label><input name="editWishlistYear" defaultValue={editingWishlist.vhsYear} />
+                  <label>Studio / Distributor</label><input name="editWishlistStudio" defaultValue={editingWishlist.studio} />
+                  <label>Edition</label><input name="editWishlistEdition" defaultValue={editingWishlist.edition} />
+                  <label>Packaging</label>
+                  <select name="editWishlistPackaging" defaultValue={editingWishlist.packaging || 'Sleeve'}>
+                    <option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option><option>Big Box</option>
+                  </select>
+                  <label>Genre</label>
+                  <select name="editWishlistGenre" defaultValue={editingWishlist.genre || 'Other'}>
+                    {genreOptions.map(g=><option key={g}>{g}</option>)}
+                  </select>
+                  <label>Priority</label>
+                  <select name="editWishlistPriority" defaultValue={editingWishlist.priority || 'Medium'}>
+                    <option>High</option><option>Medium</option><option>Low</option>
+                  </select>
+                  <label>Notes</label><textarea name="editWishlistNotes" rows="4" defaultValue={editingWishlist.notes} />
+
+                  <div className="wishlist-edit-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" className="found-it-button" onClick={()=>foundWishlistItem(editingWishlist)}>📼 Found It!</button>
+                    <button type="button" className="secondary danger-lite" onClick={()=>removeWishlistItem(editingWishlist.id)}>Remove</button>
+                  </div>
+                </form>
+              </section>
+            )}
 
             <section className="wishlist-grid">
-              {wishlist.length ? wishlist
-                .slice()
-                .sort((a,b) => ({High:0,Medium:1,Low:2}[a.priority || 'Medium'] - ({High:0,Medium:1,Low:2}[b.priority || 'Medium'])))
-                .map(item => (
-                  <article className={`wishlist-card priority-${(item.priority || 'Medium').toLowerCase()}`} key={item.id}>
-                    <div className="wishlist-card-top">
-                      <span className="wishlist-priority">{item.priority || 'Medium'} Priority</span>
-                      <button type="button" className="secondary danger-lite" onClick={()=>removeWishlistItem(item.id)}>Remove</button>
-                    </div>
-                    <h3>{item.title}</h3>
-                    <div className="small">{item.vhsYear || 'No year'} • {item.studio || 'Unknown studio'}</div>
-                    <div className="badge-row">
-                      <span className="tag alt">{item.edition || 'Wanted'}</span>
-                      <span className="mini-badge">{item.packaging || 'Sleeve'}</span>
-                      <span className="mini-badge">{item.genre || 'Other'}</span>
-                    </div>
-                    {item.notes && <p className="wishlist-notes">{item.notes}</p>}
-                    <button type="button" className="found-it-button" onClick={()=>foundWishlistItem(item)}>✓ Found It — Add to Collection</button>
-                  </article>
-                ))
-                : <div className="panel empty-state"><h3>No wanted tapes yet</h3><p className="small">Add a few grails so your thrift hunts have a mission.</p></div>}
+              {wishlist.length ? (
+                wishlist
+                  .slice()
+                  .sort((a,b) => {
+                    const order = {High:0, Medium:1, Low:2};
+                    return (order[a.priority || 'Medium'] ?? 1) - (order[b.priority || 'Medium'] ?? 1);
+                  })
+                  .map(item => (
+                    <article
+                      className={`wishlist-card priority-${(item.priority || 'Medium').toLowerCase()} ${editingWishlist?.id === item.id ? 'editing' : ''}`}
+                      key={item.id}
+                      onClick={()=>setEditingWishlist(item)}
+                      role="button"
+                      tabIndex="0"
+                    >
+                      <div className="wishlist-card-top">
+                        <span className="wishlist-priority">{item.priority || 'Medium'} Priority</span>
+                        <button type="button" className="secondary danger-lite" onClick={(e)=>{e.stopPropagation(); removeWishlistItem(item.id);}}>Remove</button>
+                      </div>
+                      <h3>{item.title}</h3>
+                      <div className="small">{item.vhsYear || 'No year'} • {item.studio || 'Unknown studio'}</div>
+                      <div className="badge-row">
+                        <span className="tag alt">{item.edition || 'Wanted'}</span>
+                        <span className="mini-badge">{item.packaging || 'Sleeve'}</span>
+                        <span className="mini-badge">{item.genre || 'Other'}</span>
+                      </div>
+                      {item.notes && <p className="wishlist-notes">{item.notes}</p>}
+                      <button type="button" className="found-it-button" onClick={(e)=>{e.stopPropagation(); foundWishlistItem(item);}}>📼 Found It!</button>
+                    </article>
+                  ))
+              ) : (
+                <div className="panel empty-state"><h3>No wanted tapes yet</h3><p className="small">Add a few grails so your thrift hunts have a mission.</p></div>
+              )}
             </section>
           </>
         )}
@@ -1576,6 +1659,16 @@ function pickMovieNight(){
             }}
           >
             {openingTape.img ? <img src={openingTape.img} alt="" /> : <div className="tape-open-title">{openingTape.title}</div>}
+          </div>
+        </div>
+      )}
+
+      {foundCelebration && (
+        <div className="found-stamp-overlay" aria-hidden="true">
+          <div className="found-stamp-card">
+            <div className="found-stamp-tape">📼</div>
+            <div className="found-stamp-text">ADDED TO COLLECTION</div>
+            <div className="found-stamp-title">{foundCelebration.title}</div>
           </div>
         </div>
       )}

@@ -2933,3 +2933,111 @@ main.app-scroll{
   border-top:1px solid rgba(148,163,184,.18);
   padding-top:14px;
 }
+
+
+/* 8.7.2 Editable Wishlist + Found It Stamp */
+.wishlist-card{
+  cursor:pointer;
+  transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.wishlist-card:hover,
+.wishlist-card.editing{
+  transform:translateY(-2px);
+  border-color:rgba(255,213,31,.45);
+  box-shadow:0 20px 46px rgba(0,0,0,.42), 0 0 24px rgba(255,213,31,.10);
+}
+
+.wishlist-edit-panel{
+  margin-top:14px;
+  border-color:rgba(255,213,31,.28);
+  box-shadow:0 18px 44px rgba(0,0,0,.36), inset 0 0 30px rgba(255,213,31,.04);
+}
+
+.wishlist-edit-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.wishlist-edit-actions{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-top:4px;
+}
+
+.found-stamp-overlay{
+  position:fixed;
+  inset:0;
+  z-index:11000;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(1,7,24,.28);
+  backdrop-filter:blur(3px);
+  animation:foundOverlayFade .86s ease forwards;
+}
+
+.found-stamp-card{
+  width:min(340px,86vw);
+  border-radius:26px;
+  padding:24px 20px;
+  text-align:center;
+  border:2px solid rgba(74,222,128,.72);
+  background:
+    radial-gradient(circle at top,rgba(74,222,128,.22),transparent 42%),
+    linear-gradient(145deg,rgba(3,30,38,.96),rgba(1,10,24,.98));
+  box-shadow:0 28px 90px rgba(0,0,0,.65), 0 0 42px rgba(74,222,128,.25);
+  animation:foundStampPop .86s cubic-bezier(.15,1.15,.2,1) forwards;
+}
+
+.found-stamp-tape{
+  font-size:2.8rem;
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.35));
+}
+
+.found-stamp-text{
+  display:inline-block;
+  margin-top:10px;
+  padding:9px 14px;
+  border:3px solid rgba(74,222,128,.95);
+  border-radius:10px;
+  color:#bbf7d0;
+  font-weight:1000;
+  letter-spacing:1.6px;
+  transform:rotate(-4deg);
+  text-transform:uppercase;
+  text-shadow:0 0 12px rgba(74,222,128,.36);
+}
+
+.found-stamp-title{
+  margin-top:16px;
+  color:#f8fafc;
+  font-weight:900;
+  font-size:1.05rem;
+}
+
+@keyframes foundOverlayFade{
+  0%{opacity:0;}
+  12%{opacity:1;}
+  82%{opacity:1;}
+  100%{opacity:0;}
+}
+
+@keyframes foundStampPop{
+  0%{transform:scale(.72) rotate(-8deg); opacity:0;}
+  28%{transform:scale(1.08) rotate(2deg); opacity:1;}
+  46%{transform:scale(.98) rotate(-2deg);}
+  100%{transform:scale(1) rotate(0deg); opacity:1;}
+}
+
+@media(min-width:620px){
+  .wishlist-edit-actions{
+    grid-template-columns:1fr 1fr auto;
+    align-items:center;
+  }
+}
