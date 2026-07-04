@@ -1,5 +1,10 @@
 # VHS Archive Changelog
 
+## v8.7.6 — One-Motion Tape Transition
+- Rebuilt the tape-open transition as a two-state CSS transition.
+- Tape now expands and fades at the same time in one continuous motion.
+- Removed midpoint keyframes from the active tape-open animation.
+
 ## v8.7.5 — Repository Cleanup + Home Stats Fix
 - Removed old separate `CHANGELOG_*.txt` files.
 - Kept one combined `CHANGELOG.md` going forward.

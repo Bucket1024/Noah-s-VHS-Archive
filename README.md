@@ -1,16 +1,13 @@
-# VHS Archive 8.7.5 — Repository Cleanup
+# VHS Archive 8.7.6 — One-Motion Tape Transition
 
-8.7.5 cleans up the repository and fixes the Home stats update.
+8.7.6 refines the Browse tape-opening animation.
 
-## New in 8.7.5
+## New in 8.7.6
 
-- Removed excess `CHANGELOG_*.txt` files
-- Kept one combined `CHANGELOG.md`
-- Removed old reupload/helper instruction files
-- Home stats now only show Inventory and Wishlist
-- Inventory opens Browse
-- Wishlist opens Wishlist
+- Tape expands and fades at the same time
+- Uses a two-state CSS transition instead of multi-step keyframes
+- Keeps Wishlist, Movie Night, SFX, Settings, backup, and cleanup unchanged
 
 ## Suggested commit message
 
-Release 8.7.5 - Repository Cleanup
+Release 8.7.6 - One Motion Tape Transition

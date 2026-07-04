@@ -3107,3 +3107,63 @@ main.app-scroll{
     grid-template-columns:repeat(2,minmax(0,1fr));
   }
 }
+
+
+/* 8.7.6 One-Motion Tape Transition
+   Two-state transition only: start position -> full-screen transparent. */
+.one-motion-tape-stage{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  overflow:hidden;
+  background:rgba(1,7,24,0);
+}
+
+.one-motion-tape-open{
+  position:fixed;
+  left:0;
+  top:0;
+  width:var(--start-w);
+  height:var(--start-h);
+  border-radius:18px;
+  overflow:hidden;
+  transform-origin:center center;
+  transform:translate3d(var(--start-x), var(--start-y), 0) scale(1);
+  opacity:1;
+  transition:
+    transform 720ms cubic-bezier(.22,.72,.12,1),
+    opacity 720ms linear,
+    border-radius 720ms ease,
+    box-shadow 720ms ease;
+  will-change:transform, opacity;
+  box-shadow:0 18px 46px rgba(0,0,0,.52);
+  backface-visibility:hidden;
+  animation:none!important;
+}
+
+.one-motion-tape-open.active{
+  transform:translate3d(
+    calc(var(--start-x) + var(--move-x)),
+    calc(var(--start-y) + var(--move-y)),
+    0
+  ) scale(calc(var(--open-scale) * 1.04));
+  opacity:0;
+  border-radius:6px;
+  box-shadow:0 30px 80px rgba(0,0,0,.62);
+}
+
+.one-motion-tape-open img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .one-motion-tape-open{
+    transition:none!important;
+  }
+}
