@@ -1,13 +1,13 @@
-# VHS Archive 8.7.8 — Strong Swipe-Back Overlay Guard
+# VHS Archive 8.7.9 — Swipe-Back Ghost Frame Suppression
 
-8.7.8 strengthens the fix for the tape ghost frame during swipe-back.
+8.7.9 keeps left-edge swipe while hiding the tape overlay during back navigation.
 
-## New in 8.7.8
+## New in 8.7.9
 
-- Tape overlay only renders during Browse
-- Pending tape-open timers are cancelled on back navigation
-- Keeps the v8.7.6 one-motion tape transition
+- Left-edge swipe remains enabled
+- Tape overlay is hidden as soon as swipe-back begins
+- Keeps the one-motion tape transition
 
 ## Suggested commit message
 
-Release 8.7.8 - Strong Swipe Back Overlay Guard
+Release 8.7.9 - Swipe Back Ghost Frame Suppression
