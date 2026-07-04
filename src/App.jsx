@@ -266,6 +266,7 @@ export default function App(){
   const [isStandalone,setIsStandalone] = useState(() => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone);
   const [form,setForm] = useState({});
   const [quickRows,setQuickRows] = useState('');
+  const [wishlistFormOpen,setWishlistFormOpen] = useState(false);
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
 
@@ -1153,6 +1154,7 @@ function pickMovieNight(){
 
     setWishlist(prev => [item, ...prev]);
     form.reset();
+    setWishlistFormOpen(false);
     notify('Added to wishlist.');
   }
 
@@ -1260,7 +1262,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.1</div></div>
         </div>
       </header>
 
@@ -1325,18 +1327,33 @@ function pickMovieNight(){
               <div className="wishlist-count"><strong>{wishlist.length}</strong><span>wanted</span></div>
             </section>
 
-            <form className="panel formgrid wishlist-form" onSubmit={addWishlistItem}>
-              <h3>Add Wanted Tape</h3>
-              <label>Title</label><input name="wishlistTitle" placeholder="Back to the Future widescreen" />
-              <label>VHS Release Year</label><input name="wishlistYear" placeholder="Optional" />
-              <label>Studio / Distributor</label><input name="wishlistStudio" placeholder="Optional" />
-              <label>Edition</label><input name="wishlistEdition" placeholder="Widescreen, Screener, Big Box..." />
-              <label>Packaging</label><select name="wishlistPackaging"><option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option><option>Big Box</option></select>
-              <label>Genre</label><select name="wishlistGenre">{genreOptions.map(g=><option key={g}>{g}</option>)}</select>
-              <label>Priority</label><select name="wishlistPriority"><option>High</option><option>Medium</option><option>Low</option></select>
-              <label>Notes</label><textarea name="wishlistNotes" rows="3" placeholder="Condition, edition, price limit, thrift notes..." />
-              <button>Add to Wishlist</button>
-            </form>
+            <section className="panel wishlist-add-panel">
+              <button
+                type="button"
+                className="wishlist-toggle"
+                onClick={()=>setWishlistFormOpen(v=>!v)}
+                aria-expanded={wishlistFormOpen}
+              >
+                <span>{wishlistFormOpen ? '−' : '+'}</span>
+                {wishlistFormOpen ? 'Hide Add Wanted Tape' : 'Add Wanted Tape'}
+              </button>
+
+              {wishlistFormOpen && (
+                <form className="formgrid wishlist-form compact-wishlist-form" onSubmit={addWishlistItem}>
+                  <h3>Add Wanted Tape</h3>
+                  <label>Title</label><input name="wishlistTitle" placeholder="Back to the Future widescreen" />
+                  <label>VHS Release Year</label><input name="wishlistYear" placeholder="Optional" />
+                  <label>Studio / Distributor</label><input name="wishlistStudio" placeholder="Optional" />
+                  <label>Edition</label><input name="wishlistEdition" placeholder="Widescreen, Screener, Big Box..." />
+                  <label>Packaging</label><select name="wishlistPackaging"><option>Sleeve</option><option>Cardboard Sleeve</option><option>Clamshell</option><option>Big Box</option></select>
+                  <label>Genre</label><select name="wishlistGenre">{genreOptions.map(g=><option key={g}>{g}</option>)}</select>
+                  <label>Priority</label><select name="wishlistPriority"><option>High</option><option>Medium</option><option>Low</option></select>
+                  <label>Notes</label><textarea name="wishlistNotes" rows="3" placeholder="Condition, edition, price limit, thrift notes..." />
+                  <button>Add to Wishlist</button>
+                </form>
+              )}
+            </section>
+
 
             <section className="wishlist-grid">
               {wishlist.length ? wishlist

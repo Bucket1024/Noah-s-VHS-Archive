@@ -2898,3 +2898,38 @@ main.app-scroll{
     width:100%;
   }
 }
+
+
+/* 8.7.1 Collapsed Wishlist Add Form */
+.wishlist-add-panel{
+  margin-top:14px;
+  padding:12px;
+}
+
+.wishlist-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-weight:900;
+  border-radius:16px;
+}
+
+.wishlist-toggle span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  border-radius:999px;
+  background:rgba(6,18,37,.22);
+  font-size:1.25rem;
+  line-height:1;
+}
+
+.compact-wishlist-form{
+  margin-top:14px;
+  border-top:1px solid rgba(148,163,184,.18);
+  padding-top:14px;
+}
