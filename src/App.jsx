@@ -300,6 +300,8 @@ export default function App(){
   }, [tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
+  // 8.7.7 overlay cleanup effect
+  useEffect(()=>{ if(view !== 'detail') setOpeningTape(null); },[view]);
   useEffect(()=>{
     if(selectedId) sessionStorage.setItem('noahVhs6_selectedTape', selectedId);
   },[selectedId]);
@@ -413,6 +415,10 @@ export default function App(){
     setTimeout(() => {
       try{ ctx.close(); }catch(error){}
     }, Math.ceil((Math.max(...steps.map(s => s.at + s.dur)) + 0.4) * 1000));
+  }
+
+  function clearTapeOpenOverlay(){
+    setOpeningTape(null);
   }
 
   function playPrizeWheelSpin(){
@@ -672,6 +678,7 @@ export default function App(){
   }
 
   function goToView(nextView, options = {}){
+    clearTapeOpenOverlay();
     if(nextView === 'browse'){
       if(options.resetBrowse || view === 'browse'){
         setQuery('');
@@ -707,6 +714,7 @@ export default function App(){
   }
 
   function goBackInApp(){
+    clearTapeOpenOverlay();
     if(viewerPhoto){ closePhotoViewer(); return; }
     if(view === 'detail'){ backToBrowse(); return; }
     const previous = viewHistoryRef.current.pop();
@@ -721,6 +729,7 @@ export default function App(){
   }
 
   function openTape(id, sourceEl = null){
+    clearTapeOpenOverlay();
     const tape = tapes.find(t => t.id === id);
     const img = tape ? mainImage(tape, photoLibrary) : '';
 
@@ -775,6 +784,7 @@ export default function App(){
   }
 
   function backToBrowse(){
+    clearTapeOpenOverlay();
     goToView('browse');
     restoreScrollPosition('browse');
   }
@@ -811,6 +821,7 @@ export default function App(){
       const dx = touch.clientX - start.x;
       const dy = Math.abs(touch.clientY - start.y);
       if(dx > 70 && dy < 60 && Date.now() - start.time < 800){
+        clearTapeOpenOverlay();
         goBackInApp();
       }
     };
@@ -1323,7 +1334,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.6</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.7</div></div>
         </div>
       </header>
 

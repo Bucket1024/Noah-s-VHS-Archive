@@ -1,13 +1,13 @@
-# VHS Archive 8.7.6 — One-Motion Tape Transition
+# VHS Archive 8.7.7 — Swipe-Back Overlay Fix
 
-8.7.6 refines the Browse tape-opening animation.
+8.7.7 fixes a small visual glitch after the new one-motion tape transition.
 
-## New in 8.7.6
+## New in 8.7.7
 
-- Tape expands and fades at the same time
-- Uses a two-state CSS transition instead of multi-step keyframes
-- Keeps Wishlist, Movie Night, SFX, Settings, backup, and cleanup unchanged
+- Clears the tape-open overlay before back navigation
+- Fixes the brief ghost tape during left-edge swipe-back
+- Keeps the v8.7.6 one-motion tape transition
 
 ## Suggested commit message
 
-Release 8.7.6 - One Motion Tape Transition
+Release 8.7.7 - Swipe Back Overlay Fix
