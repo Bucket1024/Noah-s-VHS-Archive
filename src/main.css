@@ -3167,12 +3167,3 @@ main.app-scroll{
     transition:none!important;
   }
 }
-
-
-/* 8.7.9 Back Navigation Overlay Suppression */
-.is-navigating-back ~ .tape-open-stage,
-body:has(.is-navigating-back) .tape-open-stage{
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}

@@ -242,7 +242,6 @@ export default function App(){
   const [selectedId,setSelectedId] = useState(() => sessionStorage.getItem('noahVhs6_selectedTape') || null);
   const [selectedPhoto,setSelectedPhoto] = useState(0);
   const [openingTape,setOpeningTape] = useState(null);
-  const [isNavigatingBack,setIsNavigatingBack] = useState(false);
   const [photoLibrary,setPhotoLibrary] = useState({});
   const [viewerPhoto,setViewerPhoto] = useState(null);
   const [viewerZoom,setViewerZoom] = useState(1);
@@ -261,8 +260,6 @@ export default function App(){
   const appReturnTimerRef = useRef(null);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
-  const backNavTimerRef = useRef(null);
-  const tapeOpenTimersRef = useRef([]);
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -303,10 +300,6 @@ export default function App(){
   }, [tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
-  // 8.7.9 reset back navigation flag
-  useEffect(()=>{ if(isNavigatingBack){ const t = setTimeout(()=>setIsNavigatingBack(false), 220); return ()=>clearTimeout(t); } },[view, isNavigatingBack]);
-  // 8.7.8 overlay cleanup effect
-  useEffect(()=>{ if(view !== 'browse') clearTapeOpenOverlay(); },[view]);
   useEffect(()=>{
     if(selectedId) sessionStorage.setItem('noahVhs6_selectedTape', selectedId);
   },[selectedId]);
@@ -420,33 +413,6 @@ export default function App(){
     setTimeout(() => {
       try{ ctx.close(); }catch(error){}
     }, Math.ceil((Math.max(...steps.map(s => s.at + s.dur)) + 0.4) * 1000));
-  }
-
-  function cancelTapeOpenTimers(){
-    tapeOpenTimersRef.current.forEach(timer => clearTimeout(timer));
-    tapeOpenTimersRef.current = [];
-  }
-
-  function clearTapeOpenOverlay(){
-    cancelTapeOpenTimers();
-    setOpeningTape(null);
-  }
-
-  function beginBackNavigation(){
-    setIsNavigatingBack(true);
-    setOpeningTape(null);
-    if(typeof cancelTapeOpenTimers === 'function') cancelTapeOpenTimers();
-    if(backNavTimerRef.current) clearTimeout(backNavTimerRef.current);
-    backNavTimerRef.current = setTimeout(() => setIsNavigatingBack(false), 260);
-  }
-
-  function scheduleTapeOpenTimer(callback, delay){
-    const timer = setTimeout(() => {
-      tapeOpenTimersRef.current = tapeOpenTimersRef.current.filter(t => t !== timer);
-      callback();
-    }, delay);
-    tapeOpenTimersRef.current.push(timer);
-    return timer;
   }
 
   function playPrizeWheelSpin(){
@@ -706,7 +672,6 @@ export default function App(){
   }
 
   function goToView(nextView, options = {}){
-    clearTapeOpenOverlay();
     if(nextView === 'browse'){
       if(options.resetBrowse || view === 'browse'){
         setQuery('');
@@ -742,8 +707,6 @@ export default function App(){
   }
 
   function goBackInApp(){
-    beginBackNavigation();
-    clearTapeOpenOverlay();
     if(viewerPhoto){ closePhotoViewer(); return; }
     if(view === 'detail'){ backToBrowse(); return; }
     const previous = viewHistoryRef.current.pop();
@@ -758,8 +721,6 @@ export default function App(){
   }
 
   function openTape(id, sourceEl = null){
-    clearTapeOpenOverlay();
-
     const tape = tapes.find(t => t.id === id);
     const img = tape ? mainImage(tape, photoLibrary) : '';
 
@@ -776,7 +737,7 @@ export default function App(){
       setTimeout(() => scrollAreaRef.current?.scrollTo({top:0, behavior:'auto'}), 20);
     };
 
-    if(sourceEl && tape && view === 'browse' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    if(sourceEl && tape && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       const rect = sourceEl.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 390;
       const viewportH = window.innerHeight || document.documentElement.clientHeight || 760;
@@ -806,16 +767,14 @@ export default function App(){
         });
       });
 
-      scheduleTapeOpenTimer(switchToDetail, 300);
-      scheduleTapeOpenTimer(() => setOpeningTape(null), 760);
+      setTimeout(switchToDetail, 300);
+      setTimeout(() => setOpeningTape(null), 760);
     } else {
       switchToDetail();
     }
   }
 
   function backToBrowse(){
-    beginBackNavigation();
-    clearTapeOpenOverlay();
     goToView('browse');
     restoreScrollPosition('browse');
   }
@@ -838,7 +797,6 @@ export default function App(){
       const touch = e.touches?.[0];
       if(!touch) return;
       if(touch.clientX <= 24){
-        beginBackNavigation();
         touchStartRef.current = {x:touch.clientX, y:touch.clientY, time:Date.now()};
       } else {
         touchStartRef.current = null;
@@ -853,7 +811,6 @@ export default function App(){
       const dx = touch.clientX - start.x;
       const dy = Math.abs(touch.clientY - start.y);
       if(dx > 70 && dy < 60 && Date.now() - start.time < 800){
-        beginBackNavigation();
         goBackInApp();
       }
     };
@@ -1366,11 +1323,11 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.9</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.6</div></div>
         </div>
       </header>
 
-      <main ref={scrollAreaRef} className={`app-scroll ${isNavigatingBack ? "is-navigating-back" : ""}`}>
+      <main ref={scrollAreaRef} className="app-scroll">
         {view === 'home' && (
           <>
             <section className="hero">
@@ -1704,7 +1661,7 @@ function pickMovieNight(){
       <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
-      {view === 'browse' && !isNavigatingBack && openingTape && (
+      {openingTape && (
         <div className="tape-open-stage one-motion-tape-stage" aria-hidden="true">
           <div
             className={`tape-open-overlay one-motion-tape-open ${openingTape.active ? 'active' : ''}`}
