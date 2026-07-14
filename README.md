@@ -1,19 +1,17 @@
-# VHS Archive 8.8.1 — Stable Theme Music
+# VHS Archive 8.8.2 — Hardware Photo Persistence
 
-Version 8.8.1 simplifies the theme music system after the recovery code caused repeated stopping.
+Version 8.8.2 fixes hardware photos disappearing after the app is refreshed or reopened.
 
 ## Changes
 
-- One persistent theme-music audio element
-- No repeated `.load()` calls
-- No source replacement or recovery loop
-- Music toggle directly starts or pauses playback
-- Backgrounding pauses music
-- Returning attempts one resume
-- If Chrome blocks playback, the app waits for the next user interaction
-- Movie Night SFX remains unchanged
-- My Hardware remains unchanged
+- Hardware photos reload from IndexedDB on startup
+- Hardware photos persist after refresh and reopening
+- Tap hardware photos to inspect them full screen
+- Pinch to zoom and drag to move
+- Use +, −, Reset, or the Back button
+- Swipe from the left edge to close the viewer
+- Stable theme music and all 8.8 hardware features remain intact
 
 ## Suggested commit message
 
-Release 8.8.1 - Stable Theme Music
+Release 8.8.2 - Hardware Photo Persistence

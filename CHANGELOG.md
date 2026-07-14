@@ -1,5 +1,13 @@
 # VHS Archive Changelog
 
+## v8.8.2 — Hardware Photo Persistence
+- Hardware photo IDs are now loaded from IndexedDB whenever the app starts.
+- Hardware photos remain visible after refreshing, closing, or reopening the app.
+- Hardware photos can now be tapped to open the existing full-screen photo viewer.
+- Added pinch zoom, drag, zoom buttons, Reset, and a clear Back button for hardware photos.
+- Left-edge swipe closes the hardware photo viewer and returns to the previous screen.
+- Stable theme music from v8.8.1 is preserved.
+
 ## v8.8.1 — Stable Theme Music
 - Removed the aggressive music reload and recovery loop.
 - Theme music now uses one persistent audio element for the lifetime of the app.

@@ -286,6 +286,7 @@ export default function App(){
   const [viewerZoom,setViewerZoom] = useState(1);
   const [viewerOffset,setViewerOffset] = useState({x:0,y:0});
   const viewerGestureRef = useRef({mode:null,startDistance:0,startZoom:1,startX:0,startY:0,startOffset:{x:0,y:0}});
+  const viewerBackSwipeRef = useRef(null);
   const [scrollPositions,setScrollPositions] = useState({});
   const scrollAreaRef = useRef(null);
   const importBackupRef = useRef(null);
@@ -325,6 +326,11 @@ export default function App(){
           if(p?.photoId) ids.push(p.photoId);
         });
       });
+
+      hardware.forEach(item => {
+        if(item?.photo?.photoId) ids.push(item.photo.photoId);
+      });
+
       const missing = [...new Set(ids)].filter(id => id && !photoLibrary[id]);
       if(!missing.length) return;
       const loaded = {};
@@ -340,7 +346,7 @@ export default function App(){
     }
     loadPhotoRefsFromIndexedDb();
     return () => { cancelled = true; };
-  }, [tapes]);
+  }, [tapes, hardware]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
   useEffect(()=>{localStorage.setItem('noahVhs6_hardware', JSON.stringify(hardware));},[hardware]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
@@ -626,10 +632,13 @@ export default function App(){
   function openPhotoViewer(photo){
     setViewerZoom(1);
     setViewerOffset({x:0,y:0});
+    viewerBackSwipeRef.current = null;
     setViewerPhoto(photo);
+    try{ window.history.pushState({vhsView:view, photoViewer:true}, '', window.location.href); }catch(error){}
   }
 
   function closePhotoViewer(){
+    viewerBackSwipeRef.current = null;
     setViewerPhoto(null);
     setViewerZoom(1);
     setViewerOffset({x:0,y:0});
@@ -649,6 +658,18 @@ export default function App(){
   }
 
   function handleViewerTouchStart(e){
+    if(e.touches.length === 1 && e.touches[0].clientX <= 28){
+      viewerBackSwipeRef.current = {
+        x:e.touches[0].clientX,
+        y:e.touches[0].clientY,
+        time:Date.now()
+      };
+      viewerGestureRef.current = {mode:'back',startDistance:0,startZoom:viewerZoom,startX:0,startY:0,startOffset:viewerOffset};
+      return;
+    }
+
+    viewerBackSwipeRef.current = null;
+
     if(e.touches.length === 2){
       viewerGestureRef.current = {
         mode:'pinch',
@@ -672,6 +693,7 @@ export default function App(){
 
   function handleViewerTouchMove(e){
     if(!viewerPhoto) return;
+    if(viewerGestureRef.current.mode === 'back') return;
     if(e.touches.length === 2 && viewerGestureRef.current.mode === 'pinch'){
       e.preventDefault();
       const dist = getTouchDistance(e.touches);
@@ -690,8 +712,26 @@ export default function App(){
     }
   }
 
-  function handleViewerTouchEnd(){
+  function handleViewerTouchEnd(e){
+    const backStart = viewerBackSwipeRef.current;
+    const endTouch = e.changedTouches?.[0];
+
+    if(backStart && endTouch){
+      const dx = endTouch.clientX - backStart.x;
+      const dy = Math.abs(endTouch.clientY - backStart.y);
+      const elapsed = Date.now() - backStart.time;
+      viewerBackSwipeRef.current = null;
+      viewerGestureRef.current = {mode:null,startDistance:0,startZoom:viewerZoom,startX:0,startY:0,startOffset:viewerOffset};
+
+      if(dx > 70 && dy < 70 && elapsed < 900){
+        closePhotoViewer();
+        return;
+      }
+    }
+
+    viewerBackSwipeRef.current = null;
     viewerGestureRef.current = {mode:null,startDistance:0,startZoom:viewerZoom,startX:0,startY:0,startOffset:viewerOffset};
+
     if(viewerZoom <= 1.02){
       setViewerZoom(1);
       setViewerOffset({x:0,y:0});
@@ -1545,7 +1585,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.1</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.2</div></div>
         </div>
       </header>
 
@@ -1947,7 +1987,23 @@ function pickMovieNight(){
                             onClick={()=>setEditingHardware(isEditing ? null : item)}
                             aria-expanded={isEditing}
                           >
-                            <div className="hardware-card-photo">
+                            <div
+                              className={`hardware-card-photo ${photoSrc ? 'clickable-photo' : ''}`}
+                              role={photoSrc ? 'button' : undefined}
+                              tabIndex={photoSrc ? 0 : undefined}
+                              title={photoSrc ? 'View and zoom hardware photo' : undefined}
+                              onClick={(e)=>{
+                                if(!photoSrc) return;
+                                e.stopPropagation();
+                                openPhotoViewer({src:photoSrc, label:displayName, kind:'hardware'});
+                              }}
+                              onKeyDown={(e)=>{
+                                if(!photoSrc || (e.key !== 'Enter' && e.key !== ' ')) return;
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openPhotoViewer({src:photoSrc, label:displayName, kind:'hardware'});
+                              }}
+                            >
                               {photoSrc
                                 ? <img src={photoSrc} alt={`${displayName} hardware`} />
                                 : <span>{hardwareIcon(item.type)}</span>}
@@ -2009,7 +2065,15 @@ function pickMovieNight(){
 
                               {photoSrc && (
                                 <div className="hardware-edit-photo">
-                                  <img src={photoSrc} alt={`${displayName} hardware`} />
+                                  <button
+                                    type="button"
+                                    className="hardware-edit-photo-view"
+                                    onClick={()=>openPhotoViewer({src:photoSrc, label:displayName, kind:'hardware'})}
+                                    title="View and zoom hardware photo"
+                                  >
+                                    <img src={photoSrc} alt={`${displayName} hardware`} />
+                                    <span>Tap to inspect and zoom</span>
+                                  </button>
                                   <button type="button" className="secondary danger-lite" onClick={()=>removeHardwarePhoto(editingHardware)}>Remove Photo</button>
                                 </div>
                               )}
@@ -2164,13 +2228,13 @@ function pickMovieNight(){
         <div className="photo-viewer-overlay">
           <div className="photo-viewer-card zoomable">
             <div className="photo-viewer-head">
-              <strong>{viewerPhoto.label || 'Tape Photo'}</strong>
+              <strong>{viewerPhoto.label || (viewerPhoto.kind === 'hardware' ? 'Hardware Photo' : 'Tape Photo')}</strong>
               <div className="zoom-controls">
                 <button type="button" className="secondary" onClick={() => zoomPhoto(-0.5)}>−</button>
                 <span>{Math.round(viewerZoom * 100)}%</span>
                 <button type="button" className="secondary" onClick={() => zoomPhoto(0.5)}>+</button>
                 <button type="button" className="secondary" onClick={resetPhotoZoom}>Reset</button>
-                <button type="button" className="secondary close-viewer" onClick={closePhotoViewer}>Close</button>
+                <button type="button" className="secondary close-viewer" onClick={closePhotoViewer}>← Back</button>
               </div>
             </div>
             <div
@@ -2186,7 +2250,7 @@ function pickMovieNight(){
                 onDoubleClick={() => viewerZoom > 1 ? resetPhotoZoom() : setViewerZoom(2)}
               />
             </div>
-            <div className="photo-viewer-note">Pinch to zoom, drag to move, or use + / −. Tap Close to return.</div>
+            <div className="photo-viewer-note">Pinch to zoom, drag to move, or use + / −. Tap Back or swipe from the left edge to return.</div>
           </div>
         </div>
       )}
