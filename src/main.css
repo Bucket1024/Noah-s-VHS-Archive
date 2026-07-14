@@ -3167,3 +3167,10 @@ main.app-scroll{
     transition:none!important;
   }
 }
+
+
+/* 8.7.7 Theme Music Recovery */
+.music-recovery-note{
+  margin-top:8px;
+  opacity:.72;
+}

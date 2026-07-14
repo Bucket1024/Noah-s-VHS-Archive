@@ -1,5 +1,13 @@
 # VHS Archive Changelog
 
+## v8.7.7 — Theme Music Recovery
+- Reloads the theme audio file when Chrome reports a loading or source error.
+- Uses a cache-busted, GitHub Pages-safe music URL.
+- Explicitly resets muted state, volume, looping, and playback state.
+- Retries playback after the audio becomes ready.
+- Shows a message when music cannot start instead of silently remaining enabled.
+- Movie Night SFX is unchanged.
+
 ## v8.7.9 — Swipe-Back Ghost Frame Suppression
 - Keeps left-edge swipe enabled.
 - Adds a back-navigation hide state to suppress the tape overlay during swipe-back.
