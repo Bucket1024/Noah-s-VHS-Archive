@@ -76,6 +76,41 @@ function normalizeTape(t){
   };
 }
 
+function normalizeHardwareItem(item){
+  return {
+    id: item?.id || 'HW-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    type: item?.type || 'VCR',
+    brand: item?.brand || '',
+    model: item?.model || '',
+    year: item?.year || '',
+    condition: item?.condition || '',
+    connections: item?.connections || '',
+    notes: item?.notes || '',
+    photo: item?.photo || null,
+    currentSetup: Boolean(item?.currentSetup),
+    createdAt: item?.createdAt || new Date().toISOString()
+  };
+}
+
+function hardwareIcon(type){
+  const icons = {
+    'Television':'📺',
+    'VCR':'📼',
+    'DVD Player':'📀',
+    'DVD/VCR Combo':'📼',
+    'LaserDisc Player':'💿',
+    'Projector':'🎞️',
+    'Tape Rewinder':'🔄',
+    'AV Accessory':'🎛️',
+    'RF Modulator':'📡',
+    'Converter / Adapter':'🔌',
+    'Remote Control':'🎚️',
+    'Other':'🧰'
+  };
+  return icons[type] || '🧰';
+}
+
+
 function normalizeWishlistItem(item){
   return {
     id: item?.id || 'WISH-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
@@ -234,6 +269,10 @@ export default function App(){
     const saved = localStorage.getItem('noahVhs6_wishlist');
     return saved ? JSON.parse(saved).map(normalizeWishlistItem) : [];
   });
+  const [hardware,setHardware] = useState(() => {
+    const saved = localStorage.getItem('noahVhs6_hardware');
+    return saved ? JSON.parse(saved).map(normalizeHardwareItem) : [];
+  });
   const [view,setView] = useState(() => sessionStorage.getItem('noahVhs6_lastView') || 'home');
   const [query,setQuery] = useState('');
   const [pkg,setPkg] = useState(''); // 8.0: pkg now stores genre filter
@@ -270,6 +309,9 @@ export default function App(){
   const [wishlistFormOpen,setWishlistFormOpen] = useState(false);
   const [editingWishlist,setEditingWishlist] = useState(null);
   const [foundCelebration,setFoundCelebration] = useState(null);
+  const [hardwareSectionOpen,setHardwareSectionOpen] = useState(false);
+  const [hardwareFormOpen,setHardwareFormOpen] = useState(false);
+  const [editingHardware,setEditingHardware] = useState(null);
 
   useEffect(()=>{localStorage.setItem('noahVhs6_tapes', JSON.stringify(tapes));},[tapes]);
 
@@ -300,6 +342,7 @@ export default function App(){
     return () => { cancelled = true; };
   }, [tapes]);
   useEffect(()=>{localStorage.setItem('noahVhs6_wishlist', JSON.stringify(wishlist));},[wishlist]);
+  useEffect(()=>{localStorage.setItem('noahVhs6_hardware', JSON.stringify(hardware));},[hardware]);
   useEffect(()=>{sessionStorage.setItem('noahVhs6_lastView', view);},[view]);
   useEffect(()=>{
     if(selectedId) sessionStorage.setItem('noahVhs6_selectedTape', selectedId);
@@ -1339,8 +1382,138 @@ function pickMovieNight(){
     }, 850);
   }
 
+  async function addHardwareItem(e){
+    e.preventDefault();
+    const formElement = e.currentTarget;
+    const fd = new FormData(formElement);
+    const brand = fd.get('hardwareBrand')?.trim();
+    const model = fd.get('hardwareModel')?.trim();
+
+    if(!brand && !model){
+      notify('Add a brand or model first.');
+      return;
+    }
+
+    const id = 'HW-' + Date.now() + '-' + Math.random().toString(36).slice(2,7);
+    let photo = null;
+    const photoFile = fd.get('hardwarePhoto');
+
+    if(photoFile && photoFile.size){
+      try{
+        photo = await saveTapePhoto(id, 'Hardware Photo', photoFile);
+      }catch(error){
+        notify('Hardware saved, but the photo could not be added.');
+      }
+    }
+
+    const item = normalizeHardwareItem({
+      id,
+      type: fd.get('hardwareType') || 'VCR',
+      brand,
+      model,
+      year: fd.get('hardwareYear') || '',
+      condition: fd.get('hardwareCondition') || '',
+      connections: fd.get('hardwareConnections') || '',
+      notes: fd.get('hardwareNotes') || '',
+      currentSetup: fd.get('hardwareCurrentSetup') === 'on',
+      photo
+    });
+
+    setHardware(prev => [item, ...prev]);
+    formElement.reset();
+    setHardwareFormOpen(false);
+    notify('Hardware added.');
+  }
+
+  async function updateHardwareItem(e){
+    e.preventDefault();
+    if(!editingHardware) return;
+
+    const formElement = e.currentTarget;
+    const fd = new FormData(formElement);
+    const brand = fd.get('editHardwareBrand')?.trim();
+    const model = fd.get('editHardwareModel')?.trim();
+
+    if(!brand && !model){
+      notify('Add a brand or model first.');
+      return;
+    }
+
+    let photo = editingHardware.photo || null;
+    const photoFile = fd.get('editHardwarePhoto');
+
+    if(photoFile && photoFile.size){
+      if(photo?.photoId){
+        idbDeletePhoto(photo.photoId).catch(()=>{});
+      }
+
+      try{
+        photo = await saveTapePhoto(editingHardware.id, 'Hardware Photo', photoFile);
+      }catch(error){
+        notify('Changes saved, but the new photo could not be added.');
+      }
+    }
+
+    const updated = normalizeHardwareItem({
+      ...editingHardware,
+      type: fd.get('editHardwareType') || 'VCR',
+      brand,
+      model,
+      year: fd.get('editHardwareYear') || '',
+      condition: fd.get('editHardwareCondition') || '',
+      connections: fd.get('editHardwareConnections') || '',
+      notes: fd.get('editHardwareNotes') || '',
+      currentSetup: fd.get('editHardwareCurrentSetup') === 'on',
+      photo
+    });
+
+    setHardware(prev => prev.map(item => item.id === updated.id ? updated : item));
+    setEditingHardware(null);
+    notify('Hardware details saved.');
+  }
+
+  function removeHardwareItem(item){
+    const name = [item.brand, item.model].filter(Boolean).join(' ') || item.type;
+    const confirmed = window.confirm(`Remove "${name}" from My Hardware?`);
+    if(!confirmed) return;
+
+    if(item.photo?.photoId){
+      idbDeletePhoto(item.photo.photoId).catch(()=>{});
+      setPhotoLibrary(prev => {
+        const next = {...prev};
+        delete next[item.photo.photoId];
+        return next;
+      });
+    }
+
+    setHardware(prev => prev.filter(h => h.id !== item.id));
+    if(editingHardware?.id === item.id) setEditingHardware(null);
+    notify('Hardware removed.');
+  }
+
+  function removeHardwarePhoto(item){
+    if(!item.photo) return;
+    const confirmed = window.confirm('Remove this hardware photo?');
+    if(!confirmed) return;
+
+    if(item.photo.photoId){
+      idbDeletePhoto(item.photo.photoId).catch(()=>{});
+      setPhotoLibrary(prev => {
+        const next = {...prev};
+        delete next[item.photo.photoId];
+        return next;
+      });
+    }
+
+    const updated = normalizeHardwareItem({...item, photo:null});
+    setHardware(prev => prev.map(h => h.id === item.id ? updated : h));
+    if(editingHardware?.id === item.id) setEditingHardware(updated);
+    notify('Hardware photo removed.');
+  }
+
   async function exportBackup(){
     const photos = {};
+
     for(const tape of tapes){
       for(const p of (tape.photos || [])){
         if(p.photoId){
@@ -1348,11 +1521,33 @@ function pickMovieNight(){
         }
       }
     }
-    const blob = new Blob([JSON.stringify({version:'7.5', tapes, wishlist, photos}, null, 2)], {type:'application/json'});
+
+    for(const item of hardware){
+      if(item.photo?.photoId){
+        photos[item.photo.photoId] = photoLibrary[item.photo.photoId] || await idbGetPhoto(item.photo.photoId).catch(() => '');
+      }
+    }
+
+    const backup = {
+      version:'8.8',
+      backupDate:new Date().toISOString(),
+      tapes,
+      wishlist,
+      hardware,
+      settings:{
+        musicEnabled,
+        sfxEnabled
+      },
+      photos
+    };
+
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'vhs-archive-7-5-backup.json';
+    a.download = `vhs-archive-8-8-backup-${new Date().toISOString().slice(0,10)}.json`;
     a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    notify(`Backup exported: ${tapes.length} tapes, ${wishlist.length} wishlist items, ${hardware.length} hardware items.`);
   }
 
   async function importBackupFile(file){
@@ -1367,6 +1562,8 @@ function pickMovieNight(){
 
       const importedTapes = Array.isArray(data) ? data : data.tapes;
       const importedWishlist = Array.isArray(data?.wishlist) ? data.wishlist : [];
+      const importedHardware = Array.isArray(data?.hardware) ? data.hardware : [];
+      const importedSettings = data?.settings && typeof data.settings === 'object' ? data.settings : {};
       const importedPhotos = data?.photos && typeof data.photos === 'object' ? data.photos : {};
 
       if(!Array.isArray(importedTapes)){
@@ -1375,7 +1572,7 @@ function pickMovieNight(){
       }
 
       const confirmed = window.confirm(
-        `Import backup with ${importedTapes.length} tapes? This will replace the current archive on this device.`
+        `Import backup with ${importedTapes.length} tapes, ${importedWishlist.length} wishlist items, and ${importedHardware.length} hardware items? This will replace the current archive on this device.`
       );
       if(!confirmed) return;
 
@@ -1395,13 +1592,25 @@ function pickMovieNight(){
       setPhotoLibrary(prev => ({...prev, ...newPhotoLibrary}));
       setTapes(importedTapes.map(normalizeTape));
       setWishlist(importedWishlist.map(normalizeWishlistItem));
+      setHardware(importedHardware.map(normalizeHardwareItem));
+
+      if(typeof importedSettings.musicEnabled === 'boolean'){
+        setMusicEnabled(importedSettings.musicEnabled);
+        localStorage.setItem('vhs_music_enabled', String(importedSettings.musicEnabled));
+      }
+
+      if(typeof importedSettings.sfxEnabled === 'boolean'){
+        setSfxEnabled(importedSettings.sfxEnabled);
+        localStorage.setItem('vhs_sfx_enabled', String(importedSettings.sfxEnabled));
+      }
+
       setSelectedId(null);
       setSelectedPhoto(0);
       setViewerPhoto(null);
       setView('home');
       sessionStorage.removeItem('noahVhs6_selectedTape');
 
-      notify('Backup imported.');
+      notify(`Backup imported: ${importedTapes.length} tapes, ${importedWishlist.length} wishlist items, ${importedHardware.length} hardware items.`);
     }catch(error){
       console.error(error);
       notify('Backup import failed.');
@@ -1417,7 +1626,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.7.7</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8</div></div>
         </div>
       </header>
 
@@ -1727,9 +1936,208 @@ function pickMovieNight(){
             <div className="panel"><h3>Collection Settings</h3><div className="stats">
               {Object.entries(stats).map(([k,v])=><div className="stat" key={k}><strong>{v}</strong><span>{k}</span></div>)}
             </div></div>
+            <section className="panel hardware-panel">
+              <button
+                type="button"
+                className="settings-section-toggle"
+                onClick={()=>setHardwareSectionOpen(v=>!v)}
+                aria-expanded={hardwareSectionOpen}
+              >
+                <span className="settings-section-toggle-icon">{hardwareSectionOpen ? '−' : '+'}</span>
+                <span className="settings-section-toggle-copy">
+                  <strong>📺 My Hardware</strong>
+                  <small>{hardware.length} item{hardware.length === 1 ? '' : 's'} catalogued</small>
+                </span>
+              </button>
+
+              {hardwareSectionOpen && (
+                <div className="hardware-section-content">
+                  <button
+                    type="button"
+                    className="hardware-add-toggle"
+                    onClick={()=>setHardwareFormOpen(v=>!v)}
+                  >
+                    {hardwareFormOpen ? '− Hide Add Hardware' : '+ Add Hardware'}
+                  </button>
+
+                  {hardwareFormOpen && (
+                    <form className="formgrid hardware-form" onSubmit={addHardwareItem}>
+                      <h3>Add Hardware</h3>
+
+                      <label>Hardware Type</label>
+                      <select name="hardwareType" defaultValue="VCR">
+                        <option>Television</option>
+                        <option>VCR</option>
+                        <option>DVD Player</option>
+                        <option>DVD/VCR Combo</option>
+                        <option>LaserDisc Player</option>
+                        <option>Projector</option>
+                        <option>Tape Rewinder</option>
+                        <option>AV Accessory</option>
+                        <option>RF Modulator</option>
+                        <option>Converter / Adapter</option>
+                        <option>Remote Control</option>
+                        <option>Other</option>
+                      </select>
+
+                      <label>Brand</label><input name="hardwareBrand" placeholder="JVC" />
+                      <label>Model</label><input name="hardwareModel" placeholder="HR-VP693U" />
+                      <label>Year (optional)</label><input name="hardwareYear" placeholder="1998" />
+
+                      <label>Condition</label>
+                      <select name="hardwareCondition">
+                        <option value="">Not set</option>
+                        <option>Mint</option>
+                        <option>Excellent</option>
+                        <option>Very Good</option>
+                        <option>Good</option>
+                        <option>Fair</option>
+                        <option>Poor</option>
+                        <option>Parts / Repair</option>
+                      </select>
+
+                      <label>Connections / Features</label>
+                      <input name="hardwareConnections" placeholder="Composite, S-Video, coaxial..." />
+
+                      <label>Notes</label>
+                      <textarea name="hardwareNotes" rows="4" placeholder="OEM remote included, repairs, quirks..." />
+
+                      <label>Photo (optional)</label>
+                      <input name="hardwarePhoto" type="file" accept="image/*" capture="environment" />
+
+                      <label className="hardware-checkbox">
+                        <input name="hardwareCurrentSetup" type="checkbox" />
+                        <span>Currently in use</span>
+                      </label>
+
+                      <button type="submit">Add Hardware</button>
+                    </form>
+                  )}
+
+                  <div className="hardware-list">
+                    {hardware.length ? hardware.map(item => {
+                      const photoSrc = item.photo ? resolvePhotoSrc(item.photo, photoLibrary) : '';
+                      const displayName = [item.brand, item.model].filter(Boolean).join(' ') || item.type;
+                      const isEditing = editingHardware?.id === item.id;
+
+                      return (
+                        <article className={`hardware-card ${isEditing ? 'editing' : ''}`} key={item.id}>
+                          <button
+                            type="button"
+                            className="hardware-card-summary"
+                            onClick={()=>setEditingHardware(isEditing ? null : item)}
+                            aria-expanded={isEditing}
+                          >
+                            <div className="hardware-card-photo">
+                              {photoSrc
+                                ? <img src={photoSrc} alt={`${displayName} hardware`} />
+                                : <span>{hardwareIcon(item.type)}</span>}
+                            </div>
+
+                            <div className="hardware-card-copy">
+                              <strong>{displayName}</strong>
+                              <span>{item.type}{item.year ? ` • ${item.year}` : ''}</span>
+                              <span>{item.condition || 'Condition not set'}</span>
+                            </div>
+
+                            <div className="hardware-card-badges">
+                              {item.currentSetup && <span className="current-setup-badge">★ In Use</span>}
+                              <span className="hardware-expand-icon">{isEditing ? '−' : '+'}</span>
+                            </div>
+                          </button>
+
+                          {isEditing && (
+                            <form className="formgrid hardware-inline-edit" onSubmit={updateHardwareItem}>
+                              <h3>Edit Hardware</h3>
+
+                              <label>Hardware Type</label>
+                              <select name="editHardwareType" defaultValue={editingHardware.type || 'VCR'}>
+                                <option>Television</option>
+                                <option>VCR</option>
+                                <option>DVD Player</option>
+                                <option>DVD/VCR Combo</option>
+                                <option>LaserDisc Player</option>
+                                <option>Projector</option>
+                                <option>Tape Rewinder</option>
+                                <option>AV Accessory</option>
+                                <option>RF Modulator</option>
+                                <option>Converter / Adapter</option>
+                                <option>Remote Control</option>
+                                <option>Other</option>
+                              </select>
+
+                              <label>Brand</label><input name="editHardwareBrand" defaultValue={editingHardware.brand} />
+                              <label>Model</label><input name="editHardwareModel" defaultValue={editingHardware.model} />
+                              <label>Year (optional)</label><input name="editHardwareYear" defaultValue={editingHardware.year} />
+
+                              <label>Condition</label>
+                              <select name="editHardwareCondition" defaultValue={editingHardware.condition || ''}>
+                                <option value="">Not set</option>
+                                <option>Mint</option>
+                                <option>Excellent</option>
+                                <option>Very Good</option>
+                                <option>Good</option>
+                                <option>Fair</option>
+                                <option>Poor</option>
+                                <option>Parts / Repair</option>
+                              </select>
+
+                              <label>Connections / Features</label>
+                              <input name="editHardwareConnections" defaultValue={editingHardware.connections} />
+
+                              <label>Notes</label>
+                              <textarea name="editHardwareNotes" rows="4" defaultValue={editingHardware.notes} />
+
+                              {photoSrc && (
+                                <div className="hardware-edit-photo">
+                                  <img src={photoSrc} alt={`${displayName} hardware`} />
+                                  <button type="button" className="secondary danger-lite" onClick={()=>removeHardwarePhoto(editingHardware)}>Remove Photo</button>
+                                </div>
+                              )}
+
+                              <label>{photoSrc ? 'Replace Photo' : 'Add Photo'}</label>
+                              <input name="editHardwarePhoto" type="file" accept="image/*" capture="environment" />
+
+                              <label className="hardware-checkbox">
+                                <input
+                                  name="editHardwareCurrentSetup"
+                                  type="checkbox"
+                                  defaultChecked={editingHardware.currentSetup}
+                                />
+                                <span>Currently in use</span>
+                              </label>
+
+                              <div className="hardware-edit-actions">
+                                <button type="submit">Save Changes</button>
+                                <button type="button" className="secondary" onClick={()=>setEditingHardware(null)}>Cancel</button>
+                                <button type="button" className="hardware-remove-button" onClick={()=>removeHardwareItem(editingHardware)}>Remove Hardware</button>
+                              </div>
+                            </form>
+                          )}
+
+                          {!isEditing && (
+                            <div className="hardware-card-details">
+                              {item.connections && <span>🔌 {item.connections}</span>}
+                              {item.notes && <p>{item.notes}</p>}
+                            </div>
+                          )}
+                        </article>
+                      );
+                    }) : (
+                      <div className="hardware-empty">
+                        <span>📺 📼</span>
+                        <strong>No hardware added yet</strong>
+                        <p>Add your TVs, players, rewinders, remotes, and AV accessories.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
+
             <div className="panel">
               <h3>Backup</h3>
-              <p className="small">Back up your collection including photos, edits, added tapes, and wishlist.</p>
+              <p className="small">Back up your tapes, photos, wishlist, hardware, watched status, and app settings.</p>
               <button onClick={exportBackup}>Export Backup JSON</button>
               <div className="restore-box">
                 <label className="restore-label">Import JSON Backup</label>
@@ -1739,7 +2147,7 @@ function pickMovieNight(){
                   accept="application/json,.json"
                   onChange={e=>importBackupFile(e.target.files?.[0])}
                 />
-                <p className="small">Choose a backup JSON file to restore tapes, wishlist, and included photos.</p>
+                <p className="small">Choose a backup JSON file to restore tapes, wishlist, hardware, settings, and included photos.</p>
               </div>
             </div>
             <div className="panel music-settings-panel">

@@ -1,5 +1,15 @@
 # VHS Archive Changelog
 
+## v8.8 — My Hardware
+- Added a collapsed My Hardware section inside Settings.
+- Add TVs, VCRs, DVD players, DVD/VCR combos, LaserDisc players, rewinders, remotes, converters, and other equipment.
+- Added brand, model, year, condition, connections/features, notes, and optional photos.
+- Hardware items can be expanded and edited inline.
+- Added confirmed Remove Hardware and Remove Photo actions.
+- Added an optional “Currently in use” marker.
+- JSON backup now includes hardware, wishlist, watched status, photos, music setting, and SFX setting.
+- Import restores the hardware list and supported settings.
+
 ## v8.7.7 — Theme Music Recovery
 - Reloads the theme audio file when Chrome reports a loading or source error.
 - Uses a cache-busted, GitHub Pages-safe music URL.
