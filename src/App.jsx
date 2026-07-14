@@ -295,7 +295,7 @@ export default function App(){
   const musicRef = useRef(null);
   const revealSfxRef = useRef(null);
   const musicFadeRef = useRef(null);
-  const musicRecoveryRef = useRef(false);
+  const musicUnlockPendingRef = useRef(false);
   const appWasPlayingRef = useRef(false);
   const appReturnTimerRef = useRef(null);
   const viewHistoryRef = useRef([]);
@@ -364,68 +364,41 @@ export default function App(){
 
 
   useEffect(() => {
-    if(!musicEnabled) return;
+    if(!musicEnabled){
+      stopThemeMusic();
+      return;
+    }
 
-    playThemeMusic();
-
-    const unlockMusic = () => {
-      const audio = musicRef.current;
-      if(!audio || audio.paused){
-        playThemeMusic({forceReload:Boolean(audio?.error)});
-      }
-      window.removeEventListener('pointerdown', unlockMusic);
-      window.removeEventListener('keydown', unlockMusic);
-      window.removeEventListener('touchstart', unlockMusic);
-    };
-
-    window.addEventListener('pointerdown', unlockMusic, {once:true});
-    window.addEventListener('keydown', unlockMusic, {once:true});
-    window.addEventListener('touchstart', unlockMusic, {once:true});
+    playThemeMusic({showFailure:false});
 
     return () => {
-      window.removeEventListener('pointerdown', unlockMusic);
-      window.removeEventListener('keydown', unlockMusic);
-      window.removeEventListener('touchstart', unlockMusic);
+      removeThemeUnlockListeners();
     };
   }, [musicEnabled]);
 
 
 
   useEffect(() => {
-    const attemptResume = () => {
-      if(appReturnTimerRef.current) clearTimeout(appReturnTimerRef.current);
-      appReturnTimerRef.current = setTimeout(() => {
-        if(!document.hidden && musicEnabled){
-          resumeThemeFromBackground();
-        }
-      }, 120);
-    };
-
     const handleVisibilityChange = () => {
       if(document.hidden){
         pauseThemeForBackground();
-      } else {
-        attemptResume();
+      } else if(musicEnabled){
+        resumeThemeFromBackground();
       }
     };
 
     const handlePageHide = () => pauseThemeForBackground();
-    const handleBlur = () => pauseThemeForBackground();
-    const handleFocus = () => attemptResume();
-    const handlePageShow = () => attemptResume();
+    const handlePageShow = () => {
+      if(musicEnabled) resumeThemeFromBackground();
+    };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('pagehide', handlePageHide);
-    window.addEventListener('blur', handleBlur);
-    window.addEventListener('focus', handleFocus);
     window.addEventListener('pageshow', handlePageShow);
 
     return () => {
-      if(appReturnTimerRef.current) clearTimeout(appReturnTimerRef.current);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('pagehide', handlePageHide);
-      window.removeEventListener('blur', handleBlur);
-      window.removeEventListener('focus', handleFocus);
       window.removeEventListener('pageshow', handlePageShow);
     };
   }, [musicEnabled]);
@@ -537,106 +510,66 @@ export default function App(){
     }, stepMs);
   }
 
-  function prepareThemeAudio(forceReload = false){
+  function getThemeAudio(){
     const audio = musicRef.current;
     if(!audio) return null;
 
     audio.loop = true;
     audio.muted = false;
     audio.defaultMuted = false;
-    audio.volume = 0.45;
 
-    const expectedSrc = `${import.meta.env.BASE_URL}audio/vhs-theme.wav?v=8.7.7`;
-    const hasLoadProblem = Boolean(audio.error) || audio.networkState === HTMLMediaElement.NETWORK_NO_SOURCE;
-
-    if(forceReload || hasLoadProblem || !audio.currentSrc){
-      audio.pause();
-      audio.src = expectedSrc;
-      audio.load();
-    }
-
-    if(audio.ended){
-      try{ audio.currentTime = 0; }catch(error){}
+    if(!Number.isFinite(audio.volume) || audio.volume <= 0){
+      audio.volume = 0.45;
     }
 
     return audio;
   }
 
-  async function waitForThemeAudio(audio, timeoutMs = 2500){
-    if(audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return true;
-
-    return new Promise(resolve => {
-      let finished = false;
-      const finish = value => {
-        if(finished) return;
-        finished = true;
-        clearTimeout(timeout);
-        audio.removeEventListener('canplay', onReady);
-        audio.removeEventListener('loadeddata', onReady);
-        audio.removeEventListener('error', onError);
-        resolve(value);
-      };
-      const onReady = () => finish(true);
-      const onError = () => finish(false);
-      const timeout = setTimeout(() => finish(audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA), timeoutMs);
-
-      audio.addEventListener('canplay', onReady, {once:true});
-      audio.addEventListener('loadeddata', onReady, {once:true});
-      audio.addEventListener('error', onError, {once:true});
-    });
+  function removeThemeUnlockListeners(){
+    if(!musicUnlockPendingRef.current) return;
+    musicUnlockPendingRef.current = false;
+    window.removeEventListener('pointerdown', unlockThemeMusic);
+    window.removeEventListener('touchstart', unlockThemeMusic);
+    window.removeEventListener('keydown', unlockThemeMusic);
   }
 
-  async function playThemeMusic(options = {}){
-    const {forceReload = false, showFailure = false} = options;
-    let audio = prepareThemeAudio(forceReload);
-    if(!audio || musicRecoveryRef.current) return false;
+  async function unlockThemeMusic(){
+    removeThemeUnlockListeners();
+    await playThemeMusic({showFailure:false});
+  }
 
-    musicRecoveryRef.current = true;
+  function waitForThemeUnlock(){
+    if(musicUnlockPendingRef.current) return;
+    musicUnlockPendingRef.current = true;
+    window.addEventListener('pointerdown', unlockThemeMusic, {once:true});
+    window.addEventListener('touchstart', unlockThemeMusic, {once:true});
+    window.addEventListener('keydown', unlockThemeMusic, {once:true});
+  }
+
+  async function playThemeMusic({showFailure = false} = {}){
+    const audio = getThemeAudio();
+    if(!audio || !musicEnabled) return false;
 
     try{
-      if(audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA){
-        const ready = await waitForThemeAudio(audio);
-        if(!ready){
-          audio = prepareThemeAudio(true);
-          await waitForThemeAudio(audio);
-        }
-      }
-
-      audio.muted = false;
-      audio.volume = 0.45;
       await audio.play();
-
-      if(audio.paused){
-        throw new Error('Theme audio remained paused after play().');
-      }
-
-      return true;
+      removeThemeUnlockListeners();
+      return !audio.paused;
     }catch(error){
       console.warn('Theme music could not start:', error);
-
-      try{
-        audio = prepareThemeAudio(true);
-        await waitForThemeAudio(audio, 3000);
-        audio.muted = false;
-        audio.volume = 0.45;
-        await audio.play();
-
-        if(!audio.paused) return true;
-      }catch(retryError){
-        console.warn('Theme music recovery failed:', retryError);
-      }
+      waitForThemeUnlock();
 
       if(showFailure){
-        notify('Music could not start. Tap the music button again.');
+        notify('Music could not start. Tap anywhere once, then try again.');
       }
+
       return false;
-    }finally{
-      musicRecoveryRef.current = false;
     }
   }
 
   function stopThemeMusic(){
-    const audio = musicRef.current;
+    removeThemeUnlockListeners();
+
+    const audio = getThemeAudio();
     if(!audio) return;
 
     if(musicFadeRef.current){
@@ -645,40 +578,19 @@ export default function App(){
     }
 
     audio.pause();
-    audio.volume = 0.45;
   }
 
   function pauseThemeForBackground(){
-    const audio = musicRef.current;
+    const audio = getThemeAudio();
     if(!audio) return;
 
     appWasPlayingRef.current = musicEnabled && !audio.paused;
-
-    if(musicFadeRef.current){
-      clearInterval(musicFadeRef.current);
-      musicFadeRef.current = null;
-    }
-
     audio.pause();
   }
 
   function resumeThemeFromBackground(){
     if(!musicEnabled) return;
-
-    playThemeMusic().then(started => {
-      if(started) return;
-
-      const startOnInteraction = () => {
-        playThemeMusic({forceReload:true});
-        window.removeEventListener('pointerdown', startOnInteraction);
-        window.removeEventListener('keydown', startOnInteraction);
-        window.removeEventListener('touchstart', startOnInteraction);
-      };
-
-      window.addEventListener('pointerdown', startOnInteraction, {once:true});
-      window.addEventListener('keydown', startOnInteraction, {once:true});
-      window.addEventListener('touchstart', startOnInteraction, {once:true});
-    });
+    playThemeMusic({showFailure:false});
   }
 
   function toggleMusic(){
@@ -687,8 +599,15 @@ export default function App(){
     localStorage.setItem('vhs_music_enabled', String(next));
 
     if(next){
-      playThemeMusic({forceReload:true, showFailure:true}).then(started => {
-        if(started) notify('Theme music on.');
+      requestAnimationFrame(() => {
+        const audio = getThemeAudio();
+        if(audio){
+          audio.volume = 0.45;
+          audio.muted = false;
+        }
+        playThemeMusic({showFailure:true}).then(started => {
+          if(started) notify('Theme music on.');
+        });
       });
     } else {
       stopThemeMusic();
@@ -1626,7 +1545,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.1</div></div>
         </div>
       </header>
 
@@ -2154,14 +2073,14 @@ function pickMovieNight(){
               <h3>Audio Settings</h3>
               <p className="small">Turn on the looping VHS Archive background theme. Music pauses when the app is backgrounded and tries to resume when the app reopens.</p>
               <button type="button" className={musicEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleMusic}>🎵 Theme Music {musicEnabled ? "On" : "Off"}</button>
-              <p className="small music-recovery-note">If Chrome suspends the theme, turning this off and on reloads the music file.</p>
+              <p className="small music-recovery-note">Music uses one persistent player and resumes once when the app returns.</p>
               <button type="button" className={sfxEnabled ? "music-toggle on" : "music-toggle"} onClick={toggleSfx}>🔊 SFX {sfxEnabled ? "On" : "Off"}</button>
             </div>
           </>
         )}
       </main>
 
-      <audio ref={musicRef} src={`${import.meta.env.BASE_URL}audio/vhs-theme.wav?v=8.7.7`} loop preload="auto" />
+      <audio ref={musicRef} src="./audio/vhs-theme.wav" loop preload="auto" />
       <audio ref={revealSfxRef} src="./audio/movie-night-reveal.mp3" preload="auto" />
 
       {openingTape && (

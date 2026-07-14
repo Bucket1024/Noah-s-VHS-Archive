@@ -1,5 +1,14 @@
 # VHS Archive Changelog
 
+## v8.8.1 — Stable Theme Music
+- Removed the aggressive music reload and recovery loop.
+- Theme music now uses one persistent audio element for the lifetime of the app.
+- Turning music on calls `play()` once without reloading the file.
+- Backgrounding pauses the theme; returning attempts one resume.
+- A blocked resume waits for the next user interaction instead of repeatedly reloading.
+- Movie Night SFX remains separate and unchanged.
+- My Hardware and the 8.8 backup improvements are preserved.
+
 ## v8.8 — My Hardware
 - Added a collapsed My Hardware section inside Settings.
 - Add TVs, VCRs, DVD players, DVD/VCR combos, LaserDisc players, rewinders, remotes, converters, and other equipment.

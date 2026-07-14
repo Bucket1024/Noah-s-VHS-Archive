@@ -3456,3 +3456,10 @@ main.app-scroll{
     font-size:.58rem;
   }
 }
+
+
+/* 8.8.1 Stable Theme Music */
+.music-recovery-note{
+  margin-top:8px;
+  opacity:.72;
+}
