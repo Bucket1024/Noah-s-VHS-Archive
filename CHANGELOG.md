@@ -1,5 +1,11 @@
 # VHS Archive Changelog
 
+## v8.8.3 — Collection ID Integrity
+- Repairs duplicate tape IDs on startup and JSON restore while preserving every tape and its photo references.
+- Generates new IDs above the highest existing VHS number rather than from the number of tapes.
+- Applies uniqueness safeguards to quick-add, regular add, and wishlist conversions.
+- Keeps existing genre filtering, theme music, hardware photo support, and tape animations unchanged.
+
 ## v8.8.2 — Hardware Photo Persistence
 - Hardware photo IDs are now loaded from IndexedDB whenever the app starts.
 - Hardware photos remain visible after refreshing, closing, or reopening the app.

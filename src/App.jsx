@@ -67,6 +67,37 @@ const views = [
   ['stats','⚙️','Settings'],
 ];
 
+// Preserve the first occurrence of each legacy ID and repair only later collisions.
+// Photo IDs are independent IndexedDB keys and must never be renamed here.
+function repairTapeIds(items){
+  const used = new Set();
+  let nextNumber = items.reduce((max, tape) => {
+    const match = /^VHS-(\d+)$/.exec(String(tape?.id || ''));
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0) + 1;
+  return items.map(tape => {
+    let id = String(tape?.id || '');
+    if(!id || used.has(id)){
+      do { id = 'VHS-' + String(nextNumber++).padStart(4, '0'); } while(used.has(id));
+      used.add(id);
+      return {...tape, id};
+    }
+    used.add(id);
+    return tape;
+  });
+}
+
+function nextTapeId(items){
+  const used = new Set(items.map(t => t.id));
+  let number = items.reduce((max, tape) => {
+    const match = /^VHS-(\d+)$/.exec(String(tape?.id || ''));
+    return match ? Math.max(max, Number(match[1])) : max;
+  }, 0) + 1;
+  let id;
+  do { id = 'VHS-' + String(number++).padStart(4, '0'); } while(used.has(id));
+  return id;
+}
+
 function normalizeTape(t){
   return {
     photos: [], cover: '', favorite:false, watched:false, dateAcquired:'', purchaseLocation:'',
@@ -263,7 +294,7 @@ function Shelf({ title, subtitle, tapes, onOpen, photoLibrary={} }){
 export default function App(){
   const [tapes,setTapes] = useState(() => {
     const saved = localStorage.getItem('noahVhs6_tapes');
-    return saved ? JSON.parse(saved).map(normalizeTape) : STARTER_TAPES.map(normalizeTape);
+    return repairTapeIds(saved ? JSON.parse(saved).map(normalizeTape) : STARTER_TAPES.map(normalizeTape));
   });
   const [wishlist,setWishlist] = useState(() => {
     const saved = localStorage.getItem('noahVhs6_wishlist');
@@ -1074,7 +1105,7 @@ function pickMovieNight(){
   };
 
   function updateTape(id, patch){
-    setTapes(prev => prev.map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
+    setTapes(prev => repairTapeIds(prev).map(t => t.id === id ? normalizeTape({...t, ...patch}) : t));
   }
 
   function removeTape(id){
@@ -1089,7 +1120,7 @@ function pickMovieNight(){
       }
     });
 
-    setTapes(prev => prev.filter(t => t.id !== id));
+    setTapes(prev => repairTapeIds(prev).filter(t => t.id !== id));
     setSelectedId(null);
     setSelectedPhoto(0);
     setEditOpen(false);
@@ -1189,13 +1220,14 @@ function pickMovieNight(){
   function quickAddTapes(){
     const rows = quickRows.split('\n').map(r => r.trim()).filter(Boolean);
     if(!rows.length){ notify('Paste one tape per line first.'); return; }
+    const quickStartNumber = Number(nextTapeId(tapes).slice(4));
     const additions = rows.map((row, idx) => {
       const parts = row.split(',').map(p => p.trim());
       const title = parts[0] || 'Untitled Tape';
       const yearMatch = row.match(/(19|20)\d{2}/);
       const packaging = /clamshell/i.test(row) ? 'Clamshell' : (/cardboard/i.test(row) ? 'Cardboard Sleeve' : 'Sleeve');
       return normalizeTape({
-        id: 'VHS-' + String(tapes.length + idx + 1).padStart(4,'0'),
+        id: 'VHS-' + String(quickStartNumber + idx).padStart(4,'0'),
         title,
         vhsYear: yearMatch ? yearMatch[0] : '',
         studio: parts[2] || parts[1] || 'Unknown',
@@ -1206,7 +1238,7 @@ function pickMovieNight(){
         dateAcquired: new Date().toISOString().slice(0,10)
       });
     });
-    setTapes(prev => [...prev, ...additions]);
+    setTapes(prev => repairTapeIds([...prev, ...additions]));
     setQuickRows('');
     notify(`${additions.length} tape${additions.length>1?'s':''} added.`);
     goToView('browse');
@@ -1219,7 +1251,7 @@ function pickMovieNight(){
     const title = fd.get('title')?.trim();
     if(!title){ notify('Add a title first.'); return; }
 
-    const next = 'VHS-' + String(tapes.length + 1).padStart(4,'0');
+    const next = nextTapeId(tapes);
     const customGenre = fd.get('customGenre')?.trim();
     const photoInputs = [
       ['Front Cover', fd.get('photoFront')],
@@ -1251,7 +1283,7 @@ function pickMovieNight(){
       dateAcquired: new Date().toISOString().slice(0,10)
     });
 
-    setTapes(prev => [...prev, newTape]);
+    setTapes(prev => repairTapeIds([...prev, newTape]));
     form.reset();
     notify(savedPhotos.length ? 'Tape added with photos.' : 'Tape added.');
     setSelectedId(next);
@@ -1315,7 +1347,7 @@ function pickMovieNight(){
   }
 
   function foundWishlistItem(item){
-    const next = 'VHS-' + String(tapes.length + 1).padStart(4,'0');
+    const next = nextTapeId(tapes);
     setFoundCelebration(item);
 
     setTimeout(() => {
@@ -1331,7 +1363,7 @@ function pickMovieNight(){
         dateAcquired: new Date().toISOString().slice(0,10)
       });
 
-      setTapes(prev => [...prev, newTape]);
+      setTapes(prev => repairTapeIds([...prev, newTape]));
       setWishlist(prev => prev.filter(w => w.id !== item.id));
       if(editingWishlist?.id === item.id) setEditingWishlist(null);
       setSelectedId(next);
@@ -1549,7 +1581,7 @@ function pickMovieNight(){
       }
 
       setPhotoLibrary(prev => ({...prev, ...newPhotoLibrary}));
-      setTapes(importedTapes.map(normalizeTape));
+      setTapes(repairTapeIds(importedTapes.map(normalizeTape)));
       setWishlist(importedWishlist.map(normalizeWishlistItem));
       setHardware(importedHardware.map(normalizeHardwareItem));
 
