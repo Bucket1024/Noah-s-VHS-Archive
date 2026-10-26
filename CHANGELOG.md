@@ -1,5 +1,10 @@
 # VHS Archive Changelog
 
+## v8.8.4 — GitHub Install Repair (repack)
+- Pin React, Vite, and icon dependency versions instead of resolving latest on each deploy.
+- Use Node 24 with npm 9 to work around the npm edgesOut installation failure.
+- Preserve the existing mobile thumbnail scrolling implementation.
+
 ## v8.8.4 — Mobile Photo Strip Swipe + Version Display
 - Enables finger-driven horizontal scrolling of tape detail thumbnails, including additional insert photos.
 - Preserves vertical page scrolling and thumbnail selection.
