@@ -332,6 +332,44 @@ export default function App(){
   const appReturnTimerRef = useRef(null);
   const viewHistoryRef = useRef([]);
   const touchStartRef = useRef(null);
+  const photoStripGestureRef = useRef(null);
+  const photoStripSuppressClickRef = useRef(false);
+
+  // Mobile/PWA fallback: ancestor pan-y rules can prevent native horizontal scrolling.
+  // Drag only the thumbnail strip; leave vertical page scrolling untouched.
+  const onPhotoStripTouchStart = (event) => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    photoStripSuppressClickRef.current = false;
+    photoStripGestureRef.current = {
+      x: touch.clientX, y: touch.clientY,
+      left: event.currentTarget.scrollLeft, axis: null
+    };
+  };
+  const onPhotoStripTouchMove = (event) => {
+    const gesture = photoStripGestureRef.current;
+    if (!gesture || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    const dx = touch.clientX - gesture.x;
+    const dy = touch.clientY - gesture.y;
+    if (!gesture.axis && (Math.abs(dx) > 7 || Math.abs(dy) > 7)) {
+      gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (gesture.axis === 'x') {
+      event.currentTarget.scrollLeft = gesture.left - dx;
+      if (Math.abs(dx) > 10) photoStripSuppressClickRef.current = true;
+      if (event.cancelable) event.preventDefault();
+    }
+  };
+  const onPhotoStripTouchEnd = () => { photoStripGestureRef.current = null; };
+  const onPhotoThumbClick = (event, index) => {
+    if (photoStripSuppressClickRef.current) {
+      event.preventDefault();
+      photoStripSuppressClickRef.current = false;
+      return;
+    }
+    setSelectedPhoto(index);
+  };
   const [toast,setToast] = useState('');
   const [editOpen,setEditOpen] = useState(false);
   const [installPrompt,setInstallPrompt] = useState(null);
@@ -1617,7 +1655,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.2</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.4</div></div>
         </div>
       </header>
 
@@ -1789,9 +1827,9 @@ function pickMovieNight(){
                     return img ? <img src={img.src} alt={img.label}/> : <div className="bigcover-title">{selected.title}</div>;
                   })()}
                 </div>
-                <div className="photo-carousel">
+                <div className="photo-carousel" onTouchStart={onPhotoStripTouchStart} onTouchMove={onPhotoStripTouchMove} onTouchEnd={onPhotoStripTouchEnd} onTouchCancel={onPhotoStripTouchEnd}>
                   {[selected.cover ? {src: mainImage(selected, photoLibrary), id:selected.cover, label:'Main Cover'} : null, ...(selected.photos || []).map(p => ({...p, src: resolvePhotoSrc(p, photoLibrary)}))].filter(p => p && p.src).map((p,i)=>(
-                    <div key={i} className={`carousel-thumb ${i===selectedPhoto?'active':''}`} onClick={()=>setSelectedPhoto(i)}>
+                    <div key={i} className={`carousel-thumb ${i===selectedPhoto?'active':''}`} onClick={(event)=>onPhotoThumbClick(event,i)}>
                       <img src={resolvePhotoSrc(p, photoLibrary)}/><span>{p.label || 'Photo'}</span>
                     </div>
                   ))}

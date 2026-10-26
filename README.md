@@ -1,17 +1,16 @@
-# VHS Archive 8.8.2 — Hardware Photo Persistence
+# VHS Archive v8.8.4
 
-Version 8.8.2 fixes hardware photos disappearing after the app is refreshed or reopened.
+Personal VHS collection PWA built with React and Vite.
 
-## Changes
+## Changes in v8.8.4
+- Swipe left or right across the thumbnail strip on a tape detail page to access additional photos.
+- Header version now correctly displays v8.8.4.
+- Previous collection ID safeguards remain intact.
 
-- Hardware photos reload from IndexedDB on startup
-- Hardware photos persist after refresh and reopening
-- Tap hardware photos to inspect them full screen
-- Pinch to zoom and drag to move
-- Use +, −, Reset, or the Back button
-- Swipe from the left edge to close the viewer
-- Stable theme music and all 8.8 hardware features remain intact
+## Deployment
+Upload the contents of this project folder to the root of your GitHub repository. GitHub Actions builds and deploys the site.
 
-## Suggested commit message
+## Backup safety
+Export and retain a JSON backup before updating. Do not delete browser storage to test an update.
 
-Release 8.8.2 - Hardware Photo Persistence
+See CHANGELOG.md for release history.

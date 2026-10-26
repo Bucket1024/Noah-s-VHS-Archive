@@ -1,5 +1,11 @@
 # VHS Archive Changelog
 
+## v8.8.4 — Mobile Photo Strip Swipe + Version Display
+- Enables finger-driven horizontal scrolling of tape detail thumbnails, including additional insert photos.
+- Preserves vertical page scrolling and thumbnail selection.
+- Corrects the displayed app version to v8.8.4 and updates release metadata.
+- Retains v8.8.3 collection ID integrity fixes and other existing functionality.
+
 ## v8.8.3 — Collection ID Integrity
 - Repairs duplicate tape IDs on startup and JSON restore while preserving every tape and its photo references.
 - Generates new IDs above the highest existing VHS number rather than from the number of tapes.
