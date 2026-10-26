@@ -335,15 +335,21 @@ export default function App(){
   const photoStripGestureRef = useRef(null);
   const photoStripSuppressClickRef = useRef(false);
 
-  // Mobile/PWA fallback: ancestor pan-y rules can prevent native horizontal scrolling.
-  // Drag only the thumbnail strip; leave vertical page scrolling untouched.
+  // Continuous, momentum-based thumbnail scrolling; vertical page gestures remain native.
+  const photoStripMomentumRef = useRef(null);
+  const stopPhotoStripMomentum = () => {
+    if (photoStripMomentumRef.current !== null) cancelAnimationFrame(photoStripMomentumRef.current);
+    photoStripMomentumRef.current = null;
+  };
   const onPhotoStripTouchStart = (event) => {
+    stopPhotoStripMomentum();
     if (event.touches.length !== 1) return;
     const touch = event.touches[0];
     photoStripSuppressClickRef.current = false;
     photoStripGestureRef.current = {
-      x: touch.clientX, y: touch.clientY,
-      left: event.currentTarget.scrollLeft, axis: null
+      x: touch.clientX, y: touch.clientY, left: event.currentTarget.scrollLeft,
+      lastX: touch.clientX, lastTime: performance.now(), velocity: 0,
+      axis: null, node: event.currentTarget
     };
   };
   const onPhotoStripTouchMove = (event) => {
@@ -356,12 +362,39 @@ export default function App(){
       gesture.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
     }
     if (gesture.axis === 'x') {
-      event.currentTarget.scrollLeft = gesture.left - dx;
+      const now = performance.now();
+      const dt = now - gesture.lastTime;
+      if (dt > 0) gesture.velocity = Math.max(-2.5, Math.min(2.5, (gesture.lastX - touch.clientX) / dt));
+      gesture.lastX = touch.clientX;
+      gesture.lastTime = now;
+      gesture.node.scrollLeft = gesture.left - dx;
       if (Math.abs(dx) > 10) photoStripSuppressClickRef.current = true;
       if (event.cancelable) event.preventDefault();
     }
   };
-  const onPhotoStripTouchEnd = () => { photoStripGestureRef.current = null; };
+  const onPhotoStripTouchEnd = () => {
+    const gesture = photoStripGestureRef.current;
+    photoStripGestureRef.current = null;
+    if (!gesture || gesture.axis !== 'x') return;
+    // Momentum follows the direction and speed of the last swipe.
+    let velocity = performance.now() - gesture.lastTime < 100 ? gesture.velocity * 16 : 0;
+    let previous = performance.now();
+    const glide = (now) => {
+      const dt = Math.min(32, now - previous);
+      previous = now;
+      const node = gesture.node;
+      const max = Math.max(0, node.scrollWidth - node.clientWidth);
+      const next = Math.max(0, Math.min(max, node.scrollLeft + velocity * dt / 16));
+      if (next === node.scrollLeft || Math.abs(velocity) < 0.25) {
+        photoStripMomentumRef.current = null;
+        return;
+      }
+      node.scrollLeft = next;
+      velocity *= Math.pow(0.94, dt / 16);
+      photoStripMomentumRef.current = requestAnimationFrame(glide);
+    };
+    if (Math.abs(velocity) >= 0.25) photoStripMomentumRef.current = requestAnimationFrame(glide);
+  };
   const onPhotoThumbClick = (event, index) => {
     if (photoStripSuppressClickRef.current) {
       event.preventDefault();
@@ -1655,7 +1688,7 @@ function pickMovieNight(){
       <header className="app-header" onClick={() => goToView('home')} role="button" title="Back to top">
         <div className="header-inner">
           <img className="header-ticket-logo" src="./vhs-ticket-header-logo-user.png" alt="VHS Archive logo" />
-          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.4</div></div>
+          <div><h1>VHS ARCHIVE</h1><div className="sub">Catalog. Collect. Preserve.</div><div className="version-badge">v8.8.5</div></div>
         </div>
       </header>
 

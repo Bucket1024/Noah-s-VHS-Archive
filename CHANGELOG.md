@@ -1,3 +1,8 @@
+## v8.8.5 — Smooth Photo Thumbnail Scrolling
+- Replaces thumbnail snapping with continuous touch dragging and momentum after flicks.
+- Preserves vertical page scrolling, thumbnail selection, and the existing photo viewer.
+- Keeps the dependency versions and other fixes from v8.8.4.
+
 # VHS Archive Changelog
 
 ## v8.8.4 — GitHub Install Repair (repack)

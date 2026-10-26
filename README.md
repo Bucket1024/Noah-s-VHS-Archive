@@ -1,10 +1,10 @@
-# VHS Archive v8.8.4
+# VHS Archive v8.8.5
 
 Personal VHS collection PWA built with React and Vite.
 
-## Changes in v8.8.4
+## Changes in v8.8.5
 - Swipe left or right across the thumbnail strip on a tape detail page to access additional photos.
-- Header version now correctly displays v8.8.4.
+- Header version now correctly displays v8.8.5.
 - Previous collection ID safeguards remain intact.
 
 ## Deployment
